@@ -3,1649 +3,545 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Simple Categorized Notes</title>
-    
-    <!-- Google Fonts: Space Grotesk -->
+    <title>copasic.my.id</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-        }
-    </script>
-    
-    <!-- FontAwesome -->
+    <script>tailwind.config = { darkMode: 'class', }</script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
-        body {
-            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        ::-webkit-scrollbar { width: 0px; height: 0px; }
+        body { font-family: 'Space Grotesk', sans-serif; -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
         .modal-enter { transform: translateY(100%); opacity: 0; transition: all 0.3s ease-out; }
         .modal-active { transform: translateY(0); opacity: 1; }
-        
-        .glass-header {
-            background-color: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-        }
-
-        .dark .glass-header {
-            background-color: rgba(17, 24, 39, 0.85);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .accordion-content {
-            display: grid;
-            grid-template-rows: 0fr;
-            transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        .accordion-content { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.3s ease; }
         .accordion-content.open { grid-template-rows: 1fr; }
         .accordion-inner { overflow: hidden; }
-
         .chevron-icon { transition: transform 0.3s ease; }
         .chevron-icon.open { transform: rotate(180deg); }
     </style>
 </head>
-<body class="flex flex-col h-screen overflow-hidden bg-[#F2F2F7] dark:bg-gray-900 transition-colors duration-300">
+<body class="flex h-screen overflow-hidden bg-[#F2F2F7] dark:bg-gray-900 transition-colors duration-300">
 
-    <!-- Header dengan Tombol Aksi -->
-    <header class="glass-header fixed top-0 w-full z-50 h-14 flex items-center justify-between px-4 md:px-6 lg:px-8">
-        <div class="flex items-center">
-            <button onclick="toggleSidebar()" class="lg:hidden w-8 h-8 flex items-center justify-center text-gray-700 dark:text-gray-200 mr-2 rounded-lg active:bg-gray-200 dark:active:bg-gray-700 transition">
-                <i class="fa-solid fa-bars text-lg"></i>
-            </button>
-            <h1 class="text-[17px] font-bold text-gray-800 dark:text-white tracking-tight">My Notes</h1>
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-20 hidden lg:hidden transition-opacity opacity-0" onclick="toggleSidebar()"></div>
+
+    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-30 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col shadow-xl lg:shadow-none">
+        <div class="h-14 flex items-center px-5 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 shrink-0">
+            <h2 class="text-[17px] font-bold text-gray-800 dark:text-white tracking-tight">copasic.my.id</h2>
         </div>
-        
-        <div class="flex items-center space-x-3">
-            <input type="file" id="import-file" accept=".json" class="hidden" onchange="importData(event)">
-            
-            <button onclick="document.getElementById('import-file').click()" class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 active:opacity-50 w-10" title="Import Data">
-                <i class="fa-solid fa-cloud-arrow-up text-[16px]"></i>
-                <span class="text-[9px] font-bold mt-0.5">IMPORT</span>
-            </button>
-            <button onclick="exportData()" class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 active:opacity-50 w-10" title="Export Data">
-                <i class="fa-solid fa-cloud-arrow-down text-[16px]"></i>
-                <span class="text-[9px] font-bold mt-0.5">EXPORT</span>
-            </button>
-            
-            <div class="w-px h-5 bg-gray-300 dark:bg-gray-700 mx-1"></div>
-            
-            <button onclick="toggleTheme()" id="btn-theme" class="w-8 h-8 flex items-center justify-center text-yellow-500 active:opacity-50 text-[18px]" title="Ubah Tema">
-                <i class="fa-solid fa-sun" id="theme-icon"></i>
-            </button>
+        <div class="flex-1 overflow-y-auto py-4 px-3 space-y-1 hide-scrollbar" id="sidebar-categories"></div>
+    </aside>
 
-            <button onclick="toggleGroupView()" id="btn-group" class="w-8 h-8 flex items-center justify-center text-indigo-500 active:opacity-50 text-[18px]" title="Kategorikan">
-                <i class="fa-solid fa-layer-group"></i>
-            </button>
-            <button onclick="openModal()" class="w-8 h-8 flex items-center justify-center text-blue-600 dark:text-blue-400 active:opacity-50 text-[24px]" title="Tambah Catatan">
-                <i class="fa-solid fa-circle-plus"></i>
-            </button>
+    <main class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+        <header class="h-14 bg-white/85 dark:bg-gray-800/85 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4 lg:px-6 z-10 shrink-0 w-full">
+            <div class="flex items-center">
+                <button onclick="toggleSidebar()" class="lg:hidden w-10 h-10 flex items-center justify-center text-gray-600 dark:text-gray-300 mr-2 active:scale-95 transition-transform"><i class="fa-solid fa-bars text-lg"></i></button>
+                <h1 class="text-[17px] font-bold text-gray-800 dark:text-white tracking-tight lg:hidden">copasic.my.id</h1>
+            </div>
+            <div class="flex items-center space-x-1 sm:space-x-3 ml-auto">
+                <input type="file" id="import-file" accept=".json" class="hidden" onchange="importData(event)">
+                <button onclick="document.getElementById('import-file').click()" class="flex flex-col items-center justify-center w-10 h-10 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg active:scale-95 transition-all">
+                    <i class="fa-solid fa-cloud-arrow-up text-[15px]"></i><span class="text-[9px] font-bold mt-0.5 tracking-wider">IMPORT</span>
+                </button>
+                <button onclick="exportData()" class="flex flex-col items-center justify-center w-10 h-10 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg active:scale-95 transition-all">
+                    <i class="fa-solid fa-cloud-arrow-down text-[15px]"></i><span class="text-[9px] font-bold mt-0.5 tracking-wider">EXPORT</span>
+                </button>
+                <div class="w-px h-6 bg-gray-300 dark:bg-gray-700 mx-1"></div>
+                <button onclick="toggleTheme()" id="btn-theme" class="w-10 h-10 flex items-center justify-center text-yellow-500 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 active:scale-95 transition-all"><i class="fa-solid fa-sun text-lg" id="theme-icon"></i></button>
+                <button onclick="toggleGroupView()" id="btn-group" class="w-10 h-10 flex items-center justify-center text-indigo-500 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 active:scale-95 transition-all"><i class="fa-solid fa-layer-group text-lg"></i></button>
+                <button onclick="openModal()" class="w-10 h-10 flex items-center justify-center text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 active:scale-95 transition-all"><i class="fa-solid fa-circle-plus text-2xl"></i></button>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto pt-6 pb-10 px-4 lg:px-6 hide-scrollbar" id="main-area">
+            <div id="notes-container" class="w-full max-w-[1600px] mx-auto"></div>
         </div>
-    </header>
+    </main>
 
-    <!-- Main Layout Wrapper (Sidebar + Konten) -->
-    <div class="flex flex-1 h-full w-full pt-14 overflow-hidden relative">
-        
-        <!-- Mobile Sidebar Overlay -->
-        <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-30 hidden opacity-0 transition-opacity duration-300 lg:hidden"></div>
-
-        <!-- Sidebar Kategori -->
-        <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 h-full overflow-y-auto pt-14 lg:pt-0 pb-20 lg:pb-0 flex flex-col shadow-2xl lg:shadow-none">
-            <div class="p-4 space-y-1.5" id="sidebar-categories">
-                <!-- Kategori akan di-render di sini via JS -->
-            </div>
-        </aside>
-
-        <!-- Area Utama: Penuh pada Desktop -->
-        <main class="flex-1 overflow-y-auto hide-scrollbar p-4 lg:p-8 relative" id="main-area">
-            <div id="notes-container" class="w-full max-w-[1600px] mx-auto">
-                <!-- Catatan akan di-render di sini via JavaScript -->
-            </div>
-        </main>
-    </div>
-
-    <!-- MODAL TAMBAH/EDIT CATATAN -->
-    <div id="modal-overlay" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-30 hidden opacity-0 transition-opacity duration-300" onclick="closeModal()"></div>
-    
-    <div id="modal" class="fixed inset-x-0 bottom-0 z-40 bg-white dark:bg-gray-800 rounded-t-3xl h-[85vh] md:max-w-2xl md:mx-auto shadow-2xl modal-enter flex flex-col transition-colors">
+    <div id="modal-overlay" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-40 hidden opacity-0 transition-opacity duration-300" onclick="closeModal()"></div>
+    <div id="modal" class="fixed inset-x-0 bottom-0 z-50 bg-white dark:bg-gray-800 rounded-t-3xl h-[85vh] md:max-w-2xl md:mx-auto shadow-2xl modal-enter flex flex-col transition-colors">
         <div class="flex justify-between items-center px-5 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded-t-3xl shrink-0">
             <button onclick="closeModal()" class="text-gray-500 dark:text-gray-400 font-medium">Batal</button>
             <h2 class="font-semibold text-[17px] text-gray-800 dark:text-white" id="modal-title">Buat Catatan</h2>
             <button onclick="saveNote()" class="text-blue-600 dark:text-blue-400 font-bold">Simpan</button>
         </div>
-        
         <div class="p-5 flex-1 overflow-y-auto hide-scrollbar bg-white dark:bg-gray-800">
             <input type="hidden" id="note-id">
             
-            <div class="mb-4" id="category-wrapper">
-                <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Pilih Kategori</label>
+            <div class="mb-4" id="category-select-container">
+                <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Pilih Kategori</label>
                 <div class="relative">
-                    <select id="note-category" onchange="toggleInputFields()" class="w-full appearance-none bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-3 px-4 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-gray-600 transition-colors">
-                        <option value="carousel">🗂️ Carousel Notes</option>
-                        <option value="copas" selected>📋 Copas</option>
-                        <option value="efekfont">🔤 Efek Font</option>
-                        <option value="error">🐛 Error Book</option>
-                        <option value="ideation">💡 Ideation</option>
-                        <option value="myinstruction">💻 Instruction</option>
-                        <option value="memo">📝 Memo Tasks</option>
-                        <option value="mylink">🔗 My Link</option>
-                        <option value="mypassword">🔑 My Password</option>
-                        <option value="myprompt">⌨️ My Prompt</option>
-                        <option value="oneshot">🎯 One Shot</option>
-                        <option value="revisi">🔄 Revisi</option>
-                        <option value="styleart">🎨 Style Art</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 dark:text-gray-400">
-                        <i class="fa-solid fa-chevron-down text-sm"></i>
-                    </div>
+                    <select id="note-category" onchange="toggleInputFields()" class="w-full appearance-none bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-3 px-4 rounded-xl font-medium focus:outline-none"></select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500"><i class="fa-solid fa-chevron-down text-sm"></i></div>
                 </div>
             </div>
 
             <div class="mb-4">
-                <input type="text" id="note-title" placeholder="Judul Catatan..." class="w-full text-[20px] font-bold focus:outline-none text-black dark:text-white bg-transparent placeholder-gray-300 dark:placeholder-gray-500 py-2 border-b border-gray-100 dark:border-gray-700">
+                <input type="text" id="note-title" placeholder="Judul Catatan..." class="w-full text-[20px] font-bold focus:outline-none text-black dark:text-white bg-transparent placeholder-gray-300 py-2 border-b border-gray-100 dark:border-gray-700">
             </div>
 
-            <!-- Bagian Lampiran -->
             <div class="mb-4">
-                <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Lampiran (Maks 2MB/File)</label>
+                <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Lampiran (>2MB Auto Kompres)</label>
                 <div class="flex space-x-2 mb-2">
-                    <button onclick="document.getElementById('attach-image').click()" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-3 py-2 rounded-lg text-sm font-medium transition"><i class="fa-solid fa-image text-blue-500 dark:text-blue-400 mr-1"></i> Gambar</button>
-                    <button onclick="document.getElementById('attach-file').click()" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-3 py-2 rounded-lg text-sm font-medium transition"><i class="fa-solid fa-paperclip text-purple-500 dark:text-purple-400 mr-1"></i> File</button>
+                    <button onclick="document.getElementById('attach-image').click()" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 text-gray-700 dark:text-gray-200 px-3 py-2 rounded-lg text-sm font-medium"><i class="fa-solid fa-image text-blue-500 mr-1"></i> Gambar</button>
+                    <button onclick="document.getElementById('attach-file').click()" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 text-gray-700 dark:text-gray-200 px-3 py-2 rounded-lg text-sm font-medium"><i class="fa-solid fa-paperclip text-purple-500 mr-1"></i> File</button>
                     <input type="file" id="attach-image" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'image')" multiple>
                     <input type="file" id="attach-file" accept=".txt,.pdf,.html,.json,.doc,.docx,.xls,.xlsx,.csv" class="hidden" onchange="handleFileUpload(event, 'file')" multiple>
                 </div>
                 <div id="attachment-preview" class="flex flex-wrap gap-2"></div>
             </div>
             
-            <!-- Mode Teks Biasa -->
             <div id="normal-input-container" class="w-full flex-col flex h-48">
-                <textarea id="note-content" placeholder="Ketik isi catatan di sini..." class="w-full h-full text-[16px] focus:outline-none text-gray-700 dark:text-gray-200 placeholder-gray-300 dark:placeholder-gray-500 resize-none leading-relaxed bg-gray-50 dark:bg-gray-700 p-3 rounded-xl border border-gray-100 dark:border-gray-600"></textarea>
+                <textarea id="note-content" placeholder="Ketik isi catatan di sini..." class="w-full h-full text-[16px] focus:outline-none text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 p-3 rounded-xl border border-gray-100 dark:border-gray-600 resize-none"></textarea>
             </div>
 
-            <!-- Mode Carousel -->
             <div id="carousel-input-container" class="w-full flex-col hidden pb-5">
                 <div class="flex justify-between items-center mb-3">
-                    <label class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Isi Kartu Carousel</label>
-                    <div class="flex items-center space-x-2 bg-gray-100 dark:bg-gray-700 rounded-lg p-1 border border-gray-200 dark:border-gray-600">
-                        <button onclick="changeCarouselCount(-1)" class="w-7 h-7 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded active:scale-95 transition-all"><i class="fa-solid fa-minus text-xs"></i></button>
+                    <label class="text-xs font-semibold text-gray-400 uppercase">Isi Kartu Carousel</label>
+                    <div class="flex items-center space-x-2 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+                        <button onclick="changeCarouselCount(-1)" class="w-7 h-7 text-gray-600 dark:text-gray-300 rounded hover:bg-gray-200"><i class="fa-solid fa-minus text-xs"></i></button>
                         <span id="carousel-count-display" class="text-sm font-bold text-gray-800 dark:text-gray-200 w-6 text-center">3</span>
-                        <button onclick="changeCarouselCount(1)" class="w-7 h-7 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded active:scale-95 transition-all"><i class="fa-solid fa-plus text-xs"></i></button>
+                        <button onclick="changeCarouselCount(1)" class="w-7 h-7 text-gray-600 dark:text-gray-300 rounded hover:bg-gray-200"><i class="fa-solid fa-plus text-xs"></i></button>
                     </div>
                 </div>
-                <div id="carousel-cards-wrapper" class="space-y-3">
-                    <!-- Carousel inputs di-inject via JS -->
-                </div>
+                <div id="carousel-cards-wrapper" class="space-y-3"></div>
             </div>
             
-            <!-- Mode My Password -->
             <div id="mypassword-input-container" class="w-full flex-col hidden space-y-4 pb-5">
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Username / Email</label>
-                    <input type="text" id="pw-username" placeholder="Masukkan Username..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Password</label>
-                    <input type="text" id="pw-password" placeholder="Masukkan Password..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Link / URL</label>
-                    <input type="url" id="pw-link" placeholder="https://..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
+                <div><label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Username/Email</label><input type="text" id="pw-username" class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl dark:text-white"></div>
+                <div><label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Password</label><input type="text" id="pw-password" class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl font-mono dark:text-white"></div>
+                <div><label class="block text-xs font-semibold text-gray-400 uppercase mb-1">URL</label><input type="url" id="pw-link" class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl dark:text-white"></div>
             </div>
 
-            <!-- Mode Revisi -->
             <div id="revisi-input-container" class="w-full flex-col hidden space-y-4 pb-5">
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Tujuan Revisi</label>
-                    <input type="text" id="rev-tujuan" placeholder="Misal: Perbaiki grammar, kurangi pengulangan..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Teks Utama</label>
-                    <textarea id="rev-content" placeholder="Ketik teks yang akan atau telah direvisi..." class="w-full h-40 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none leading-relaxed"></textarea>
-                </div>
+                <div><label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Tujuan Revisi</label><input type="text" id="rev-tujuan" class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl dark:text-white"></div>
+                <div><label class="block text-xs font-semibold text-gray-400 uppercase mb-1">Teks Utama</label><textarea id="rev-content" class="w-full h-40 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl resize-none dark:text-white"></textarea></div>
             </div>
 
-            <!-- Mode One Shot -->
             <div id="oneshot-input-container" class="w-full flex-col hidden pb-5 items-center justify-center py-6">
-                <div class="w-20 h-20 bg-rose-100 dark:bg-rose-900/30 text-rose-500 rounded-full flex items-center justify-center text-4xl mb-4">🎯</div>
+                <div class="w-20 h-20 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center text-4xl mb-4">🎯</div>
                 <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Mode Anti-Distraksi</h3>
-                <p class="text-center text-sm text-gray-500 dark:text-gray-400 mb-6 px-4">Teks akan otomatis hilang per kata saat Anda menekan spasi untuk melatih aliran ide tanpa henti.</p>
-                <button onclick="openOneShotFullscreen()" class="bg-rose-500 hover:bg-rose-600 text-white px-8 py-3.5 rounded-2xl font-bold transition-colors shadow-lg active:scale-95 w-full md:w-auto flex items-center justify-center">
-                    <i class="fa-solid fa-expand mr-2"></i> Buka Kanvas One Shot
-                </button>
+                <button onclick="openOneShotFullscreen()" class="bg-rose-500 hover:bg-rose-600 text-white px-8 py-3.5 rounded-2xl font-bold shadow-lg w-full md:w-auto"><i class="fa-solid fa-expand mr-2"></i> Buka Kanvas One Shot</button>
             </div>
         </div>
     </div>
 
-    <!-- CUSTOM DELETE ALERT OVERLAY -->
-    <div id="delete-alert-overlay" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
-        <div id="delete-alert-box" class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300">
-            <div class="p-6 text-center">
-                <div class="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-4 text-red-500">
-                    <i class="fa-solid fa-triangle-exclamation text-3xl"></i>
-                </div>
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Hapus Catatan?</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Tindakan ini tidak dapat dibatalkan. Catatan akan dihapus permanen.</p>
-            </div>
-            <div class="flex border-t border-gray-100 dark:border-gray-700">
-                <button onclick="closeDeleteAlert()" class="flex-1 py-3.5 text-gray-600 dark:text-gray-400 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-r border-gray-100 dark:border-gray-700">Batal</button>
-                <button onclick="confirmDelete()" class="flex-1 py-3.5 text-red-600 dark:text-red-500 font-bold hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">Hapus</button>
+    <div id="copy-modal-overlay" class="fixed inset-0 bg-black/50 z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+        <div id="copy-modal-box" class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-sm shadow-2xl p-6 text-center transform scale-95 transition-transform duration-300">
+            <div class="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-4 text-green-500"><i class="fa-regular fa-copy text-3xl"></i></div>
+            <h3 class="text-lg font-bold dark:text-white mb-2">Salin Catatan</h3>
+            <p class="text-sm text-gray-500 mb-6">Pilih format salinan.</p>
+            <div class="flex flex-col space-y-3">
+                <button onclick="executeCopy(true)" class="w-full py-3 bg-blue-500 text-white rounded-xl font-bold">Beserta Judul</button>
+                <button onclick="executeCopy(false)" class="w-full py-3 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white rounded-xl font-bold">Tanpa Judul</button>
+                <button onclick="closeCopyModal()" class="w-full py-3 text-gray-500 font-medium">Batal</button>
             </div>
         </div>
     </div>
 
-    <!-- CUSTOM COPY OPTIONS OVERLAY -->
-    <div id="copy-options-overlay" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
-        <div id="copy-options-box" class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-xs overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300">
-            <div class="p-5 text-center border-b border-gray-100 dark:border-gray-700">
-                <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mx-auto mb-3 text-blue-500">
-                    <i class="fa-regular fa-copy text-xl"></i>
-                </div>
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Opsi Salin</h3>
-            </div>
-            <div class="flex flex-col">
-                <button onclick="executeCopy(true)" class="py-4 text-gray-800 dark:text-gray-200 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-b border-gray-100 dark:border-gray-700">Beserta Judul</button>
-                <button onclick="executeCopy(false)" class="py-4 text-gray-800 dark:text-gray-200 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-b border-gray-100 dark:border-gray-700">Tanpa Judul</button>
-                <button onclick="closeCopyOptions()" class="py-4 text-red-500 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">Batal</button>
+    <div id="delete-alert-overlay" class="fixed inset-0 bg-black/50 z-50 hidden opacity-0 flex items-center justify-center p-4 transition-opacity">
+        <div id="delete-alert-box" class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-sm shadow-2xl p-6 text-center transform scale-95 transition-transform">
+            <div class="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-4 text-red-500"><i class="fa-solid fa-triangle-exclamation text-3xl"></i></div>
+            <h3 class="text-lg font-bold dark:text-white mb-2">Hapus Catatan?</h3>
+            <div class="flex mt-6 gap-3">
+                <button onclick="closeDeleteAlert()" class="flex-1 py-3 bg-gray-100 dark:bg-gray-700 dark:text-white rounded-xl font-bold">Batal</button>
+                <button onclick="confirmDelete()" class="flex-1 py-3 bg-red-500 text-white rounded-xl font-bold">Hapus</button>
             </div>
         </div>
     </div>
 
-    <!-- TOAST NOTIFICATION -->
-    <div id="toast" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-white text-white dark:text-gray-900 px-5 py-3 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 translate-y-20 opacity-0 z-50 flex items-center pointer-events-none">
-        <i class="fa-solid fa-check-circle text-green-400 dark:text-green-500 text-lg mr-3"></i>
-        <span id="toast-message" class="text-[14px] font-medium">Teks berhasil disalin!</span>
-    </div>
-
-    <!-- CUSTOM ONE SHOT FULLSCREEN KANVAS -->
-    <div id="oneshot-fullscreen-overlay" class="fixed inset-0 bg-[#F2F2F7] dark:bg-gray-900 z-[100] hidden flex-col transition-opacity duration-300 opacity-0">
-        <!-- Floating Header/Controls -->
+    <div id="oneshot-fullscreen-overlay" class="fixed inset-0 bg-[#F2F2F7] dark:bg-gray-900 z-[100] hidden flex-col opacity-0 transition-opacity duration-300">
         <div class="absolute top-6 left-6 right-6 flex justify-between items-center z-30 pointer-events-none">
-            <div id="oneshot-fs-stats" class="text-sm font-bold text-rose-500 bg-rose-100 dark:bg-rose-900/30 px-4 py-2 rounded-full shadow-sm pointer-events-auto">0 Kata</div>
-            <button onclick="closeOneShotFullscreen()" class="w-12 h-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full shadow-lg flex items-center justify-center text-gray-800 dark:text-white hover:scale-105 active:scale-95 transition pointer-events-auto" title="Selesai / Keluar Kanvas">
-                <i class="fa-solid fa-check text-xl"></i>
-            </button>
+            <div id="oneshot-fs-stats" class="text-sm font-bold text-rose-500 bg-rose-100 px-4 py-2 rounded-full shadow-sm pointer-events-auto">0 Kata</div>
+            <button onclick="closeOneShotFullscreen()" class="w-12 h-12 bg-white dark:bg-gray-800 rounded-full shadow-lg flex items-center justify-center text-gray-800 dark:text-white pointer-events-auto hover:scale-105 transition"><i class="fa-solid fa-check text-xl"></i></button>
         </div>
-
-        <!-- Hidden content store -->
         <textarea id="oneshot-fs-hidden" class="hidden"></textarea>
-
-        <!-- Big Input Centered -->
         <div class="flex-1 flex items-center justify-center p-8 relative overflow-hidden z-10">
-            <!-- Menambahkan autocapitalize="none" agar keyboard tidak override secara paksa -->
-            <div id="oneshot-fs-visible" contenteditable="true" autocapitalize="none" oninput="handleOneShotInput(event)" class="w-full max-w-5xl mx-auto text-center text-5xl md:text-[6vw] font-black text-gray-800 dark:text-gray-200 focus:outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-gray-300 dark:empty:before:text-gray-700 leading-tight break-words" data-placeholder="Ketik di sini..."></div>
+            <div id="oneshot-fs-visible" contenteditable="true" autocapitalize="none" oninput="handleOneShotInput(event)" class="w-full max-w-5xl mx-auto text-center text-5xl md:text-[6vw] font-black text-gray-800 dark:text-gray-200 focus:outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-gray-300 break-words" data-placeholder="Ketik di sini..."></div>
         </div>
-
-        <!-- Preview Box (Absolute Centered) -->
-        <div id="oneshot-fs-preview-box" class="absolute inset-x-6 top-24 bottom-28 md:inset-x-24 md:top-32 md:bottom-32 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-3xl shadow-2xl p-8 hidden overflow-y-auto text-lg md:text-2xl leading-relaxed text-gray-800 dark:text-gray-200 z-20 border border-gray-200 dark:border-gray-700"></div>
-
-        <!-- Floating Bottom Control -->
+        <div id="oneshot-fs-preview-box" class="absolute inset-x-6 top-24 bottom-28 md:inset-x-24 md:top-32 md:bottom-32 bg-white/95 dark:bg-gray-800/95 backdrop-blur rounded-3xl shadow-2xl p-8 hidden overflow-y-auto text-xl leading-relaxed text-gray-800 dark:text-gray-200 z-20"></div>
         <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 pointer-events-auto">
-            <button onclick="toggleOneShotPreview()" id="btn-oneshot-preview" class="bg-gray-800 dark:bg-white text-white dark:text-gray-900 px-6 py-3 rounded-full font-bold shadow-xl hover:scale-105 active:scale-95 transition flex items-center text-sm md:text-base">
-                <i class="fa-solid fa-eye mr-2"></i> <span id="oneshot-preview-btn-text">Intip Teks</span>
-            </button>
+            <button onclick="toggleOneShotPreview()" id="btn-oneshot-preview" class="bg-gray-800 dark:bg-white text-white dark:text-gray-900 px-6 py-3 rounded-full font-bold shadow-xl flex items-center hover:scale-105"><i class="fa-solid fa-eye mr-2"></i> <span id="oneshot-preview-btn-text">Intip Teks</span></button>
         </div>
     </div>
 
-    <input type="file" id="carousel-image-input" accept="image/*" class="hidden" onchange="handleCarouselImageUpload(event)">
-
-    <!-- CUSTOM EDIT CAROUSEL CARD MODAL -->
-    <div id="edit-card-overlay" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
-        <div id="edit-card-box" class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col">
-            <div class="px-5 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-900">
-                <h3 class="font-bold text-gray-900 dark:text-white">Edit Kartu Carousel</h3>
-                <button onclick="closeEditCarouselCardModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"><i class="fa-solid fa-times"></i></button>
-            </div>
-            <div class="p-5 flex-1 bg-white dark:bg-gray-800">
-                <textarea id="edit-card-textarea" placeholder="Isi kartu..." class="w-full h-32 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
-            </div>
-            <div class="flex border-t border-gray-100 dark:border-gray-700">
-                <button onclick="closeEditCarouselCardModal()" class="flex-1 py-3.5 text-gray-600 dark:text-gray-400 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-r border-gray-100 dark:border-gray-700">Batal</button>
-                <button onclick="saveEditCarouselCard()" class="flex-1 py-3.5 text-blue-600 dark:text-blue-500 font-bold hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">Simpan</button>
-            </div>
-        </div>
+    <div id="toast" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-white text-white px-5 py-3 rounded-xl shadow-xl transition-all duration-300 translate-y-20 opacity-0 z-[110] flex items-center pointer-events-none">
+        <i class="fa-solid fa-check-circle text-green-400 mr-3"></i><span id="toast-message" class="text-[14px] font-medium">Sukses!</span>
     </div>
 
     <script>
         const categories = {
-            carousel: { title: "Carousel Notes", icon: "🗂️", color: "text-pink-500 dark:text-pink-400", bg: "bg-pink-100 dark:bg-pink-900/30" },
-            copas: { title: "Copas", icon: "📋", color: "text-green-500 dark:text-green-400", bg: "bg-green-100 dark:bg-green-900/30" },
-            efekfont: { title: "Efek Font", icon: "🔤", color: "text-emerald-500 dark:text-emerald-400", bg: "bg-emerald-100 dark:bg-emerald-900/30" },
-            error: { title: "Error Book", icon: "🐛", color: "text-red-500 dark:text-red-400", bg: "bg-red-100 dark:bg-red-900/30" },
-            ideation: { title: "Ideation", icon: "💡", color: "text-amber-500 dark:text-amber-400", bg: "bg-amber-100 dark:bg-amber-900/30" },
-            myinstruction: { title: "Instruction", icon: "💻", color: "text-indigo-500 dark:text-indigo-400", bg: "bg-indigo-100 dark:bg-indigo-900/30" },
-            memo: { title: "Memo Tasks", icon: "📝", color: "text-yellow-500 dark:text-yellow-400", bg: "bg-yellow-100 dark:bg-yellow-900/30" },
-            mylink: { title: "My Link", icon: "🔗", color: "text-purple-500 dark:text-purple-400", bg: "bg-purple-100 dark:bg-purple-900/30" },
-            mypassword: { title: "My Password", icon: "🔑", color: "text-teal-500 dark:text-teal-400", bg: "bg-teal-100 dark:bg-teal-900/30" },
-            myprompt: { title: "My Prompt", icon: "⌨️", color: "text-orange-500 dark:text-orange-400", bg: "bg-orange-100 dark:bg-orange-900/30" },
-            oneshot: { title: "One Shot", icon: "🎯", color: "text-rose-500 dark:text-rose-400", bg: "bg-rose-100 dark:bg-rose-900/30" },
-            revisi: { title: "Revisi", icon: "🔄", color: "text-cyan-500 dark:text-cyan-400", bg: "bg-cyan-100 dark:bg-cyan-900/30" },
-            styleart: { title: "Style Art", icon: "🎨", color: "text-fuchsia-500 dark:text-fuchsia-400", bg: "bg-fuchsia-100 dark:bg-fuchsia-900/30" }
+            carousel: { title: "Carousel Notes", icon: "🗂️", color: "text-pink-500", bg: "bg-pink-100 dark:bg-pink-900/30" },
+            copas: { title: "Copas", icon: "📋", color: "text-green-500", bg: "bg-green-100 dark:bg-green-900/30" },
+            efekfont: { title: "Efek Font", icon: "🔤", color: "text-emerald-500", bg: "bg-emerald-100 dark:bg-emerald-900/30" },
+            error: { title: "Error Book", icon: "🐛", color: "text-red-500", bg: "bg-red-100 dark:bg-red-900/30" },
+            ideation: { title: "Ideation", icon: "💡", color: "text-amber-500", bg: "bg-amber-100 dark:bg-amber-900/30" },
+            myinstruction: { title: "Instruction", icon: "💻", color: "text-indigo-500", bg: "bg-indigo-100 dark:bg-indigo-900/30" },
+            memo: { title: "Memo Tasks", icon: "📝", color: "text-yellow-500", bg: "bg-yellow-100 dark:bg-yellow-900/30" },
+            mylink: { title: "My Link", icon: "🔗", color: "text-purple-500", bg: "bg-purple-100 dark:bg-purple-900/30" },
+            mypassword: { title: "My Password", icon: "🔑", color: "text-teal-500", bg: "bg-teal-100 dark:bg-teal-900/30" },
+            myprompt: { title: "My Prompt", icon: "⌨️", color: "text-orange-500", bg: "bg-orange-100 dark:bg-orange-900/30" },
+            oneshot: { title: "One Shot", icon: "🎯", color: "text-rose-500", bg: "bg-rose-100 dark:bg-rose-900/30" },
+            revisi: { title: "Revisi", icon: "🔄", color: "text-cyan-500", bg: "bg-cyan-100 dark:bg-cyan-900/30" },
+            styleart: { title: "Style Art", icon: "🎨", color: "text-fuchsia-500", bg: "bg-fuchsia-100 dark:bg-fuchsia-900/30" }
         };
+        const sortedCategoryKeys = Object.keys(categories).sort((a,b) => categories[a].title.localeCompare(categories[b].title));
 
         let notes = [];
         const STORAGE_KEY = "simple_app_notes";
-        
+        let currentFilter = 'all';
         let isGrouped = false; 
-        let openNotes = new Set();
-        let openCategories = new Set();
-        
-        let currentAttachments = [];
-        let currentCarouselImages = {}; 
-        let currentCarouselCount = 3; 
-        let toastTimeout;
-        let noteIdToDelete = null;
-        let noteIdToCopy = null;
-        let activeCarouselEdit = { noteId: null, cardId: null };
-        let activeFilter = 'all'; // State untuk Kategori Sidebar
+        let openNotes = new Set(), openCategories = new Set();
+        let currentAttachments = [], currentCarouselImages = {}, currentCarouselCount = 3;
+        let noteIdToDelete = null, noteIdToCopy = null, toastTimeout;
 
-        window.onload = () => {
-            initTheme();
-            loadNotes();
-        };
-
-        // --- MANAJEMEN SIDEBAR & FILTER ---
-        function toggleSidebar(forceState = null) {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            
-            const isClosed = sidebar.classList.contains('-translate-x-full');
-            const newState = forceState !== null ? forceState : isClosed;
-
-            if (newState) {
-                sidebar.classList.remove('-translate-x-full');
-                overlay.classList.remove('hidden');
-                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
-            } else {
-                sidebar.classList.add('-translate-x-full');
-                overlay.classList.add('opacity-0');
-                setTimeout(() => overlay.classList.add('hidden'), 300);
-            }
-        }
-
-        function setFilter(filter) {
-            activeFilter = filter;
-            renderSidebar();
-            renderNotes();
-            
-            // Auto-close sidebar di mobile setelah klik
-            if (window.innerWidth < 1024) {
-                toggleSidebar(false);
-            }
-        }
-
-        function renderSidebar() {
-            const container = document.getElementById('sidebar-categories');
-            if(!container) return;
-            
-            let html = '';
-            
-            // Tombol "Semua Catatan"
-            const allActive = activeFilter === 'all' ? 'bg-blue-50 dark:bg-gray-700/60 font-bold' : 'hover:bg-gray-50 dark:hover:bg-gray-700/50 text-gray-700 dark:text-gray-300';
-            html += `
-                <button onclick="setFilter('all')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors ${allActive}">
-                    <div class="flex items-center">
-                        <div class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-500 dark:text-blue-400 flex items-center justify-center mr-3">
-                            <i class="fa-solid fa-layer-group"></i>
-                        </div>
-                        <span class="text-[15px]">Semua Catatan</span>
-                    </div>
-                    <span class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-[11px] font-bold py-0.5 px-2.5 rounded-full">${notes.length}</span>
-                </button>
-            `;
-
-            // Menu Kategori
-            const sortedKeys = Object.keys(categories).sort((a, b) => categories[a].title.localeCompare(categories[b].title));
-            sortedKeys.forEach(catKey => {
-                const config = categories[catKey];
-                const count = notes.filter(n => n.category === catKey).length;
-                const isActive = activeFilter === catKey ? 'bg-gray-100 dark:bg-gray-700/60 font-bold' : 'hover:bg-gray-50 dark:hover:bg-gray-700/50 text-gray-700 dark:text-gray-300';
-
-                html += `
-                    <button onclick="setFilter('${catKey}')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors ${isActive}">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 rounded-lg ${config.bg} ${config.color} flex items-center justify-center mr-3">
-                                ${config.icon}
-                            </div>
-                            <span class="text-[15px]">${config.title}</span>
-                        </div>
-                        <span class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-[11px] font-bold py-0.5 px-2.5 rounded-full">${count}</span>
-                    </button>
-                `;
-            });
-
-            container.innerHTML = html;
-        }
+        window.onload = () => { initTheme(); populateCategorySelect(); loadNotes(); renderSidebar(); };
 
         function initTheme() {
-            const savedTheme = localStorage.getItem('theme');
-            const html = document.documentElement;
-            const icon = document.getElementById('theme-icon');
-            
-            if (savedTheme === 'light') {
-                html.classList.remove('dark');
-                icon.classList.remove('fa-sun');
-                icon.classList.add('fa-moon');
+            if (localStorage.getItem('theme') === 'light') {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('theme-icon').className = "fa-solid fa-moon text-lg";
                 document.getElementById('btn-theme').classList.replace('text-yellow-500', 'text-gray-500');
-            } else {
-                html.classList.add('dark');
-                icon.classList.remove('fa-moon');
-                icon.classList.add('fa-sun');
-                document.getElementById('btn-theme').classList.replace('text-gray-500', 'text-yellow-500');
             }
         }
-
         function toggleTheme() {
             const html = document.documentElement;
-            const icon = document.getElementById('theme-icon');
-            const btn = document.getElementById('btn-theme');
-            
             if (html.classList.contains('dark')) {
                 html.classList.remove('dark');
-                icon.classList.remove('fa-sun');
-                icon.classList.add('fa-moon');
-                btn.classList.replace('text-yellow-500', 'text-gray-500');
+                document.getElementById('theme-icon').className = "fa-solid fa-moon text-lg";
+                document.getElementById('btn-theme').classList.replace('text-yellow-500', 'text-gray-500');
                 localStorage.setItem('theme', 'light');
             } else {
                 html.classList.add('dark');
-                icon.classList.remove('fa-moon');
-                icon.classList.add('fa-sun');
-                btn.classList.replace('text-gray-500', 'text-yellow-500');
+                document.getElementById('theme-icon').className = "fa-solid fa-sun text-lg";
+                document.getElementById('btn-theme').classList.replace('text-gray-500', 'text-yellow-500');
                 localStorage.setItem('theme', 'dark');
             }
         }
 
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toast-message').innerText = message;
-            
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
-            
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = msg;
+            t.classList.remove('translate-y-20', 'opacity-0');
             clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => {
-                toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3000);
+            toastTimeout = setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 3000);
         }
 
-        // --- MANAJEMEN ONE SHOT FULLSCREEN ---
-        function openOneShotFullscreen() {
-            const overlay = document.getElementById('oneshot-fullscreen-overlay');
-            overlay.classList.remove('hidden');
-            overlay.classList.add('flex');
-            setTimeout(() => {
-                overlay.classList.remove('opacity-0');
-                placeCaretAtEnd(document.getElementById('oneshot-fs-visible'));
-            }, 10);
-        }
-
-        function closeOneShotFullscreen() {
-            const overlay = document.getElementById('oneshot-fullscreen-overlay');
-            overlay.classList.add('opacity-0');
-            setTimeout(() => {
-                overlay.classList.add('hidden');
-                overlay.classList.remove('flex');
-            }, 300);
-        }
-
-        function handleOneShotInput(e) {
-            const visibleEl = document.getElementById('oneshot-fs-visible');
-            const hiddenEl = document.getElementById('oneshot-fs-hidden');
-            let val = visibleEl.innerText.replace(/\u00A0/g, " "); 
-
-            // Kapitalisasi cerdas: Hanya huruf kapital jika input adalah huruf pertama setelah titik/akhir kalimat
-            if (val.length === 1 && val.match(/[a-z]/)) {
-                const hiddenVal = hiddenEl.value;
-                if (hiddenVal === "" || /(?:[.!?])[\s\n]*$/.test(hiddenVal)) {
-                    val = val.toUpperCase();
-                    visibleEl.innerText = val;
-                    placeCaretAtEnd(visibleEl);
-                }
-            }
-
-            if (val.includes(' ') || val.includes('\n')) {
-                const match = val.match(/^(.*[\s\n]+)([^\s\n]*)$/);
-                if (match) {
-                    hiddenEl.value += match[1];
-                    visibleEl.innerText = match[2];
-                    placeCaretAtEnd(visibleEl);
-                }
-            }
-            updateOneShotStats();
-            
-            const box = document.getElementById('oneshot-fs-preview-box');
-            if (!box.classList.contains('hidden')) {
-                box.innerText = hiddenEl.value + visibleEl.innerText;
-            }
-        }
-
-        function placeCaretAtEnd(el) {
-            el.focus();
-            if (typeof window.getSelection !== "undefined" && typeof document.createRange !== "undefined") {
-                const range = document.createRange();
-                range.selectNodeContents(el);
-                range.collapse(false);
-                const sel = window.getSelection();
-                sel.removeAllRanges();
-                sel.addRange(range);
-            }
-        }
-
-        function updateOneShotStats() {
-            const hiddenVal = document.getElementById('oneshot-fs-hidden')?.value || "";
-            const visibleVal = document.getElementById('oneshot-fs-visible')?.innerText || "";
-            const text = (hiddenVal + visibleVal).trim();
-            const wordCount = text ? text.split(/\s+/).length : 0;
-            const statEl = document.getElementById('oneshot-fs-stats');
-            if(statEl) statEl.innerText = `${wordCount} Kata`;
-        }
-
-        function toggleOneShotPreview() {
-            const box = document.getElementById('oneshot-fs-preview-box');
-            const hidden = document.getElementById('oneshot-fs-hidden');
-            const visible = document.getElementById('oneshot-fs-visible');
-            const btnText = document.getElementById('oneshot-preview-btn-text');
-            const btnIcon = document.querySelector('#btn-oneshot-preview i');
-
-            if (box.classList.contains('hidden')) {
-                box.innerText = hidden.value + visible.innerText;
-                box.classList.remove('hidden');
-                btnText.innerText = "Tutup Intip";
-                btnIcon.className = "fa-solid fa-eye-slash mr-2";
+        function toggleSidebar() {
+            const s = document.getElementById('sidebar'), o = document.getElementById('sidebar-overlay');
+            if (s.classList.contains('-translate-x-full')) {
+                s.classList.remove('-translate-x-full'); o.classList.remove('hidden'); setTimeout(() => o.classList.remove('opacity-0'), 10);
             } else {
-                box.classList.add('hidden');
-                btnText.innerText = "Intip Teks";
-                btnIcon.className = "fa-solid fa-eye mr-2";
-                placeCaretAtEnd(visible);
+                s.classList.add('-translate-x-full'); o.classList.add('opacity-0'); setTimeout(() => o.classList.add('hidden'), 300);
             }
+        }
+
+        function setFilter(key) { currentFilter = key; renderSidebar(); renderNotes(); if(window.innerWidth < 1024) toggleSidebar(); }
+
+        function renderSidebar() {
+            let h = `<button onclick="setFilter('all')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors ${currentFilter === 'all' ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 font-bold' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"><div class="flex items-center"><i class="fa-solid fa-border-all w-6 mr-2"></i> Semua Catatan</div><span class="bg-gray-200 dark:bg-gray-700 text-xs px-2 rounded-full">${notes.length}</span></button><div class="my-2 border-t border-gray-100 dark:border-gray-700"></div>`;
+            sortedCategoryKeys.forEach(key => {
+                const c = notes.filter(n => n.category === key).length;
+                h += `<button onclick="setFilter('${key}')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-colors ${currentFilter === key ? 'bg-gray-100 dark:bg-gray-700 font-bold dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'}"><div class="flex items-center"><span class="w-6 text-lg mr-2">${categories[key].icon}</span>${categories[key].title}</div>${c>0 ? `<span class="bg-gray-200 dark:bg-gray-700 text-xs px-2 rounded-full">${c}</span>` : ''}</button>`;
+            });
+            document.getElementById('sidebar-categories').innerHTML = h;
+        }
+
+        function populateCategorySelect() {
+            const sel = document.getElementById('note-category'); sel.innerHTML = '';
+            sortedCategoryKeys.forEach(k => {
+                const o = document.createElement('option'); o.value = k; o.innerHTML = `${categories[k].icon} ${categories[k].title}`;
+                if (k === 'copas') o.selected = true;
+                sel.appendChild(o);
+            });
+        }
+
+        function compressImage(file, cb) {
+            const r = new FileReader();
+            r.onload = (e) => {
+                const img = new Image(); img.onload = () => {
+                    const cvs = document.createElement('canvas'), ctx = cvs.getContext('2d');
+                    let w = img.width, h = img.height;
+                    if (w>h && w>1200) { h*=1200/w; w=1200; } else if (h>1200) { w*=1200/h; h=1200; }
+                    cvs.width = w; cvs.height = h; ctx.drawImage(img,0,0,w,h); cb(cvs.toDataURL('image/jpeg', 0.8));
+                }; img.src = e.target.result;
+            }; r.readAsDataURL(file);
+        }
+
+        function handleFileUpload(evt, type) {
+            Array.from(evt.target.files).forEach(f => {
+                if (type === 'image' && f.size > 2097152) {
+                    showToast(`Kompresi ${f.name}...`); compressImage(f, c => { currentAttachments.push({ id: Date.now()+Math.random(), type, name: f.name, data: c }); renderAttachmentPreview(); showToast("Kompresi sukses."); });
+                } else if (type !== 'image' && f.size > 2097152) { showToast(`File maks 2MB.`); } 
+                else {
+                    const r = new FileReader(); r.onload = e => { currentAttachments.push({ id: Date.now()+Math.random(), type, name: f.name, data: e.target.result }); renderAttachmentPreview(); }; r.readAsDataURL(f);
+                }
+            }); evt.target.value = ''; 
+        }
+
+        function removeAttachment(id) { currentAttachments = currentAttachments.filter(a => a.id !== id); renderAttachmentPreview(); }
+
+        function renderAttachmentPreview() {
+            document.getElementById('attachment-preview').innerHTML = currentAttachments.map(a => a.type === 'image' ? `<div class="relative w-16 h-16 rounded-lg overflow-hidden border border-gray-200"><img src="${a.data}" class="object-cover w-full h-full"><button onclick="removeAttachment(${a.id})" class="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 text-xs"><i class="fa-solid fa-times"></i></button></div>` : `<div class="relative bg-gray-50 px-3 py-2 rounded-lg text-xs"><i class="fa-solid fa-file mr-2"></i>${a.name}<button onclick="removeAttachment(${a.id})" class="absolute top-1 right-1 bg-red-500 text-white w-4 h-4 rounded-full text-[10px]"><i class="fa-solid fa-times"></i></button></div>`).join('');
         }
 
         function toggleInputFields() {
-            const category = document.getElementById('note-category').value;
-            const normalContainer = document.getElementById('normal-input-container');
-            const carouselContainer = document.getElementById('carousel-input-container');
-            const pwContainer = document.getElementById('mypassword-input-container');
-            const revContainer = document.getElementById('revisi-input-container');
-            const oneshotContainer = document.getElementById('oneshot-input-container');
-
-            [normalContainer, carouselContainer, pwContainer, revContainer, oneshotContainer].forEach(el => {
-                if(el) {
-                    el.classList.add('hidden');
-                    el.classList.remove('flex');
-                }
+            const cat = document.getElementById('note-category').value;
+            ['normal','carousel','mypassword','revisi','oneshot'].forEach(id => {
+                const el = document.getElementById(id+'-input-container'); if(el) { el.classList.add('hidden'); el.classList.remove('flex'); }
             });
-
-            if (category === 'carousel') {
-                carouselContainer.classList.remove('hidden'); carouselContainer.classList.add('flex');
-            } else if (category === 'mypassword') {
-                pwContainer.classList.remove('hidden'); pwContainer.classList.add('flex');
-            } else if (category === 'revisi') {
-                revContainer.classList.remove('hidden'); revContainer.classList.add('flex');
-            } else if (category === 'oneshot') {
-                oneshotContainer.classList.remove('hidden'); oneshotContainer.classList.add('flex');
-            } else {
-                normalContainer.classList.remove('hidden'); normalContainer.classList.add('flex');
-            }
+            const tg = document.getElementById(cat === 'carousel' || cat === 'mypassword' || cat === 'revisi' || cat === 'oneshot' ? cat+'-input-container' : 'normal-input-container');
+            tg.classList.replace('hidden', 'flex');
         }
 
         function initCarouselInputs(count = 3) {
-            currentCarouselCount = count;
-            document.getElementById('carousel-count-display').innerText = count;
-            const wrapper = document.getElementById('carousel-cards-wrapper');
-            wrapper.innerHTML = '';
-            
-            for(let i=1; i<=count; i++) {
-                wrapper.appendChild(createCarouselInputGroup(i, i));
-            }
-            wrapper.appendChild(createCarouselInputGroup('caption', 'Caption'));
+            currentCarouselCount = count; document.getElementById('carousel-count-display').innerText = count;
+            const wrap = document.getElementById('carousel-cards-wrapper'); wrap.innerHTML = '';
+            for(let i=1; i<=count; i++) wrap.innerHTML += createCarouselInputGroup(i, i);
+            wrap.innerHTML += createCarouselInputGroup('caption', 'Caption');
         }
 
-        function createCarouselInputGroup(id, label) {
-            const div = document.createElement('div');
-            div.id = `car-input-group-${id}`;
-            div.className = "relative bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl transition-colors mt-3";
-            
-            const badgeClass = id === 'caption' ? 'bg-purple-500 w-auto px-2' : 'bg-pink-500 w-6';
-            
-            div.innerHTML = `
-                <div class="absolute -top-2 -left-2 ${badgeClass} text-white h-6 flex items-center justify-center rounded-full text-[11px] font-bold shadow-md z-10">${label}</div>
-                <textarea id="car-content-${id}" placeholder="Konten ${id === 'caption' ? 'caption' : 'kartu ke-'+id}..." class="w-full bg-transparent text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none resize-none h-16 pt-1"></textarea>
-                
-                <div class="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600 flex justify-between items-center">
-                    <button onclick="document.getElementById('modal-car-img-${id}').click()" class="text-[12px] text-blue-500 hover:text-blue-600 font-medium flex items-center">
-                        <i class="fa-solid fa-image mr-1"></i> Tambah Gambar
-                    </button>
-                    <input type="file" id="modal-car-img-${id}" accept="image/*" class="hidden" onchange="handleModalCarouselImage(event, '${id}')">
-                    
-                    <div id="car-img-preview-box-${id}" class="hidden flex items-center space-x-2">
-                        <img id="car-img-preview-src-${id}" src="" class="w-8 h-8 object-cover rounded border border-gray-300 dark:border-gray-500">
-                        <button onclick="removeModalCarouselImage('${id}')" class="text-red-500 hover:text-red-600 text-[12px] bg-red-50 dark:bg-red-900/30 w-5 h-5 rounded flex items-center justify-center"><i class="fa-solid fa-times"></i></button>
-                    </div>
-                </div>
-            `;
-            return div;
+        function createCarouselInputGroup(id, lbl) {
+            const bClass = id === 'caption' ? 'bg-purple-500 px-2' : 'bg-pink-500 w-6';
+            return `<div class="relative bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl mt-3"><div class="absolute -top-2 -left-2 ${bClass} text-white h-6 flex items-center justify-center rounded-full text-[11px] font-bold">${lbl}</div><textarea id="car-content-${id}" class="w-full bg-transparent text-[15px] dark:text-white focus:outline-none resize-none h-16 pt-1"></textarea><div class="mt-2 pt-2 border-t flex justify-between"><button onclick="document.getElementById('modal-car-img-${id}').click()" class="text-[12px] text-blue-500"><i class="fa-solid fa-image"></i> Gambar</button><input type="file" id="modal-car-img-${id}" accept="image/*" class="hidden" onchange="handleModalCarouselImage(event, '${id}')"><div id="car-img-preview-box-${id}" class="hidden flex items-center space-x-2"><img id="car-img-preview-src-${id}" src="" class="w-8 h-8 object-cover rounded"><button onclick="removeModalCarouselImage('${id}')" class="text-red-500 text-[12px]"><i class="fa-solid fa-times"></i></button></div></div></div>`;
         }
 
-        function changeCarouselCount(delta) {
-            const newCount = currentCarouselCount + delta;
-            if (newCount < 1 || newCount > 20) {
-                if (newCount > 20) showToast("Maksimal 20 kartu.");
-                return;
-            }
-            
-            const wrapper = document.getElementById('carousel-cards-wrapper');
-            const captionEl = document.getElementById('car-input-group-caption');
-            
-            if (delta > 0) {
-                currentCarouselCount++;
-                wrapper.insertBefore(createCarouselInputGroup(currentCarouselCount, currentCarouselCount), captionEl);
-            } else {
-                const lastChild = document.getElementById(`car-input-group-${currentCarouselCount}`);
-                if (lastChild) wrapper.removeChild(lastChild);
-                delete currentCarouselImages[currentCarouselCount]; 
-                currentCarouselCount--;
-            }
+        function handleModalCarouselImage(evt, idx) {
+            const f = evt.target.files[0]; if(!f) return;
+            if(f.size>2097152){ compressImage(f, c => { currentCarouselImages[idx]=c; renderModalCarouselImagePreview(idx); }); }
+            else { const r = new FileReader(); r.onload=e=>{ currentCarouselImages[idx]=e.target.result; renderModalCarouselImagePreview(idx); }; r.readAsDataURL(f); }
+        }
+        function removeModalCarouselImage(idx) { delete currentCarouselImages[idx]; renderModalCarouselImagePreview(idx); }
+        function renderModalCarouselImagePreview(idx) {
+            const bx = document.getElementById(`car-img-preview-box-${idx}`), im = document.getElementById(`car-img-preview-src-${idx}`);
+            if(currentCarouselImages[idx]){ im.src = currentCarouselImages[idx]; bx.classList.remove('hidden'); } else bx.classList.add('hidden');
+        }
+
+        function changeCarouselCount(d) {
+            const n = currentCarouselCount + d; if (n<1 || n>20) return;
+            const w = document.getElementById('carousel-cards-wrapper'), cap = document.getElementById('car-input-group-caption');
+            if (d>0) { currentCarouselCount++; const p = document.createElement('div'); p.innerHTML = createCarouselInputGroup(currentCarouselCount, currentCarouselCount); w.insertBefore(p.firstElementChild, cap); }
+            else { const c = document.getElementById(`car-input-group-${currentCarouselCount}`); if(c) c.remove(); delete currentCarouselImages[currentCarouselCount]; currentCarouselCount--; }
             document.getElementById('carousel-count-display').innerText = currentCarouselCount;
         }
 
-        // --- HELPER: KOMPRESI GAMBAR OTOMATIS ---
-        function processImageFile(file, callback) {
-            const MAX_SIZE = 2 * 1024 * 1024; // Batas 2MB
-            if (file.size <= MAX_SIZE) {
-                // Jika kurang dari 2MB, langsung baca seperti biasa
-                const reader = new FileReader();
-                reader.onload = e => callback(e.target.result, file.name, file.type);
-                reader.readAsDataURL(file);
-            } else {
-                // Jika lebih dari 2MB, jalankan auto compress
-                showToast("Mengkompresi gambar berukuran besar...");
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        let width = img.width;
-                        let height = img.height;
-                        
-                        // Batasi resolusi maksimal 1200px agar base64 tidak membengkak
-                        const MAX_DIMENSION = 1200;
-                        if (width > height && width > MAX_DIMENSION) {
-                            height = Math.round(height * MAX_DIMENSION / width);
-                            width = MAX_DIMENSION;
-                        } else if (height > MAX_DIMENSION) {
-                            width = Math.round(width * MAX_DIMENSION / height);
-                            height = MAX_DIMENSION;
-                        }
-
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-                        
-                        // Kompresi ke format JPEG dengan kualitas 70%
-                        const dataURL = canvas.toDataURL('image/jpeg', 0.7);
-                        callback(dataURL, file.name, 'image/jpeg');
-                    };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function handleModalCarouselImage(event, index) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            processImageFile(file, (dataUrl) => {
-                currentCarouselImages[index] = dataUrl;
-                renderModalCarouselImagePreview(index);
-            });
-            event.target.value = '';
-        }
-
-        function removeModalCarouselImage(index) {
-            delete currentCarouselImages[index];
-            renderModalCarouselImagePreview(index);
-        }
-
-        function renderModalCarouselImagePreview(index) {
-            const box = document.getElementById(`car-img-preview-box-${index}`);
-            const img = document.getElementById(`car-img-preview-src-${index}`);
-            if (!box || !img) return; 
-
-            if (currentCarouselImages[index]) {
-                img.src = currentCarouselImages[index];
-                box.classList.remove('hidden');
-            } else {
-                normalContainer.classList.remove('hidden'); normalContainer.classList.add('flex');
-            }
-        }
-
-        function handleFileUpload(event, type) {
-            const files = event.target.files;
-            if (!files) return;
-
-            Array.from(files).forEach(file => {
-                if (type === 'image') {
-                    processImageFile(file, (dataUrl, fileName, mimeType) => {
-                        currentAttachments.push({
-                            id: Date.now() + Math.random(),
-                            type: 'image',
-                            name: fileName,
-                            data: dataUrl,
-                            mimeType: mimeType
-                        });
-                        renderAttachmentPreview();
-                    });
-                } else {
-                    // Untuk file dokumen (PDF/TXT) tetap dibatasi 2MB karena tidak bisa dikompres
-                    if (file.size > 1024 * 1024 * 2) { 
-                        showToast(`File ${file.name} terlalu besar (Maks 2MB).`);
-                        return;
-                    }
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        currentAttachments.push({
-                            id: Date.now() + Math.random(),
-                            type: 'file',
-                            name: file.name,
-                            data: e.target.result,
-                            mimeType: file.type
-                        });
-                        renderAttachmentPreview();
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-            event.target.value = ''; 
-        }
-
-        function removeAttachment(id) {
-            currentAttachments = currentAttachments.filter(a => a.id !== id);
-            renderAttachmentPreview();
-        }
-
-        function renderAttachmentPreview() {
-            const container = document.getElementById('attachment-preview');
-            container.innerHTML = '';
-            currentAttachments.forEach(att => {
-                if (att.type === 'image') {
-                    container.innerHTML += `
-                        <div class="relative w-16 h-16 rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden shrink-0 shadow-sm">
-                            <img src="${att.data}" class="object-cover w-full h-full" />
-                            <button onclick="removeAttachment(${att.id})" class="absolute top-0 right-0 bg-red-500/90 text-white w-5 h-5 flex items-center justify-center text-xs"><i class="fa-solid fa-times"></i></button>
-                        </div>
-                    `;
-                } else {
-                    container.innerHTML += `
-                        <div class="relative bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 px-3 py-2 rounded-lg text-xs flex items-center max-w-[150px] shadow-sm text-gray-700 dark:text-gray-200">
-                            <i class="fa-solid fa-file text-gray-400 mr-2"></i> <span class="truncate pr-4">${att.name}</span>
-                            <button onclick="removeAttachment(${att.id})" class="absolute top-1 right-1 bg-red-500/90 text-white w-4 h-4 rounded-full flex items-center justify-center text-[10px]"><i class="fa-solid fa-times"></i></button>
-                        </div>
-                    `;
-                }
-            });
-        }
-
         function openModal(editId = null) {
-            const overlay = document.getElementById('modal-overlay');
-            const modal = document.getElementById('modal');
-            const categoryWrapper = document.getElementById('category-wrapper');
+            ['note-id','note-title','note-content','pw-username','pw-password','pw-link','rev-tujuan','rev-content','oneshot-fs-hidden'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = ""; });
+            if(document.getElementById('oneshot-fs-visible')) document.getElementById('oneshot-fs-visible').innerText = "";
+            const catC = document.getElementById('category-select-container'), catS = document.getElementById('note-category');
             
-            document.getElementById('note-id').value = "";
-            document.getElementById('note-title').value = "";
-            document.getElementById('note-content').value = "";
-            // Baris document.getElementById('note-category').value = "copas"; DIHAPUS agar tidak reset terus
-            
-            if (document.getElementById('pw-username')) {
-                document.getElementById('pw-username').value = "";
-                document.getElementById('pw-password').value = "";
-                document.getElementById('pw-link').value = "";
-            }
-            if (document.getElementById('rev-tujuan')) {
-                document.getElementById('rev-tujuan').value = "";
-                document.getElementById('rev-content').value = "";
-            }
-            if (document.getElementById('oneshot-fs-hidden')) {
-                document.getElementById('oneshot-fs-hidden').value = "";
-                document.getElementById('oneshot-fs-visible').innerText = "";
-                updateOneShotStats();
-                document.getElementById('oneshot-fs-preview-box').classList.add('hidden');
-            }
-            
-            currentAttachments = []; 
-            currentCarouselImages = {}; 
-            
-            document.getElementById('modal-title').innerText = "Buat Catatan";
-            let targetCarouselCount = 3; 
-
             if (editId) {
-                categoryWrapper.classList.remove('hidden');
-                const note = notes.find(n => n.id === editId);
-                if (note) {
-                    document.getElementById('note-id').value = note.id;
-                    document.getElementById('note-title').value = note.title;
-                    document.getElementById('note-category').value = note.category;
-                    document.getElementById('modal-title').innerText = "Edit Catatan";
-                    
-                    if (note.attachments) currentAttachments = [...note.attachments];
-
-                    if (note.category === 'carousel') {
-                        let parsed = [];
-                        try { parsed = JSON.parse(note.content); } catch(e) {}
-                        
-                        const regularCards = parsed.filter(c => !c.isCaption);
-                        const captionCard = parsed.find(c => c.isCaption);
-                        
-                        if (regularCards.length > 0) targetCarouselCount = regularCards.length;
-                        initCarouselInputs(targetCarouselCount); 
-
-                        for(let i=1; i<=targetCarouselCount; i++) {
-                            if (regularCards[i-1]) {
-                                document.getElementById(`car-content-${i}`).value = regularCards[i-1].content || '';
-                                if (regularCards[i-1].image) {
-                                    currentCarouselImages[i] = regularCards[i-1].image;
-                                    renderModalCarouselImagePreview(i);
-                                }
-                            }
-                        }
-                        
-                        if (captionCard) {
-                            const capEl = document.getElementById('car-content-caption');
-                            if (capEl) capEl.value = captionCard.content || '';
-                            if (captionCard.image) {
-                                currentCarouselImages['caption'] = captionCard.image;
-                                renderModalCarouselImagePreview('caption');
-                            }
-                        }
-                    } else if (note.category === 'mypassword') {
-                        let pwData = { username: '', password: '', link: '' };
-                        try { pwData = JSON.parse(note.content); } catch(e) {}
-                        if (document.getElementById('pw-username')) {
-                            document.getElementById('pw-username').value = pwData.username || '';
-                            document.getElementById('pw-password').value = pwData.password || '';
-                            document.getElementById('pw-link').value = pwData.link || '';
-                        }
-                        initCarouselInputs(targetCarouselCount);
-                    } else if (note.category === 'revisi') {
-                        let revData = { tujuan: '', content: '' };
-                        try { revData = JSON.parse(note.content); } catch(e) {}
-                        if (document.getElementById('rev-tujuan')) {
-                            document.getElementById('rev-tujuan').value = revData.tujuan || '';
-                            document.getElementById('rev-content').value = revData.content || '';
-                        }
-                        initCarouselInputs(targetCarouselCount);
-                    } else if (note.category === 'oneshot') {
-                        if (document.getElementById('oneshot-fs-hidden')) {
-                            document.getElementById('oneshot-fs-hidden').value = note.content || '';
-                            document.getElementById('oneshot-fs-visible').innerText = '';
-                            updateOneShotStats();
-                            document.getElementById('oneshot-fs-preview-box').classList.add('hidden');
-                        }
-                        initCarouselInputs(targetCarouselCount);
-                    } else {
-                        document.getElementById('note-content').value = note.content;
-                        initCarouselInputs(targetCarouselCount);
-                    }
+                catC.classList.remove('hidden'); const note = notes.find(n => n.id === editId);
+                if(note) {
+                    document.getElementById('note-id').value = note.id; document.getElementById('note-title').value = note.title; catS.value = note.category;
+                    currentAttachments = note.attachments ? [...note.attachments] : [];
+                    let cCount = 3;
+                    if(note.category==='carousel'){
+                        let p = []; try{ p=JSON.parse(note.content); }catch(e){}
+                        const reg = p.filter(c=>!c.isCaption), cap = p.find(c=>c.isCaption);
+                        if(reg.length>0) cCount = reg.length; initCarouselInputs(cCount);
+                        for(let i=1;i<=cCount;i++){ if(reg[i-1]){ document.getElementById(`car-content-${i}`).value=reg[i-1].content||''; if(reg[i-1].image){ currentCarouselImages[i]=reg[i-1].image; renderModalCarouselImagePreview(i); } } }
+                        if(cap){ document.getElementById('car-content-caption').value=cap.content||''; if(cap.image){ currentCarouselImages['caption']=cap.image; renderModalCarouselImagePreview('caption'); } }
+                    } else if(note.category==='mypassword'){
+                        let p = {}; try{ p=JSON.parse(note.content); }catch(e){}
+                        document.getElementById('pw-username').value=p.username||''; document.getElementById('pw-password').value=p.password||''; document.getElementById('pw-link').value=p.link||''; initCarouselInputs();
+                    } else if(note.category==='revisi'){
+                        let r = {}; try{ r=JSON.parse(note.content); }catch(e){}
+                        document.getElementById('rev-tujuan').value=r.tujuan||''; document.getElementById('rev-content').value=r.content||''; initCarouselInputs();
+                    } else if(note.category==='oneshot'){ document.getElementById('oneshot-fs-hidden').value=note.content||''; updateOneShotStats(); initCarouselInputs(); }
+                    else { document.getElementById('note-content').value=note.content; initCarouselInputs(); }
                 }
             } else {
-                // LOGIKA CERDAS: Sembunyikan kategori & pilih otomatis jika sidebar spesifik dipilih
-                if (activeFilter !== 'all') {
-                    document.getElementById('note-category').value = activeFilter;
-                    categoryWrapper.classList.add('hidden');
-                } else {
-                    categoryWrapper.classList.remove('hidden');
-                }
-                initCarouselInputs(targetCarouselCount);
+                currentAttachments=[]; currentCarouselImages={}; initCarouselInputs();
+                if(currentFilter!=='all'){ catS.value=currentFilter; catC.classList.add('hidden'); } else { catC.classList.remove('hidden'); }
+            }
+            renderAttachmentPreview(); toggleInputFields();
+            document.getElementById('modal-overlay').classList.remove('hidden'); setTimeout(()=> { document.getElementById('modal-overlay').classList.remove('opacity-0'); document.getElementById('modal').classList.add('modal-active'); }, 10);
+        }
+
+        function closeModal() { document.getElementById('modal-overlay').classList.add('opacity-0'); document.getElementById('modal').classList.remove('modal-active'); setTimeout(()=>document.getElementById('modal-overlay').classList.add('hidden'), 300); }
+
+        function openOneShotFullscreen() {
+            document.getElementById('oneshot-fullscreen-overlay').classList.remove('hidden'); document.getElementById('oneshot-fullscreen-overlay').classList.add('flex');
+            setTimeout(() => { document.getElementById('oneshot-fullscreen-overlay').classList.remove('opacity-0'); placeCaretAtEnd(document.getElementById('oneshot-fs-visible')); }, 10);
+        }
+        function closeOneShotFullscreen() { document.getElementById('oneshot-fullscreen-overlay').classList.add('opacity-0'); setTimeout(() => { document.getElementById('oneshot-fullscreen-overlay').classList.add('hidden'); document.getElementById('oneshot-fullscreen-overlay').classList.remove('flex'); }, 300); }
+        
+        function handleOneShotInput(e) {
+            const vis = document.getElementById('oneshot-fs-visible'), hid = document.getElementById('oneshot-fs-hidden');
+            let txt = vis.innerText;
+            
+            if (txt.length === 1) {
+                const prev = hid.value;
+                if (prev === "" || /[.!?]\s+$/.test(prev)) { vis.innerText = txt.toUpperCase(); placeCaretAtEnd(vis); txt = vis.innerText; }
             }
 
-            renderAttachmentPreview();
-            toggleInputFields();
-
-            overlay.classList.remove('hidden');
-            setTimeout(() => {
-                overlay.classList.remove('opacity-0');
-                modal.classList.add('modal-active');
-            }, 10);
+            let val = txt.replace(/\u00A0/g, " ");
+            if (val.includes(' ') || val.includes('\n')) {
+                const m = val.match(/^(.*[\s\n]+)([^\s\n]*)$/);
+                if (m) { hid.value += m[1]; vis.innerText = m[2]; placeCaretAtEnd(vis); }
+            }
+            updateOneShotStats();
+            const box = document.getElementById('oneshot-fs-preview-box');
+            if(!box.classList.contains('hidden')) box.innerText = hid.value + vis.innerText;
         }
 
-        function closeModal() {
-            const overlay = document.getElementById('modal-overlay');
-            const modal = document.getElementById('modal');
-            overlay.classList.add('opacity-0');
-            modal.classList.remove('modal-active');
-            setTimeout(() => overlay.classList.add('hidden'), 300);
+        function placeCaretAtEnd(el) {
+            el.focus(); if (typeof window.getSelection !== "undefined" && typeof document.createRange !== "undefined") {
+                const r = document.createRange(); r.selectNodeContents(el); r.collapse(false);
+                const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+            }
         }
-
-        function loadNotes() {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            notes = saved ? JSON.parse(saved) : [];
-            renderSidebar();
-            renderNotes();
+        function updateOneShotStats() {
+            const txt = document.getElementById('oneshot-fs-hidden').value + document.getElementById('oneshot-fs-visible').innerText;
+            const w = txt.trim() === "" ? 0 : txt.trim().split(/\s+/).length;
+            document.getElementById('oneshot-fs-stats').innerText = w + " Kata";
+        }
+        function toggleOneShotPreview() {
+            const box = document.getElementById('oneshot-fs-preview-box'), btnTxt = document.getElementById('oneshot-preview-btn-text');
+            if (box.classList.contains('hidden')) { box.classList.remove('hidden'); box.innerText = document.getElementById('oneshot-fs-hidden').value + document.getElementById('oneshot-fs-visible').innerText; btnTxt.innerText = "Tutup Intip"; } 
+            else { box.classList.add('hidden'); btnTxt.innerText = "Intip Teks"; placeCaretAtEnd(document.getElementById('oneshot-fs-visible')); }
         }
 
         function saveNote() {
-            const id = document.getElementById('note-id').value;
-            const category = document.getElementById('note-category').value;
-            const titleInput = document.getElementById('note-title').value.trim();
-            
+            const id = document.getElementById('note-id').value, cat = document.getElementById('note-category').value, title = document.getElementById('note-title').value.trim();
             let content = "";
-            let rawTextForTitle = "";
+            if (cat === 'carousel') {
+                const cards = [];
+                for(let i=1;i<=currentCarouselCount;i++){ cards.push({ id: `card-${Date.now()}-${i}`, content: document.getElementById(`car-content-${i}`).value, image: currentCarouselImages[i] || null, isCaption: false }); }
+                cards.push({ id: `card-${Date.now()}-cap`, content: document.getElementById('car-content-caption').value, image: currentCarouselImages['caption'] || null, isCaption: true });
+                content = JSON.stringify(cards);
+            } else if (cat === 'mypassword') {
+                content = JSON.stringify({ username: document.getElementById('pw-username').value, password: document.getElementById('pw-password').value, link: document.getElementById('pw-link').value });
+            } else if (cat === 'revisi') {
+                content = JSON.stringify({ tujuan: document.getElementById('rev-tujuan').value, content: document.getElementById('rev-content').value });
+            } else if (cat === 'oneshot') { content = document.getElementById('oneshot-fs-hidden').value + document.getElementById('oneshot-fs-visible').innerText; } 
+            else { content = document.getElementById('note-content').value; }
 
-            if (category === 'carousel') {
-                const carouselData = [];
-                let parsedOld = [];
-                
-                if (id) {
-                    const existingNote = notes.find(n => n.id == id);
-                    if (existingNote) {
-                        try { parsedOld = JSON.parse(existingNote.content); } catch(e){}
-                    }
-                }
-
-                const oldRegulars = parsedOld.filter(c => !c.isCaption);
-                const oldCaption = parsedOld.find(c => c.isCaption);
-
-                let oldIdx = 0;
-                for(let i=1; i<=currentCarouselCount; i++) {
-                    const elTxt = document.getElementById(`car-content-${i}`);
-                    const txt = elTxt ? elTxt.value.trim() : "";
-                    const img = currentCarouselImages[i] || null;
-                    
-                    carouselData.push({ 
-                        id: oldRegulars[oldIdx]?.id || (Date.now() + i + Math.random()),
-                        content: txt,
-                        image: img,
-                        isCaption: false
-                    });
-                    if (!rawTextForTitle && txt) rawTextForTitle = txt; 
-                    oldIdx++;
-                }
-                
-                const capTxtEl = document.getElementById('car-content-caption');
-                const capTxt = capTxtEl ? capTxtEl.value.trim() : "";
-                const capImg = currentCarouselImages['caption'] || null;
-                
-                carouselData.push({
-                    id: oldCaption?.id || (Date.now() + 999 + Math.random()),
-                    content: capTxt,
-                    image: capImg,
-                    isCaption: true
-                });
-                if (!rawTextForTitle && capTxt) rawTextForTitle = capTxt;
-                
-                content = JSON.stringify(carouselData);
-
-            } else if (category === 'mypassword') {
-                const pwData = {
-                    username: document.getElementById('pw-username').value.trim(),
-                    password: document.getElementById('pw-password').value.trim(),
-                    link: document.getElementById('pw-link').value.trim()
-                };
-                content = JSON.stringify(pwData);
-                rawTextForTitle = pwData.username || pwData.link || "My Password";
-
-            } else if (category === 'revisi') {
-                const revData = {
-                    tujuan: document.getElementById('rev-tujuan').value.trim(),
-                    content: document.getElementById('rev-content').value.trim()
-                };
-                content = JSON.stringify(revData);
-                rawTextForTitle = revData.tujuan || revData.content || "Revisi";
-
-            } else if (category === 'oneshot') {
-                const hiddenVal = document.getElementById('oneshot-fs-hidden').value;
-                const visibleVal = document.getElementById('oneshot-fs-visible').innerText;
-                content = hiddenVal + visibleVal;
-                rawTextForTitle = content;
-
-            } else {
-                content = document.getElementById('note-content').value.trim();
-                rawTextForTitle = content;
+            if (!content.trim() && cat !== 'carousel' && cat !== 'mypassword' && cat !== 'revisi' && currentAttachments.length===0 && !title) {
+                showToast("Catatan masih kosong!"); return;
             }
 
-            let title = titleInput;
-            if (!title) {
-                if (rawTextForTitle) {
-                    let cleanText = rawTextForTitle.replace(/^- \[[xX ]\]\s*/i, '');
-                    const words = cleanText.trim().split(/\s+/);
-                    title = words.slice(0, 4).join(' '); 
-                    if (words.length > 4) title += '...';
-                } else {
-                    title = "Tanpa Judul";
-                }
-            }
-
-            const attachmentsToSave = [...currentAttachments];
-
-            if (id) {
-                const index = notes.findIndex(n => n.id == id);
-                if(index > -1) {
-                    notes[index] = { ...notes[index], category, title, content, attachments: attachmentsToSave, updatedAt: Date.now() };
-                }
-            } else {
-                notes.push({ id: Date.now(), category, title, content, attachments: attachmentsToSave, timestamp: Date.now() });
-            }
-
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
-                showToast("Catatan berhasil disimpan!");
-                closeModal();
-                renderSidebar();
-                renderNotes();
-            } catch (error) {
-                if (error.name === 'QuotaExceededError' || error.name === 'DOMException') {
-                    showToast("Gagal! Penyimpanan penuh, hapus lampiran lama.");
-                } else {
-                    showToast("Terjadi kesalahan saat menyimpan.");
-                }
-            }
-        }
-
-        function openDeleteAlert(id) {
-            noteIdToDelete = id;
-            const overlay = document.getElementById('delete-alert-overlay');
-            const box = document.getElementById('delete-alert-box');
-            overlay.classList.remove('hidden');
-            overlay.classList.add('flex');
-            setTimeout(() => {
-                overlay.classList.remove('opacity-0');
-                box.classList.remove('scale-95');
-                box.classList.add('scale-100');
-            }, 10);
-        }
-
-        function closeDeleteAlert() {
-            const overlay = document.getElementById('delete-alert-overlay');
-            const box = document.getElementById('delete-alert-box');
-            overlay.classList.add('opacity-0');
-            box.classList.remove('scale-100');
-            box.classList.add('scale-95');
-            setTimeout(() => {
-                overlay.classList.add('hidden');
-                overlay.classList.remove('flex');
-                noteIdToDelete = null;
-            }, 300);
-        }
-
-        function confirmDelete() {
-            if (noteIdToDelete !== null) {
-                notes = notes.filter(n => n.id !== noteIdToDelete);
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
-                renderSidebar();
-                renderNotes();
-                showToast("Catatan dihapus.");
-                closeDeleteAlert();
-            }
-        }
-
-        function copyCarouselCard(noteId, cardId) {
-            const note = notes.find(n => n.id === noteId);
-            if (!note) return;
-            try {
-                const items = JSON.parse(note.content);
-                const card = items.find(i => i.id === cardId);
-                if (card) {
-                    const textarea = document.createElement('textarea');
-                    textarea.value = card.content;
-                    document.body.appendChild(textarea);
-                    textarea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textarea);
-                    showToast("Teks kartu disalin!");
-                }
-            } catch(e) {}
-        }
-
-        function deleteCarouselCard(noteId, cardId) {
-            if (!confirm("Hapus kartu ini dari Carousel?")) return;
-            const note = notes.find(n => n.id === noteId);
-            if (!note) return;
-            try {
-                let items = JSON.parse(note.content);
-                items = items.filter(i => i.id !== cardId);
-                note.content = JSON.stringify(items);
-                note.updatedAt = Date.now();
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
-                renderNotes();
-                showToast("Kartu carousel dihapus.");
-            } catch(e) {}
-        }
-
-        function triggerCarouselImageUpload(noteId, cardId) {
-            activeCarouselEdit = { noteId, cardId };
-            document.getElementById('carousel-image-input').click();
-        }
-
-        function handleCarouselImageUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+            if (id) { const i = notes.findIndex(n => n.id === id); if(i!==-1) notes[i] = { ...notes[i], category: cat, title, content, attachments: [...currentAttachments], updatedAt: new Date().toISOString() }; } 
+            else { notes.unshift({ id: Date.now().toString(), category: cat, title, content, attachments: [...currentAttachments], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }); }
             
-            processImageFile(file, (dataUrl) => {
-                const note = notes.find(n => n.id === activeCarouselEdit.noteId);
-                if (note) {
-                    try {
-                        let items = JSON.parse(note.content);
-                        let card = items.find(i => i.id === activeCarouselEdit.cardId);
-                        if (card) {
-                            card.image = dataUrl;
-                            note.content = JSON.stringify(items);
-                            note.updatedAt = Date.now();
-                            localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
-                            renderNotes();
-                            showToast("Gambar ditambahkan ke kartu!");
-                        }
-                    } catch(err) {
-                        showToast("Gagal menyimpan gambar.");
-                    }
-                }
-            });
-            event.target.value = '';
+            saveToStorage(); renderSidebar(); renderNotes(); closeModal(); showToast("Tersimpan!");
         }
 
-        function openEditCarouselCardModal(noteId, cardId) {
-            activeCarouselEdit = { noteId, cardId };
-            const note = notes.find(n => n.id === noteId);
-            if (!note) return;
-            try {
-                const items = JSON.parse(note.content);
-                const card = items.find(i => i.id === cardId);
-                if (card) {
-                    document.getElementById('edit-card-textarea').value = card.content;
-                    const overlay = document.getElementById('edit-card-overlay');
-                    const box = document.getElementById('edit-card-box');
-                    overlay.classList.remove('hidden');
-                    overlay.classList.add('flex');
-                    setTimeout(() => {
-                        overlay.classList.remove('opacity-0');
-                        box.classList.remove('scale-95');
-                        box.classList.add('scale-100');
-                    }, 10);
-                }
-            } catch(e) {}
-        }
+        function loadNotes() { const s = localStorage.getItem(STORAGE_KEY); if(s) notes = JSON.parse(s); renderNotes(); }
+        function saveToStorage() { localStorage.setItem(STORAGE_KEY, JSON.stringify(notes)); }
 
-        function closeEditCarouselCardModal() {
-            const overlay = document.getElementById('edit-card-overlay');
-            const box = document.getElementById('edit-card-box');
-            overlay.classList.add('opacity-0');
-            box.classList.remove('scale-100');
-            box.classList.add('scale-95');
-            setTimeout(() => {
-                overlay.classList.add('hidden');
-                overlay.classList.remove('flex');
-            }, 300);
-        }
+        function toggleGroupView() { isGrouped = !isGrouped; document.getElementById('btn-group').classList.toggle('text-indigo-500'); document.getElementById('btn-group').classList.toggle('text-white'); document.getElementById('btn-group').classList.toggle('bg-indigo-500'); renderNotes(); }
+        function toggleAccordion(id) { const c = document.getElementById(`acc-content-${id}`), i = document.getElementById(`acc-icon-${id}`); if(openNotes.has(id)){ openNotes.delete(id); c.classList.remove('open'); i.classList.remove('open'); } else { openNotes.add(id); c.classList.add('open'); i.classList.add('open'); } }
+        function toggleCategoryGroup(cat) { const c = document.getElementById(`cat-content-${cat}`), i = document.getElementById(`cat-icon-${cat}`); if(openCategories.has(cat)){ openCategories.delete(cat); c.classList.add('hidden'); i.style.transform = 'rotate(0deg)'; } else { openCategories.add(cat); c.classList.remove('hidden'); i.style.transform = 'rotate(180deg)'; } }
+        function formatDate(ds) { const d=new Date(ds), now=new Date(), diff=(now-d)/1000; if(diff<86400) return d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}); if(diff<604800) return ['Min','Sen','Sel','Rab','Kam','Jum','Sab'][d.getDay()]; return d.toLocaleDateString('id-ID',{day:'numeric',month:'short'}); }
 
-        function saveEditCarouselCard() {
-            const note = notes.find(n => n.id === activeCarouselEdit.noteId);
-            if (!note) return;
-            try {
-                let items = JSON.parse(note.content);
-                let card = items.find(i => i.id === activeCarouselEdit.cardId);
-                if (card) {
-                    card.content = document.getElementById('edit-card-textarea').value;
-                    note.content = JSON.stringify(items);
-                    note.updatedAt = Date.now();
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
-                    renderNotes();
-                    closeEditCarouselCardModal();
-                    showToast("Kartu berhasil diperbarui!");
-                }
-            } catch(e) {}
-        }
-
-        // --- MANAJEMEN MODAL COPY NOTE ---
-        function openCopyOptions(id) {
-            noteIdToCopy = id;
-            const overlay = document.getElementById('copy-options-overlay');
-            const box = document.getElementById('copy-options-box');
-            
-            overlay.classList.remove('hidden');
-            overlay.classList.add('flex');
-            setTimeout(() => {
-                overlay.classList.remove('opacity-0');
-                box.classList.remove('scale-95');
-                box.classList.add('scale-100');
-            }, 10);
-        }
-
-        function closeCopyOptions() {
-            const overlay = document.getElementById('copy-options-overlay');
-            const box = document.getElementById('copy-options-box');
-            
-            overlay.classList.add('opacity-0');
-            box.classList.remove('scale-100');
-            box.classList.add('scale-95');
-            
-            setTimeout(() => {
-                overlay.classList.add('hidden');
-                overlay.classList.remove('flex');
-                noteIdToCopy = null;
-            }, 300);
-        }
-
+        function openCopyModal(id) { noteIdToCopy = id; document.getElementById('copy-modal-overlay').classList.remove('hidden'); setTimeout(()=>document.getElementById('copy-modal-overlay').classList.remove('opacity-0'),10); }
+        function closeCopyModal() { document.getElementById('copy-modal-overlay').classList.add('opacity-0'); setTimeout(()=>document.getElementById('copy-modal-overlay').classList.add('hidden'),300); }
+        
         function executeCopy(withTitle) {
-            if (noteIdToCopy === null) return;
-            const note = notes.find(n => n.id === noteIdToCopy);
-            if (!note) {
-                closeCopyOptions();
-                return;
+            const n = notes.find(x => x.id === noteIdToCopy); if(!n) return;
+            let txt = (withTitle && n.title) ? n.title + "\n\n" : "";
+            if (n.category === 'carousel') {
+                try { const p = JSON.parse(n.content); p.forEach((c,i)=>{ if(c.isCaption) txt+=`\n[CAPTION]\n${c.content}\n`; else txt+=`[Slide ${i+1}]\n${c.content}\n\n`; }); } catch(e){}
+            } else if(n.category === 'mypassword') {
+                try { const p=JSON.parse(n.content); txt+=`Username: ${p.username}\nPassword: ${p.password}\nLink: ${p.link}`; } catch(e){}
+            } else if(n.category === 'revisi') {
+                try { const r=JSON.parse(n.content); txt+=`Tujuan: ${r.tujuan}\nRevisi:\n${r.content}`; } catch(e){}
+            } else { txt += n.content; }
+            navigator.clipboard.writeText(txt.trim()).then(() => { closeCopyModal(); showToast("Disalin!"); });
+        }
+
+        function openDeleteAlert(id) { noteIdToDelete = id; document.getElementById('delete-alert-overlay').classList.remove('hidden'); setTimeout(()=>document.getElementById('delete-alert-overlay').classList.remove('opacity-0'),10); }
+        function closeDeleteAlert() { document.getElementById('delete-alert-overlay').classList.add('opacity-0'); setTimeout(()=>document.getElementById('delete-alert-overlay').classList.add('hidden'),300); }
+        function confirmDelete() { if(noteIdToDelete){ notes = notes.filter(n=>n.id!==noteIdToDelete); saveToStorage(); renderSidebar(); renderNotes(); closeDeleteAlert(); showToast("Dihapus!"); } }
+
+        function renderNotes() {
+            const cont = document.getElementById('notes-container'); cont.innerHTML = '';
+            let f = notes; if(currentFilter!=='all') f = notes.filter(n=>n.category===currentFilter);
+            if(f.length===0){ cont.innerHTML = `<div class="flex flex-col items-center justify-center h-64 text-gray-400"><i class="fa-solid fa-folder-open text-5xl mb-4 opacity-50"></i><p>Belum ada catatan.</p></div>`; return; }
+
+            if (isGrouped) {
+                const cats = [...new Set(f.map(n=>n.category))].sort();
+                cats.forEach(c => {
+                    const cNotes = f.filter(n=>n.category===c); const conf = categories[c]; if(!openCategories.has(c)) openCategories.add(c);
+                    let h = `<div class="mb-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden"><div class="px-5 py-4 ${conf.bg} flex justify-between items-center cursor-pointer" onclick="toggleCategoryGroup('${c}')"><div class="flex items-center"><span class="text-2xl mr-3">${conf.icon}</span><h3 class="font-bold text-gray-800 dark:text-white">${conf.title} <span class="text-sm font-normal text-gray-500 ml-2">(${cNotes.length})</span></h3></div><i id="cat-icon-${c}" class="fa-solid fa-chevron-down text-gray-500 transition-transform ${openCategories.has(c)?'rotate-180':''}"></i></div><div id="cat-content-${c}" class="${openCategories.has(c)?'':'hidden'} p-4"><div class="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">`;
+                    cNotes.forEach(n => h += `<div class="break-inside-avoid">${buildNoteCard(n)}</div>`);
+                    h += `</div></div></div>`; cont.innerHTML += h;
+                });
+            } else {
+                let h = `<div class="columns-1 md:columns-2 xl:columns-3 gap-4 space-y-4">`;
+                f.forEach(n => h += `<div class="break-inside-avoid">${buildNoteCard(n)}</div>`);
+                h += `</div>`; cont.innerHTML = h;
             }
+        }
+
+        function buildNoteCard(note) {
+            const conf = categories[note.category] || categories.copas;
             
-            let textToCopy = "";
-            if (withTitle && note.title) {
-                textToCopy += `${note.title}\n\n`;
+            // Full Canvas Image layout
+            let imgHtml = '', fileHtml = '';
+            if(note.attachments && note.attachments.length>0){
+                const imgs = note.attachments.filter(a=>a.type==='image'), fls = note.attachments.filter(a=>a.type!=='image');
+                if(imgs.length>0) imgHtml = `<div class="w-full flex flex-col gap-2 mb-3">` + imgs.map(i=>`<img src="${i.data}" class="w-full h-auto object-cover rounded-xl border border-gray-100 dark:border-gray-700">`).join('') + `</div>`;
+                if(fls.length>0) fileHtml = `<div class="flex flex-wrap gap-2 mt-4 pt-3 border-t border-gray-100 dark:border-gray-700">` + fls.map(f=>`<div class="bg-gray-50 dark:bg-gray-700 px-3 py-1.5 rounded-lg text-xs flex items-center dark:text-gray-300 border border-gray-100 dark:border-gray-600"><i class="fa-solid fa-file mr-2 text-gray-400"></i> <span class="truncate max-w-[120px]">${f.name}</span></div>`).join('') + `</div>`;
             }
-            
+
+            let cHtml = '';
             if (note.category === 'carousel') {
                 try {
-                    let items = JSON.parse(note.content);
-                    let numIdx = 1;
-                    const cardTexts = items.map((it) => {
-                        const title = it.isCaption ? 'Caption' : `Kartu ${numIdx++}`;
-                        return `[${title}]\n${it.content}`;
-                    }).join('\n\n---\n\n');
-                    textToCopy += cardTexts;
-                } catch(e) {}
+                    const p = JSON.parse(note.content), reg=p.filter(c=>!c.isCaption), cap=p.find(c=>c.isCaption);
+                    if(reg.length>0) cHtml += `<div class="flex overflow-x-auto space-x-3 pb-2 hide-scrollbar">` + reg.map((c,i)=>`<div class="shrink-0 w-[200px] sm:w-[240px] bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 rounded-xl overflow-hidden flex flex-col"><div class="bg-pink-100 dark:bg-pink-900/30 px-3 py-1.5 text-[10px] font-bold text-pink-500 uppercase tracking-wider flex justify-between"><span>Slide ${i+1}</span></div>${c.image?`<img src="${c.image}" class="w-full h-24 object-cover border-b border-gray-100 dark:border-gray-600">`:''}<div class="p-3 text-sm dark:text-gray-200 whitespace-pre-wrap">${c.content}</div></div>`).join('') + `</div>`;
+                    if(cap) cHtml += `<div class="mt-3 bg-purple-50 dark:bg-purple-900/10 border border-purple-100 dark:border-purple-900/30 rounded-xl overflow-hidden"><div class="bg-purple-100 dark:bg-purple-900/30 px-3 py-1.5 text-[10px] font-bold text-purple-600 uppercase">Caption</div>${cap.image?`<img src="${cap.image}" class="w-full h-32 object-cover">`:''}<div class="p-3 text-sm dark:text-gray-200 whitespace-pre-wrap">${cap.content}</div></div>`;
+                } catch(e) { cHtml = note.content; }
             } else if (note.category === 'mypassword') {
                 try {
-                    let pw = JSON.parse(note.content);
-                    textToCopy += `Username: ${pw.username}\nPassword: ${pw.password}\nLink: ${pw.link}`;
-                } catch(e) {}
+                    const p = JSON.parse(note.content);
+                    cHtml = `<div class="space-y-2"><div class="flex items-center text-sm"><span class="w-8 text-center text-gray-400"><i class="fa-solid fa-user"></i></span><span class="font-medium dark:text-white font-mono bg-gray-50 dark:bg-gray-700 px-2 py-1 rounded">${p.username||'-'}</span></div><div class="flex items-center text-sm"><span class="w-8 text-center text-gray-400"><i class="fa-solid fa-key"></i></span><span class="font-medium dark:text-white font-mono bg-gray-50 dark:bg-gray-700 px-2 py-1 rounded blur-sm hover:blur-none transition-all">${p.password||'-'}</span></div>${p.link?`<div class="flex items-center text-sm mt-2"><span class="w-8 text-center text-gray-400"><i class="fa-solid fa-link"></i></span><a href="${p.link}" target="_blank" class="text-blue-500 hover:underline truncate">${p.link}</a></div>`:''}</div>`;
+                } catch(e) { cHtml = note.content; }
             } else if (note.category === 'revisi') {
-                try {
-                    let rev = JSON.parse(note.content);
-                    textToCopy += `Tujuan Revisi: ${rev.tujuan}\n\nTeks:\n${rev.content}`;
-                } catch(e) {}
+                try { const r = JSON.parse(note.content); cHtml = `<div class="bg-cyan-50 dark:bg-cyan-900/10 border border-cyan-100 dark:border-cyan-900/30 p-3 rounded-xl mb-3"><div class="text-[10px] font-bold text-cyan-600 uppercase mb-1">Tujuan:</div><div class="font-medium dark:text-white">${r.tujuan}</div></div><div class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">${r.content}</div>`; } catch(e) { cHtml = note.content; }
             } else {
-                textToCopy += note.content;
-            }
-            
-            const textarea = document.createElement('textarea');
-            textarea.value = textToCopy.trim();
-            document.body.appendChild(textarea);
-            textarea.select();
-            
-            try {
-                document.execCommand('copy');
-                showToast("Teks berhasil disalin!");
-            } catch (err) {
-                showToast("Gagal menyalin teks.");
-            }
-            
-            document.body.removeChild(textarea);
-            closeCopyOptions();
-        }
-
-        function visitLink(id) {
-            const note = notes.find(n => n.id === id);
-            if (!note) return;
-            
-            if (note.category === 'mypassword') {
-                try {
-                    const pw = JSON.parse(note.content);
-                    if (pw.link) {
-                        let url = pw.link;
-                        if (!url.match(/^https?:\/\//i)) { url = 'https://' + url; }
-                        window.open(url, '_blank');
-                        showToast("Membuka tautan...");
-                        return;
-                    }
-                } catch(e) {}
-                showToast("Tidak ditemukan link pada password ini.");
-                return;
+                let lines = note.content ? note.content.split('\n') : [];
+                let pText = lines.slice(0, 3).join('\n');
+                let isLong = lines.length > 3 || note.content.length > 200;
+                if(isLong && lines.length <= 3) pText = note.content.substring(0,200) + '...';
+                
+                if (isLong) {
+                    cHtml = `<div class="accordion-content ${openNotes.has(note.id)?'open':''}" id="acc-content-${note.id}"><div class="accordion-inner"><div class="text-[15px] leading-relaxed text-gray-700 dark:text-gray-200 whitespace-pre-wrap pb-2">${note.content}</div></div></div><div class="${openNotes.has(note.id)?'hidden':''} text-[15px] leading-relaxed text-gray-700 dark:text-gray-200 whitespace-pre-wrap relative">${pText}<div class="absolute bottom-0 w-full h-8 bg-gradient-to-t from-white dark:from-gray-800 to-transparent"></div></div><button onclick="toggleAccordion('${note.id}')" class="text-[12px] font-bold text-blue-500 mt-2 flex items-center hover:text-blue-600">Selengkapnya <i id="acc-icon-${note.id}" class="fa-solid fa-chevron-down ml-1 chevron-icon ${openNotes.has(note.id)?'open':''}"></i></button>`;
+                } else { cHtml = `<div class="text-[15px] leading-relaxed text-gray-700 dark:text-gray-200 whitespace-pre-wrap">${note.content}</div>`; }
             }
 
-            const urlRegex = /(https?:\/\/[^\s]+)/g;
-            const matches = note.content.match(urlRegex);
-            
-            if (matches && matches.length > 0) {
-                window.open(matches[0], '_blank');
-                showToast("Membuka tautan...");
-            } else {
-                showToast("Tidak ditemukan link (http/https) pada catatan ini.");
-            }
-        }
-
-        function toggleCategory(catKey) {
-            const content = document.getElementById(`cat-body-${catKey}`);
-            const icon = document.getElementById(`cat-icon-${catKey}`);
-            const isOpen = content.classList.toggle('open');
-            icon.classList.toggle('open');
-            if (isOpen) openCategories.add(catKey);
-            else openCategories.delete(catKey);
-        }
-
-        function toggleNote(noteId) {
-            const content = document.getElementById(`note-body-${noteId}`);
-            const icon = document.getElementById(`note-icon-${noteId}`);
-            const isOpen = content.classList.toggle('open');
-            icon.classList.toggle('open');
-            if (isOpen) openNotes.add(noteId);
-            else openNotes.delete(noteId);
-        }
-
-        function toggleGroupView() {
-            isGrouped = !isGrouped;
-            const btn = document.getElementById('btn-group');
-            if (isGrouped) {
-                btn.innerHTML = '<i class="fa-solid fa-list"></i>'; 
-                btn.classList.add('bg-indigo-100', 'dark:bg-indigo-900/40', 'rounded-lg');
-            } else {
-                btn.innerHTML = '<i class="fa-solid fa-layer-group"></i>';
-                btn.classList.remove('bg-indigo-100', 'dark:bg-indigo-900/40', 'rounded-lg');
-            }
-            renderNotes();
+            return `<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 transition-all hover:shadow-md">
+                <div class="flex justify-between items-start mb-3">
+                    <div class="flex items-center space-x-2"><span class="w-8 h-8 rounded-full ${conf.bg} ${conf.color} flex items-center justify-center text-sm shadow-sm">${conf.icon}</span>
+                        <div>${note.title?`<h4 class="font-bold text-gray-900 dark:text-white text-base leading-tight">${note.title}</h4>`:''}<p class="text-[10px] text-gray-400 font-medium">${formatDate(note.createdAt)}</p></div>
+                    </div>
+                    <div class="flex space-x-1 opacity-60 hover:opacity-100 transition-opacity">
+                        <button onclick="openCopyModal('${note.id}')" class="w-8 h-8 text-gray-400 hover:text-green-500 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg flex items-center justify-center transition-colors"><i class="fa-regular fa-copy"></i></button>
+                        <button onclick="openModal('${note.id}')" class="w-8 h-8 text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg flex items-center justify-center transition-colors"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="openDeleteAlert('${note.id}')" class="w-8 h-8 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg flex items-center justify-center transition-colors"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+                </div>
+                ${imgHtml}
+                ${cHtml}
+                ${fileHtml}
+            </div>`;
         }
 
         function exportData() {
-            if (notes.length === 0) return showToast("Tidak ada data untuk diekspor!");
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(notes));
-            const downloadNode = document.createElement('a');
-            downloadNode.setAttribute("href", dataStr);
-            downloadNode.setAttribute("download", `MyNotes_Backup_${new Date().toISOString().slice(0,10)}.json`);
-            document.body.appendChild(downloadNode);
-            downloadNode.click();
-            downloadNode.remove();
-            showToast("Berhasil diekspor!");
+            const data = JSON.stringify(notes, null, 2); const blob = new Blob([data], {type: 'application/json'}); const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = `copasic_backup_${new Date().toISOString().slice(0,10)}.json`; a.click();
+            URL.revokeObjectURL(url); showToast("Data diexport!");
         }
-
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedNotes = JSON.parse(e.target.result);
-                    if (Array.isArray(importedNotes)) {
-                        const notesMap = new Map();
-                        notes.forEach(n => notesMap.set(n.id, n));
-                        importedNotes.forEach(n => notesMap.set(n.id, n));
-                        notes = Array.from(notesMap.values());
-                        
-                        localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
-                        renderSidebar();
-                        renderNotes();
-                        showToast("Data berhasil diimpor!");
-                    } else { showToast("Format file tidak valid."); }
-                } catch (err) { 
-                    if (err.name === 'QuotaExceededError') {
-                         showToast("Gagal! Penyimpanan browser penuh.");
-                    } else {
-                         showToast("Gagal membaca file JSON."); 
-                    }
-                }
-                event.target.value = ''; 
-            };
-            reader.readAsText(file);
-        }
-
-        function escapeHTML(str) {
-            if (!str) return '';
-            return str.replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag));
-        }
-
-        function formatTime(timestamp) {
-            if (!timestamp) return '';
-            const date = new Date(timestamp);
-            return date.toLocaleDateString('id-ID', {
-                day: 'numeric', month: 'short', year: 'numeric',
-                hour: '2-digit', minute: '2-digit'
-            }).replace(/\./g, ':');
-        }
-
-        function buildNoteCard(note, showBadge = false) {
-            const catConfig = categories[note.category] || categories['memo'];
-            const isNoteOpen = openNotes.has(note.id);
-            const openClass = isNoteOpen ? "open" : "";
-            
-            let previewContent = '';
-            
-            if (note.category === 'carousel') {
-                let items = [];
-                try { items = JSON.parse(note.content); } catch(e){}
-                
-                previewContent = `<div class="flex gap-3 overflow-x-auto hide-scrollbar py-3 pl-2 items-start">`;
-                
-                let numIdx = 1;
-                items.forEach((it) => {
-                    const imgHtml = it.image ? `<img src="${it.image}" class="w-full h-auto max-h-64 object-cover object-center rounded-lg mb-3 shadow-sm border border-gray-200 dark:border-gray-600">` : '';
-                    
-                    const isCaption = it.isCaption;
-                    const badgeHtml = isCaption 
-                        ? `<div class="absolute -top-2 -left-2 bg-purple-500 text-white px-2 h-5 flex items-center justify-center rounded-full text-[10px] font-bold shadow-md z-10">Caption</div>`
-                        : `<div class="absolute -top-2 -left-2 bg-pink-500 text-white w-5 h-5 flex items-center justify-center rounded-full text-[10px] font-bold shadow-md z-10">${numIdx++}</div>`;
-                        
-                    previewContent += `
-                        <div class="shrink-0 w-52 bg-gray-50 dark:bg-gray-700 p-3 rounded-xl border border-gray-200 dark:border-gray-600 flex flex-col justify-between transition-colors relative">
-                            ${badgeHtml}
-                            <div>
-                                ${imgHtml}
-                                <div class="text-[13px] text-gray-800 dark:text-gray-200 whitespace-pre-wrap">${escapeHTML(it.content)}</div>
-                            </div>
-                            <div class="mt-4 pt-3 border-t border-gray-200 dark:border-gray-600 flex justify-between items-center">
-                                <button onclick="copyCarouselCard(${note.id}, ${it.id}); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded bg-white dark:bg-gray-600 text-green-500 hover:text-green-600 shadow-sm border border-gray-100 dark:border-gray-500 transition-colors" title="Salin"><i class="fa-regular fa-copy text-[11px]"></i></button>
-                                <button onclick="openEditCarouselCardModal(${note.id}, ${it.id}); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded bg-white dark:bg-gray-600 text-blue-500 hover:text-blue-600 shadow-sm border border-gray-100 dark:border-gray-500 transition-colors" title="Edit Teks"><i class="fa-solid fa-pen text-[11px]"></i></button>
-                                <button onclick="triggerCarouselImageUpload(${note.id}, ${it.id}); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded bg-white dark:bg-gray-600 text-purple-500 hover:text-purple-600 shadow-sm border border-gray-100 dark:border-gray-500 transition-colors" title="Unggah Gambar"><i class="fa-solid fa-image text-[11px]"></i></button>
-                                <button onclick="deleteCarouselCard(${note.id}, ${it.id}); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded bg-white dark:bg-gray-600 text-red-500 hover:text-red-600 shadow-sm border border-gray-100 dark:border-gray-500 transition-colors" title="Hapus Kartu"><i class="fa-solid fa-trash text-[11px]"></i></button>
-                            </div>
-                        </div>
-                    `;
-                });
-                previewContent += `</div>`;
-                if(items.length === 0) previewContent = '<p class="text-[13px] text-gray-400 dark:text-gray-500 italic">Carousel kosong</p>';
-                
-            } else if (note.category === 'mypassword') {
-                let pw = {username: '', password: '', link: ''};
-                try { pw = JSON.parse(note.content); } catch(e){}
-                
-                let safeLink = escapeHTML(pw.link);
-                let linkUrl = safeLink.match(/^https?:\/\//i) ? safeLink : 'https://' + safeLink;
-                let linkHtml = safeLink ? `<a href="${linkUrl}" target="_blank" onclick="event.stopPropagation()" class="text-blue-500 dark:text-blue-400 hover:underline break-all">${safeLink}</a>` : '-';
-                
-                previewContent = `
-                    <div class="space-y-3 text-[14px] text-gray-700 dark:text-gray-300">
-                        <div class="flex flex-col"><span class="text-[11px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider mb-0.5">Username / Email</span><span class="font-medium select-all">${escapeHTML(pw.username) || '-'}</span></div>
-                        <div class="flex flex-col"><span class="text-[11px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider mb-0.5">Password</span><span class="font-mono bg-gray-100 dark:bg-gray-700/50 px-2 py-1 rounded inline-block w-fit select-all">${escapeHTML(pw.password) || '-'}</span></div>
-                        <div class="flex flex-col"><span class="text-[11px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider mb-0.5">Link / URL</span><span class="">${linkHtml}</span></div>
-                    </div>
-                `;
-                
-            } else if (note.category === 'mylink') {
-                const safeContent = escapeHTML(note.content);
-                const urlRegex = /(https?:\/\/[^\s]+)/g;
-                const linkedContent = safeContent.replace(urlRegex, function(url) {
-                    return `<a href="${url}" target="_blank" onclick="event.stopPropagation()" class="text-blue-500 dark:text-blue-400 hover:underline break-all">${url}</a>`;
-                });
-                previewContent = `<div class="text-[14px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">${linkedContent}</div>`;
-                
-            } else if (note.category === 'revisi') {
-                let rev = { tujuan: '', content: '' };
-                try { rev = JSON.parse(note.content); } catch(e){}
-                previewContent = `
-                    <div class="space-y-3">
-                        <div class="bg-cyan-50 dark:bg-cyan-900/20 p-3 rounded-xl border border-cyan-100 dark:border-cyan-800/50">
-                            <span class="block text-[11px] text-cyan-600 dark:text-cyan-400 uppercase font-bold tracking-wider mb-1">Tujuan Revisi</span>
-                            <span class="text-[13px] text-gray-800 dark:text-gray-200">${escapeHTML(rev.tujuan) || '-'}</span>
-                        </div>
-                        <div class="text-[14px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed px-1">
-                            ${escapeHTML(rev.content)}
-                        </div>
-                    </div>
-                `;
-            } else {
-                previewContent = `<div class="text-[14px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">${escapeHTML(note.content)}</div>`;
-            }
-
-            // Memisahkan Lampiran Gambar dan File Biasa
-            let imagesHtml = '';
-            let filesHtml = '';
-            
-            if (note.attachments && note.attachments.length > 0) {
-                const imageAtts = note.attachments.filter(a => a.type === 'image');
-                const fileAtts = note.attachments.filter(a => a.type !== 'image');
-                
-                // Jika ada lampiran gambar, susun di atas teks dengan ukuran penuh
-                if (imageAtts.length > 0) {
-                    imagesHtml = `<div class="mb-4 space-y-3">`;
-                    imageAtts.forEach(att => {
-                        imagesHtml += `<a href="${att.data}" target="_blank" title="Klik untuk lihat penuh" onclick="event.stopPropagation()" class="block w-full rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm bg-gray-100 dark:bg-gray-900"><img src="${att.data}" class="w-full h-auto hover:opacity-90 transition"></a>`;
-                    });
-                    imagesHtml += `</div>`;
-                }
-                
-                // Jika ada lampiran file dokumen/lainnya, susun di bawah dengan ukuran kecil
-                if (fileAtts.length > 0) {
-                    filesHtml = `<div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700 flex flex-wrap gap-2">`;
-                    fileAtts.forEach(att => {
-                        filesHtml += `<a href="${att.data}" download="${att.name}" title="Klik untuk unduh" onclick="event.stopPropagation()" class="bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 px-3 py-2 rounded-lg text-[13px] text-blue-600 dark:text-blue-400 font-medium flex items-center transition border border-gray-200 dark:border-gray-600 shadow-sm"><i class="fa-solid fa-file-arrow-down mr-2 text-gray-400 dark:text-gray-500"></i> <span class="truncate max-w-[140px]">${att.name}</span></a>`;
-                    });
-                    filesHtml += `</div>`;
-                }
-            }
-
-            const badgeHtml = showBadge ? `<span class="px-2 py-0.5 rounded-md ${catConfig.bg} ${catConfig.color} text-[11px] font-bold ml-2 shrink-0">${catConfig.icon} ${catConfig.title}</span>` : '';
-
-            const timeCreated = formatTime(note.timestamp);
-            const timeEdited = note.updatedAt && note.updatedAt !== note.timestamp ? formatTime(note.updatedAt) : '';
-            const timeHtml = `<div class="text-[11px] text-gray-400 dark:text-gray-500 mt-1.5 truncate">
-                Dibuat: ${timeCreated} ${timeEdited ? ` &bull; Diedit: ${timeEdited}` : ''}
-            </div>`;
-
-            // break-inside-avoid dan inline-block w-full ditambahkan untuk layout Masonry (kolom PC)
-            return `
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-colors break-inside-avoid inline-block w-full mb-4 md:mb-5">
-                    <div class="px-4 py-3.5 flex justify-between items-center cursor-pointer active:bg-gray-50 dark:active:bg-gray-700 transition" onclick="toggleNote(${note.id})">
-                        <div class="flex-1 pr-2 flex flex-col overflow-hidden justify-center">
-                            <div class="flex items-center overflow-hidden">
-                                <h3 class="font-bold text-gray-900 dark:text-white text-[15px] truncate">${escapeHTML(note.title)}</h3>
-                                ${badgeHtml}
-                                ${note.attachments && note.attachments.length > 0 ? '<i class="fa-solid fa-paperclip text-gray-400 dark:text-gray-500 text-[11px] ml-2 shrink-0"></i>' : ''}
-                            </div>
-                            ${timeHtml}
-                        </div>
-                        
-                        <div class="flex items-center space-x-0.5 shrink-0">
-                            ${['mylink', 'mypassword'].includes(note.category) ? `
-                            <button onclick="visitLink(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-indigo-600 dark:text-indigo-400 active:bg-indigo-50 dark:active:bg-indigo-900/30 rounded-full transition" title="Kunjungi Link">
-                                <i class="fa-solid fa-arrow-up-right-from-square text-[13px]"></i>
-                            </button>
-                            ` : ''}
-                            <button onclick="openCopyOptions(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-green-600 dark:text-green-400 active:bg-green-50 dark:active:bg-green-900/30 rounded-full transition" title="Salin Teks">
-                                <i class="fa-regular fa-copy text-[13px]"></i>
-                            </button>
-                            <button onclick="openModal(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-blue-500 dark:text-blue-400 active:bg-blue-50 dark:active:bg-blue-900/30 rounded-full transition" title="Edit Catatan">
-                                <i class="fa-solid fa-pen text-[13px]"></i>
-                            </button>
-                            <button onclick="openDeleteAlert(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-red-500 dark:text-red-400 active:bg-red-50 dark:active:bg-red-900/30 rounded-full transition" title="Hapus Catatan">
-                                <i class="fa-solid fa-trash text-[13px]"></i>
-                            </button>
-                            <div class="w-px h-4 bg-gray-200 dark:bg-gray-600 mx-1"></div>
-                            <i class="fa-solid fa-chevron-down text-gray-400 dark:text-gray-500 text-sm chevron-icon pl-1 ${openClass}" id="note-icon-${note.id}"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="accordion-content border-t border-gray-100 dark:border-gray-700 ${openClass}" id="note-body-${note.id}">
-                        <div class="accordion-inner bg-gray-50/50 dark:bg-gray-800/50">
-                            <div class="p-4">
-                                ${imagesHtml}
-                                ${previewContent}
-                                ${filesHtml}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderNotes() {
-            const container = document.getElementById('notes-container');
-            container.innerHTML = '';
-
-            // Terapkan filter dari sidebar
-            let filteredNotes = activeFilter === 'all' ? notes : notes.filter(n => n.category === activeFilter);
-
-            if (filteredNotes.length === 0) {
-                container.innerHTML = `
-                    <div class="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 pt-20">
-                        <i class="fa-regular fa-folder-open text-6xl mb-4 text-gray-300 dark:text-gray-600"></i>
-                        <p class="font-medium">Belum ada catatan di sini.</p>
-                        <p class="text-sm mt-1">Klik tombol + untuk menambah.</p>
-                    </div>`;
-                return;
-            }
-
-            let html = '';
-
-            if (isGrouped) {
-                // Layout Masonry (Kolom) untuk Kategori Besar pada Desktop
-                html += `<div class="columns-1 lg:columns-2 xl:columns-3 gap-5 md:gap-6">`;
-                
-                const sortedKeys = Object.keys(categories).sort((a, b) => categories[a].title.localeCompare(categories[b].title));
-                sortedKeys.forEach(catKey => {
-                    // Skip jika sedang tidak melihat Semua Catatan dan kategori tidak cocok dengan filter sidebar
-                    if (activeFilter !== 'all' && activeFilter !== catKey) return; 
-                    
-                    const catNotes = filteredNotes.filter(n => n.category === catKey).sort((a,b) => b.timestamp - a.timestamp);
-                    if (catNotes.length > 0) {
-                        const config = categories[catKey];
-                        const isCatOpen = openCategories.has(catKey);
-                        const openClass = isCatOpen ? "open" : "";
-                        
-                        html += `
-                            <div class="mb-5 md:mb-6 break-inside-avoid inline-block w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden transition-colors">
-                                <div class="flex justify-between items-center px-4 py-3.5 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 active:bg-gray-100 dark:active:bg-gray-700 transition-colors" onclick="toggleCategory('${catKey}')">
-                                    <div class="flex items-center">
-                                        <div class="w-8 h-8 rounded-lg ${config.bg} ${config.color} flex items-center justify-center mr-3">
-                                            ${config.icon}
-                                        </div>
-                                        <h2 class="text-[16px] font-bold text-gray-800 dark:text-white">${config.title}</h2>
-                                        <span class="ml-2 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 px-2 py-0.5 rounded-full text-xs font-bold">${catNotes.length}</span>
-                                    </div>
-                                    <i class="fa-solid fa-chevron-down text-gray-400 dark:text-gray-500 text-sm chevron-icon ${openClass}" id="cat-icon-${catKey}"></i>
-                                </div>
-                                
-                                <div class="accordion-content ${openClass}" id="cat-body-${catKey}">
-                                    <div class="accordion-inner bg-gray-50/50 dark:bg-gray-900/30 border-t border-gray-100 dark:border-gray-700">
-                                        <div class="p-3.5 pb-0">
-                        `;
-
-                        catNotes.forEach(note => { html += buildNoteCard(note, false); });
-
-                        html += `               </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    }
-                });
-                
-                html += `</div>`;
-            } else {
-                // Layout Masonry (Kolom) untuk Semua Catatan pada Desktop
-                const allNotes = [...filteredNotes].sort((a,b) => b.timestamp - a.timestamp);
-                html += `<div class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 md:gap-5 lg:gap-6 pt-2">`;
-                
-                // Hanya tampilkan badge jika melihat tab Semua Catatan
-                const showBadge = activeFilter === 'all';
-                allNotes.forEach(note => { html += buildNoteCard(note, showBadge); });
-                
-                html += `</div>`;
-            }
-
-            container.innerHTML = html;
+        function importData(e) {
+            const file = e.target.files[0]; if(!file) return; const reader = new FileReader();
+            reader.onload = e => { try { const imp = JSON.parse(e.target.result); if(Array.isArray(imp)){ notes = [...imp, ...notes.filter(n=>!imp.find(i=>i.id===n.id))]; saveToStorage(); renderSidebar(); renderNotes(); showToast("Data diimport!"); } } catch(err) { showToast("File tidak valid"); } };
+            reader.readAsText(file); e.target.value = '';
         }
     </script>
 </body>
