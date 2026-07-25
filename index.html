@@ -41,7 +41,7 @@
         .toast-enter { transform: translateY(-100%); opacity: 0; transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1); }
         .toast-active { transform: translateY(0); opacity: 1; }
 
-        .accordion-content { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.3s ease; }
+        .accordion-content { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .accordion-content.open { grid-template-rows: 1fr; }
         .accordion-inner { overflow: hidden; }
         .chevron-icon { transition: transform 0.3s ease; }
@@ -89,7 +89,7 @@
             <div class="flex items-center space-x-4 ml-auto">
                 <button onclick="toggleTheme()" id="btn-theme" class="text-ios-blue text-[20px] active:opacity-50"><i class="fa-solid fa-sun" id="theme-icon"></i></button>
                 <button onclick="toggleGroupView()" id="btn-group" class="text-ios-blue text-[20px] active:opacity-50"><i class="fa-solid fa-layer-group"></i></button>
-                <button onclick="openModal()" class="text-ios-blue text-[24px] active:opacity-50"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button onclick="openModal()" class="text-ios-blue text-[24px] active:opacity-50"><i class="fa-solid fa-circle-plus"></i></button>
             </div>
         </header>
 
@@ -110,7 +110,6 @@
     
     <!-- Z-Index 100 dan height aman untuk Mobile -->
     <div id="modal" class="fixed inset-x-0 bottom-0 z-[100] bg-ios-bg dark:bg-[#1C1C1E] rounded-t-[14px] h-[85vh] max-h-[calc(100%-60px)] max-w-3xl mx-auto modal-enter flex flex-col ios-shadow">
-        
         <!-- Grab Handle -->
         <div class="w-full flex justify-center pt-2 pb-1 shrink-0"><div class="w-10 h-[5px] rounded-full bg-gray-300 dark:bg-gray-600"></div></div>
         
@@ -498,7 +497,7 @@
             } else if (cat === 'oneshot') { content = document.getElementById('oneshot-fs-hidden').value + document.getElementById('oneshot-fs-visible').innerText; } 
             else { content = document.getElementById('note-content').value; }
 
-            if (!content.trim() && cat !== 'carousel' && cat !== 'mypassword' && cat !== 'revisi' && currentAttachments.length===0 && !title) return;
+            if (!content.trim() && cat !== 'carousel' && cat !== 'mypassword' && cat !== 'revisi' && currentAttachments.length===0 && !title) return; // Prevent empty save quietly
 
             if (id) { const i = notes.findIndex(n => n.id === id); if(i!==-1) notes[i] = { ...notes[i], category: cat, title, content, attachments: [...currentAttachments], updatedAt: new Date().toISOString() }; } 
             else { notes.unshift({ id: Date.now().toString(), category: cat, title, content, attachments: [...currentAttachments], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }); }
@@ -510,7 +509,13 @@
         function saveToStorage() { localStorage.setItem(STORAGE_KEY, JSON.stringify(notes)); }
 
         function toggleGroupView() { isGrouped = !isGrouped; document.getElementById('btn-group').classList.toggle('opacity-50'); renderNotes(); }
-        function toggleAccordion(id) { const c = document.getElementById(`acc-content-${id}`), i = document.getElementById(`acc-icon-${id}`); if(openNotes.has(id)){ openNotes.delete(id); c.classList.remove('open'); i.classList.remove('open'); } else { openNotes.add(id); c.classList.add('open'); i.classList.add('open'); } }
+        
+        function toggleAccordion(id) { 
+            const c = document.getElementById(`acc-content-${id}`), i = document.getElementById(`acc-icon-${id}`); 
+            if(openNotes.has(id)){ openNotes.delete(id); c.classList.remove('open'); i.classList.remove('rotate-180'); } 
+            else { openNotes.add(id); c.classList.add('open'); i.classList.add('rotate-180'); } 
+        }
+
         function toggleCategoryGroup(cat) { const c = document.getElementById(`cat-content-${cat}`), i = document.getElementById(`cat-icon-${cat}`); if(openCategories.has(cat)){ openCategories.delete(cat); c.classList.add('hidden'); i.style.transform = 'rotate(0deg)'; } else { openCategories.add(cat); c.classList.remove('hidden'); i.style.transform = 'rotate(180deg)'; } }
 
         function formatDate(ds) { const d=new Date(ds), now=new Date(), diff=(now-d)/1000; if(diff<86400) return d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}); if(diff<604800) return ['Min','Sen','Sel','Rab','Kam','Jum','Sab'][d.getDay()]; return d.toLocaleDateString('id-ID',{day:'numeric',month:'short'}); }
@@ -545,7 +550,6 @@
                 cats.forEach(c => {
                     const cNotes = f.filter(n=>n.category===c); const conf = categories[c]; if(!openCategories.has(c)) openCategories.add(c);
                     
-                    // KARTU KATEGORI UTAMA (OUTER CARD)
                     let h = `<div class="mb-6 bg-white dark:bg-ios-darkCard rounded-[28px] ios-shadow p-5 lg:p-6 border border-ios-separator/10 dark:border-ios-darkSeparator">
                         <div class="flex items-center justify-between cursor-pointer active:opacity-50 pb-2" onclick="toggleCategoryGroup('${c}')">
                             <div class="flex items-center">
@@ -558,8 +562,6 @@
                             </div>
                         </div>
                         <div id="cat-content-${c}" class="${openCategories.has(c)?'':'hidden'} pt-5 mt-3 border-t border-ios-separator/20 dark:border-ios-darkSeparator columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">`;
-                    
-                    // NESTED CARDS (DI DALAMNYA)
                     cNotes.forEach(n => h += `<div class="break-inside-avoid">${buildNoteCard(n, true)}</div>`);
                     h += `</div></div>`; cont.innerHTML += h;
                 });
@@ -570,65 +572,104 @@
             }
         }
 
-        // TAMPILAN KARTU (BISA NORMAL ATAU NESTED)
+        // TAMPILAN KARTU NOTE
         function buildNoteCard(note, isNested = false) {
             const conf = categories[note.category] || categories.copas;
-            
-            // JIKA NESTED, UBAH LATAR BELAKANG AGAR TERLIHAT "KARTU DALAM KARTU"
-            const bgWrapper = isNested 
-                ? 'bg-gray-50/70 dark:bg-[#2C2C2E]/60 border border-ios-separator/20 dark:border-ios-darkSeparator' 
-                : 'bg-ios-card dark:bg-ios-darkCard ios-shadow border border-ios-separator/10 dark:border-ios-darkSeparator';
+            const bgWrapper = isNested ? 'bg-gray-50/70 dark:bg-[#2C2C2E]/60 border border-ios-separator/20 dark:border-ios-darkSeparator' : 'bg-ios-card dark:bg-ios-darkCard ios-shadow border border-ios-separator/10 dark:border-ios-darkSeparator';
 
+            // 1. Logika Ekstrak URL untuk Tombol "Visit Link"
+            let firstUrl = null;
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            
+            function linkify(text) {
+                if (!text) return text;
+                return text.replace(urlRegex, url => `<a href="${url}" target="_blank" onclick="event.stopPropagation()" class="text-ios-blue hover:underline">${url}</a>`);
+            }
+
+            if (note.content) {
+                const match = note.content.match(urlRegex);
+                if (match) firstUrl = match[0];
+            }
+
+            if (note.category === 'mypassword') {
+                try { const p = JSON.parse(note.content); if (p.link) firstUrl = p.link; } catch(e) {}
+            }
+
+            // 2 & 3. HTML Lampiran (File & Gambar Downloadable)
             let imgHtml = '', fileHtml = '';
             if(note.attachments && note.attachments.length>0){
                 const imgs = note.attachments.filter(a=>a.type==='image'), fls = note.attachments.filter(a=>a.type!=='image');
                 
-                // GAMBAR SEKARANG TAMPIL FULL (TanPA OBJECT-COVER & MAX-H)
-                if(imgs.length>0) imgHtml = `<div class="w-full flex flex-col gap-1 mb-3">` + imgs.map(i=>`<img src="${i.data}" class="w-full h-auto rounded-[12px] border border-ios-separator/10 dark:border-ios-darkSeparator">`).join('') + `</div>`;
+                if(imgs.length>0) imgHtml = `<div class="w-full flex flex-col gap-2 mb-3">` + imgs.map((img, idx)=>`
+                    <div class="relative">
+                        <img src="${img.data}" class="w-full h-auto rounded-[12px] border border-ios-separator/10 dark:border-ios-darkSeparator">
+                        <a href="${img.data}" download="${img.name || `image-${idx}.jpg`}" onclick="event.stopPropagation()" class="absolute top-2 right-2 w-8 h-8 bg-black/60 backdrop-blur-md rounded-full text-white flex items-center justify-center active:scale-95 transition-transform"><i class="fa-solid fa-download text-[13px]"></i></a>
+                    </div>`).join('') + `</div>`;
                 
-                if(fls.length>0) fileHtml = `<div class="flex flex-wrap gap-2 mt-3 pt-3 border-t border-ios-separator/20 dark:border-ios-darkSeparator">` + fls.map(f=>`<div class="bg-gray-200/50 dark:bg-[#3A3A3C]/50 px-3 py-1.5 rounded-[8px] text-[13px] flex items-center text-black dark:text-white"><i class="fa-solid fa-file mr-2 text-gray-500"></i> <span class="truncate max-w-[120px]">${f.name}</span></div>`).join('') + `</div>`;
+                if(fls.length>0) fileHtml = `<div class="flex flex-wrap gap-2 mt-3 pt-3 border-t border-ios-separator/20 dark:border-ios-darkSeparator">` + fls.map(f=>`
+                    <a href="${f.data}" download="${f.name}" onclick="event.stopPropagation()" class="bg-[#767680]/10 dark:bg-[#767680]/24 px-3 py-2 rounded-[8px] text-[13px] flex items-center text-black dark:text-white hover:opacity-70 transition-opacity">
+                        <i class="fa-solid fa-file mr-2 text-gray-500"></i> <span class="truncate max-w-[120px]">${f.name}</span> <i class="fa-solid fa-download ml-2 text-ios-blue text-[11px]"></i>
+                    </a>`).join('') + `</div>`;
             }
 
+            // HTML Konten Utama (Linkify aktif)
             let cHtml = '';
             if (note.category === 'carousel') {
                 try {
                     const p = JSON.parse(note.content), reg=p.filter(c=>!c.isCaption), cap=p.find(c=>c.isCaption);
-                    if(reg.length>0) cHtml += `<div class="flex overflow-x-auto space-x-3 pb-2 hide-scrollbar">` + reg.map((c,i)=>`<div class="shrink-0 w-[220px] bg-white dark:bg-[#1C1C1E] border border-ios-separator/10 dark:border-ios-darkSeparator rounded-[14px] overflow-hidden flex flex-col shadow-sm"><div class="bg-gray-200 dark:bg-[#3A3A3C] px-3 py-1.5 text-[11px] font-semibold text-gray-700 dark:text-gray-300">Slide ${i+1}</div>${c.image?`<img src="${c.image}" class="w-full h-auto object-contain bg-gray-100 dark:bg-[#2C2C2E]">`:''}<div class="p-3 text-[15px] text-black dark:text-white whitespace-pre-wrap">${c.content}</div></div>`).join('') + `</div>`;
-                    if(cap) cHtml += `<div class="mt-3 bg-ios-blue/10 border border-ios-blue/20 rounded-[14px] overflow-hidden shadow-sm"><div class="bg-ios-blue/20 px-3 py-1.5 text-[11px] font-bold text-ios-blue">Caption</div>${cap.image?`<img src="${cap.image}" class="w-full h-auto object-contain bg-gray-100 dark:bg-[#2C2C2E]">`:''}<div class="p-3 text-[15px] text-black dark:text-white whitespace-pre-wrap">${cap.content}</div></div>`;
-                } catch(e) { cHtml = note.content; }
+                    if(reg.length>0) cHtml += `<div class="flex overflow-x-auto space-x-3 pb-2 hide-scrollbar">` + reg.map((c,i)=>`<div class="shrink-0 w-[220px] bg-white dark:bg-[#1C1C1E] border border-ios-separator/10 dark:border-ios-darkSeparator rounded-[14px] overflow-hidden flex flex-col shadow-sm"><div class="bg-gray-200 dark:bg-[#3A3A3C] px-3 py-1.5 text-[11px] font-semibold text-gray-700 dark:text-gray-300">Slide ${i+1}</div>${c.image?`<div class="relative"><img src="${c.image}" class="w-full h-auto object-contain bg-gray-100 dark:bg-[#2C2C2E]"><a href="${c.image}" download="slide-${i+1}.jpg" onclick="event.stopPropagation()" class="absolute top-1 right-1 w-6 h-6 bg-black/60 rounded-full text-white flex items-center justify-center"><i class="fa-solid fa-download text-[10px]"></i></a></div>`:''}<div class="p-3 text-[15px] text-black dark:text-white whitespace-pre-wrap">${linkify(c.content)}</div></div>`).join('') + `</div>`;
+                    if(cap) cHtml += `<div class="mt-3 bg-ios-blue/10 border border-ios-blue/20 rounded-[14px] overflow-hidden shadow-sm"><div class="bg-ios-blue/20 px-3 py-1.5 text-[11px] font-bold text-ios-blue">Caption</div>${cap.image?`<div class="relative"><img src="${cap.image}" class="w-full h-auto object-contain bg-gray-100 dark:bg-[#2C2C2E]"><a href="${cap.image}" download="caption.jpg" onclick="event.stopPropagation()" class="absolute top-1 right-1 w-6 h-6 bg-black/60 rounded-full text-white flex items-center justify-center"><i class="fa-solid fa-download text-[10px]"></i></a></div>`:''}<div class="p-3 text-[15px] text-black dark:text-white whitespace-pre-wrap">${linkify(cap.content)}</div></div>`;
+                } catch(e) { cHtml = linkify(note.content); }
             } else if (note.category === 'mypassword') {
                 try {
                     const p = JSON.parse(note.content);
-                    cHtml = `<div class="space-y-2"><div class="flex items-center text-[15px]"><span class="w-8 text-center text-gray-400"><i class="fa-solid fa-user"></i></span><span class="font-medium text-black dark:text-white bg-white dark:bg-[#3A3A3C] shadow-sm px-2 py-1 rounded-[8px]">${p.username||'-'}</span></div><div class="flex items-center text-[15px]"><span class="w-8 text-center text-gray-400"><i class="fa-solid fa-key"></i></span><span class="font-medium text-black dark:text-white bg-white dark:bg-[#3A3A3C] shadow-sm px-2 py-1 rounded-[8px] blur-sm hover:blur-none transition-all">${p.password||'-'}</span></div>${p.link?`<div class="flex items-center text-[15px] mt-2"><span class="w-8 text-center text-gray-400"><i class="fa-solid fa-link"></i></span><a href="${p.link}" target="_blank" class="text-ios-blue hover:opacity-70 truncate">${p.link}</a></div>`:''}</div>`;
-                } catch(e) { cHtml = note.content; }
+                    cHtml = `<div class="space-y-2"><div class="flex items-center text-[15px]"><span class="w-8 text-center text-gray-400"><i class="fa-solid fa-user"></i></span><span class="font-medium text-black dark:text-white bg-white dark:bg-[#3A3A3C] shadow-sm px-2 py-1 rounded-[8px]">${p.username||'-'}</span></div><div class="flex items-center text-[15px]"><span class="w-8 text-center text-gray-400"><i class="fa-solid fa-key"></i></span><span class="font-medium text-black dark:text-white bg-white dark:bg-[#3A3A3C] shadow-sm px-2 py-1 rounded-[8px] blur-sm hover:blur-none transition-all">${p.password||'-'}</span></div>${p.link?`<div class="flex items-center text-[15px] mt-2"><span class="w-8 text-center text-gray-400"><i class="fa-solid fa-link"></i></span><a href="${p.link}" target="_blank" onclick="event.stopPropagation()" class="text-ios-blue hover:opacity-70 truncate">${p.link}</a></div>`:''}</div>`;
+                } catch(e) { cHtml = linkify(note.content); }
             } else if (note.category === 'revisi') {
-                try { const r = JSON.parse(note.content); cHtml = `<div class="bg-white dark:bg-[#3A3A3C] shadow-sm border border-ios-separator/10 dark:border-ios-darkSeparator p-3 rounded-[12px] mb-3"><div class="text-[12px] font-semibold text-gray-500 mb-1">Tujuan:</div><div class="font-medium text-black dark:text-white text-[15px]">${r.tujuan}</div></div><div class="text-[16px] text-black dark:text-white whitespace-pre-wrap leading-relaxed">${r.content}</div>`; } catch(e) { cHtml = note.content; }
+                try { const r = JSON.parse(note.content); cHtml = `<div class="bg-white dark:bg-[#3A3A3C] shadow-sm border border-ios-separator/10 dark:border-ios-darkSeparator p-3 rounded-[12px] mb-3"><div class="text-[12px] font-semibold text-gray-500 mb-1">Tujuan:</div><div class="font-medium text-black dark:text-white text-[15px]">${linkify(r.tujuan)}</div></div><div class="text-[16px] text-black dark:text-white whitespace-pre-wrap leading-relaxed">${linkify(r.content)}</div>`; } catch(e) { cHtml = linkify(note.content); }
             } else {
-                let lines = note.content ? note.content.split('\n') : [];
-                let pText = lines.slice(0, 3).join('\n');
-                let isLong = lines.length > 3 || note.content.length > 200;
-                if(isLong && lines.length <= 3) pText = note.content.substring(0,200) + '...';
-                
-                if (isLong) {
-                    cHtml = `<div class="accordion-content ${openNotes.has(note.id)?'open':''}" id="acc-content-${note.id}"><div class="accordion-inner"><div class="text-[16px] leading-relaxed text-black dark:text-white whitespace-pre-wrap pb-2">${note.content}</div></div></div><div class="${openNotes.has(note.id)?'hidden':''} text-[16px] leading-relaxed text-black dark:text-white whitespace-pre-wrap relative">${pText}<div class="absolute bottom-0 w-full h-8 bg-gradient-to-t ${isNested ? 'from-gray-50 dark:from-[#2C2C2E]' : 'from-ios-card dark:from-ios-darkCard'} to-transparent"></div></div><button onclick="toggleAccordion('${note.id}')" class="text-[15px] font-medium text-ios-blue mt-1 flex items-center active:opacity-50">Selengkapnya <i id="acc-icon-${note.id}" class="fa-solid fa-chevron-down ml-1 text-[12px] chevron-icon ${openNotes.has(note.id)?'open':''}"></i></button>`;
-                } else { cHtml = `<div class="text-[16px] leading-relaxed text-black dark:text-white whitespace-pre-wrap">${note.content}</div>`; }
+                cHtml = `<div class="text-[16px] leading-relaxed text-black dark:text-white whitespace-pre-wrap">${linkify(note.content)}</div>`;
+            }
+
+            // 4 & 5. Judul Default & Label Waktu (Buat & Edit)
+            let displayTitle = note.title ? note.title : "Catatan Tanpa Judul";
+            let dateHtml = `Buat: ${formatDate(note.createdAt)}`;
+            if (note.updatedAt && note.updatedAt !== note.createdAt) {
+                dateHtml += ` • Edit: ${formatDate(note.updatedAt)}`;
             }
 
             return `<div class="${bgWrapper} rounded-[24px] p-5 relative overflow-hidden group">
-                <div class="flex justify-between items-start mb-4">
-                    <div class="flex items-center space-x-3">
-                        <span class="w-8 h-8 rounded-full ${conf.bg} text-white flex items-center justify-center text-[14px] shadow-sm">${conf.icon}</span>
-                        <div>${note.title?`<h4 class="font-semibold text-black dark:text-white text-[17px] leading-tight">${note.title}</h4>`:''}<p class="text-[12px] text-gray-500">${formatDate(note.createdAt)}</p></div>
+                
+                <!-- HEADER KARTU (TERLIHAT DEFAULT) -->
+                <div class="flex justify-between items-start cursor-pointer" onclick="toggleAccordion('${note.id}')">
+                    
+                    <div class="flex items-start space-x-3 max-w-[65%]">
+                        <span class="w-9 h-9 shrink-0 rounded-full ${conf.bg} text-white flex items-center justify-center text-[15px] shadow-sm mt-0.5">${conf.icon}</span>
+                        <div class="flex flex-col overflow-hidden">
+                            <h4 class="font-semibold text-black dark:text-white text-[17px] leading-tight mb-1 truncate">${displayTitle}</h4>
+                            <p class="text-[11px] text-gray-500 leading-tight">${dateHtml}</p>
+                        </div>
                     </div>
-                    <div class="flex space-x-2">
-                        <button onclick="openCopyModal('${note.id}')" class="w-8 h-8 text-gray-400 hover:text-green-500 bg-white/50 dark:bg-[#3A3A3C]/50 rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-regular fa-copy text-[14px]"></i></button>
-                        <button onclick="openModal('${note.id}')" class="w-8 h-8 text-gray-400 hover:text-ios-blue bg-white/50 dark:bg-[#3A3A3C]/50 rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-solid fa-pen-to-square text-[14px]"></i></button>
-                        <button onclick="openDeleteAlert('${note.id}')" class="w-8 h-8 text-gray-400 hover:text-ios-red bg-white/50 dark:bg-[#3A3A3C]/50 rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-solid fa-trash-can text-[14px]"></i></button>
+                    
+                    <div class="flex space-x-2 shrink-0">
+                        ${firstUrl ? `<a href="${firstUrl}" target="_blank" onclick="event.stopPropagation()" class="w-8 h-8 text-ios-blue bg-blue-50 dark:bg-blue-900/30 rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-solid fa-arrow-up-right-from-square text-[13px]"></i></a>` : ''}
+                        <button onclick="event.stopPropagation(); openCopyModal('${note.id}')" class="w-8 h-8 text-gray-400 hover:text-green-500 bg-gray-100 dark:bg-[#2C2C2E] rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-regular fa-copy text-[13px]"></i></button>
+                        <button onclick="event.stopPropagation(); openModal('${note.id}')" class="w-8 h-8 text-gray-400 hover:text-ios-blue bg-gray-100 dark:bg-[#2C2C2E] rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-solid fa-pen-to-square text-[13px]"></i></button>
+                        <button onclick="event.stopPropagation(); openDeleteAlert('${note.id}')" class="w-8 h-8 text-gray-400 hover:text-ios-red bg-gray-100 dark:bg-[#2C2C2E] rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-solid fa-trash-can text-[13px]"></i></button>
+                        <i id="acc-icon-${note.id}" class="fa-solid fa-chevron-down text-gray-400 transition-transform ml-1 mt-2 text-[14px] ${openNotes.has(note.id)?'rotate-180':''}"></i>
+                    </div>
+
+                </div>
+
+                <!-- ISI KARTU (AKORDION TERTUTUP DEFAULT) -->
+                <div class="accordion-content ${openNotes.has(note.id)?'open':''}" id="acc-content-${note.id}">
+                    <div class="accordion-inner pt-4 border-t border-ios-separator/10 dark:border-ios-darkSeparator mt-3">
+                        ${imgHtml}
+                        ${cHtml}
+                        ${fileHtml}
                     </div>
                 </div>
-                ${imgHtml}
-                ${cHtml}
-                ${fileHtml}
+
             </div>`;
         }
     </script>
