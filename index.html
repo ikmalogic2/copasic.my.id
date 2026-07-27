@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>copasic.my.id</title>
     
-    <!-- Favicon & PWA App Icon (Logo Clipboard bergaya iOS) -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%23007AFF%22/><rect x=%2230%22 y=%2230%22 width=%2240%22 height=%2245%22 rx=%226%22 fill=%22none%22 stroke=%22%23FFF%22 stroke-width=%226%22/><path d=%22M 40 20 h 20 v 15 h -20 z%22 fill=%22%23FFF%22/><line x1=%2242%22 y1=%2250%22 x2=%2258%22 y2=%2250%22 stroke=%22%23FFF%22 stroke-width=%224%22 stroke-linecap=%22round%22/><line x1=%2242%22 y1=%2260%22 x2=%2258%22 y2=%2260%22 stroke=%22%23FFF%22 stroke-width=%224%22 stroke-linecap=%22round%22/></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%23007AFF%22/><rect x=%2230%22 y=%2230%22 width=%2240%22 height=%2245%22 rx=%226%22 fill=%22none%22 stroke=%22%23FFF%22 stroke-width=%226%22/><path d=%22M 40 20 h 20 v 15 h -20 z%22 fill=%22%23FFF%22/><line x1=%2242%22 y1=%2250%22 x2=%2258%22 y2=%2250%22 stroke=%22%23FFF%22 stroke-width=%224%22 stroke-linecap=%22round%22/><line x1=%2242%22 y1=%2260%22 x2=%2258%22 y2=%2260%22 stroke=%22%23FFF%22 stroke-width=%224%22 stroke-linecap=%22round%22/></svg>">
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%23000000%22/><rect x=%2230%22 y=%2230%22 width=%2240%22 height=%2245%22 rx=%226%22 fill=%22none%22 stroke=%22%23FFF%22 stroke-width=%226%22/><path d=%22M 40 20 h 20 v 15 h -20 z%22 fill=%22%23FFF%22/><line x1=%2242%22 y1=%2250%22 x2=%2258%22 y2=%2250%22 stroke=%22%23FFF%22 stroke-width=%224%22 stroke-linecap=%22round%22/><line x1=%2242%22 y1=%2260%22 x2=%2258%22 y2=%2260%22 stroke=%22%23FFF%22 stroke-width=%224%22 stroke-linecap=%22round%22/></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%23000000%22/><rect x=%2230%22 y=%2230%22 width=%2240%22 height=%2245%22 rx=%226%22 fill=%22none%22 stroke=%22%23FFF%22 stroke-width=%226%22/><path d=%22M 40 20 h 20 v 15 h -20 z%22 fill=%22%23FFF%22/><line x1=%2242%22 y1=%2250%22 x2=%2258%22 y2=%2250%22 stroke=%22%23FFF%22 stroke-width=%224%22 stroke-linecap=%22round%22/><line x1=%2242%22 y1=%2260%22 x2=%2258%22 y2=%2260%22 stroke=%22%23FFF%22 stroke-width=%224%22 stroke-linecap=%22round%22/></svg>">
 
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { 
@@ -19,7 +20,6 @@
                         ios: {
                             bg: '#F2F2F7', darkBg: '#000000',
                             card: '#FFFFFF', darkCard: '#1C1C1E',
-                            blue: '#007AFF', red: '#FF3B30',
                             gray: '#8E8E93', darkGray: '#98989D',
                             separator: 'rgba(60, 60, 67, 0.36)', darkSeparator: 'rgba(84, 84, 88, 0.65)'
                         }
@@ -28,17 +28,20 @@
             }
         }
     </script>
+    
     <!-- Google Fonts: Space Grotesk -->
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* Apple System Fonts */
-        body { font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+        html { color-scheme: light; }
+        html.dark { color-scheme: dark; }
+        
+        body { font-family: 'Space Grotesk', -apple-system, sans-serif; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { display: none; }
         
-        /* iOS Shadow & Transitions */
         .ios-shadow { box-shadow: 0 4px 24px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02); }
         .dark .ios-shadow { box-shadow: 0 4px 24px rgba(0,0,0,0.2); border: 0.5px solid #38383A; }
         
@@ -54,18 +57,27 @@
         .chevron-icon { transition: transform 0.3s ease; }
         .chevron-icon.open { transform: rotate(180deg); }
 
-        /* iOS Input styling */
         .ios-input { appearance: none; background: rgba(118, 118, 128, 0.12); border-radius: 10px; }
         .dark .ios-input { background: rgba(118, 118, 128, 0.24); }
 
-        /* Fix Tampilan Dropdown Mode Gelap */
-        html { color-scheme: light; }
-        html.dark { color-scheme: dark; }
         select option { background-color: #FFFFFF; color: #000000; }
         .dark select option { background-color: #1C1C1E; color: #FFFFFF; }
     </style>
 </head>
 <body class="flex h-[100dvh] overflow-hidden bg-ios-bg dark:bg-ios-darkBg transition-colors duration-300">
+
+    <!-- BULK ACTION BAR (Muncul dari atas saat ada catatan dipilih) -->
+    <div id="bulk-action-bar" class="fixed top-0 inset-x-0 h-[60px] bg-black dark:bg-white text-white dark:text-black z-[120] flex items-center justify-between px-5 transform -translate-y-full transition-transform duration-300 ios-shadow">
+        <div class="flex items-center space-x-4">
+            <button onclick="clearSelection()" class="text-xl active:opacity-50"><i class="fa-solid fa-xmark"></i></button>
+            <span class="font-bold text-[16px]"><span id="bulk-count">0</span> Terpilih</span>
+        </div>
+        <div class="flex items-center space-x-5">
+            <button onclick="bulkCopy()" class="text-[18px] active:opacity-50"><i class="fa-regular fa-copy"></i></button>
+            <button onclick="openBulkMoveModal()" class="text-[18px] active:opacity-50"><i class="fa-solid fa-folder-open"></i></button>
+            <button onclick="confirmBulkDelete()" class="text-[18px] text-red-500 active:opacity-50"><i class="fa-solid fa-trash-can"></i></button>
+        </div>
+    </div>
 
     <!-- OVERLAY SIDEBAR -->
     <div id="sidebar-overlay" class="fixed inset-0 bg-black/40 z-20 hidden lg:hidden transition-opacity opacity-0 backdrop-blur-sm" onclick="toggleSidebar()"></div>
@@ -78,7 +90,7 @@
         
         <div class="px-5 mt-4 mb-2 flex justify-between items-center shrink-0">
             <span class="text-[12px] font-semibold text-gray-500 uppercase tracking-wider">Kategori Anda</span>
-            <button onclick="openCatModal()" class="text-ios-blue bg-ios-blue/10 w-7 h-7 rounded-full flex items-center justify-center hover:opacity-70 transition-opacity"><i class="fa-solid fa-plus text-[12px]"></i></button>
+            <button onclick="openCatModal()" class="text-black dark:text-white bg-black/5 dark:bg-white/10 w-7 h-7 rounded-full flex items-center justify-center hover:opacity-70 transition-opacity"><i class="fa-solid fa-plus text-[12px]"></i></button>
         </div>
 
         <div class="flex-1 overflow-y-auto pb-2 px-3 space-y-0.5" id="sidebar-categories">
@@ -88,10 +100,10 @@
         <!-- IMPORT/EXPORT -->
         <div class="p-4 shrink-0 flex gap-2 border-t border-ios-separator/10 dark:border-ios-darkSeparator">
             <input type="file" id="import-file" accept=".json" class="hidden" onchange="importData(event)">
-            <button onclick="document.getElementById('import-file').click()" class="flex-1 flex items-center justify-center py-2.5 bg-ios-card dark:bg-ios-darkCard rounded-[10px] text-ios-blue hover:opacity-70 transition-opacity ios-shadow text-[13px] font-semibold">
+            <button onclick="document.getElementById('import-file').click()" class="flex-1 flex items-center justify-center py-2.5 bg-ios-card dark:bg-ios-darkCard rounded-[10px] text-black dark:text-white hover:opacity-70 transition-opacity ios-shadow text-[13px] font-semibold">
                 <i class="fa-solid fa-cloud-arrow-up mr-2 text-[15px]"></i> Import
             </button>
-            <button onclick="exportData()" class="flex-1 flex items-center justify-center py-2.5 bg-ios-card dark:bg-ios-darkCard rounded-[10px] text-ios-blue hover:opacity-70 transition-opacity ios-shadow text-[13px] font-semibold">
+            <button onclick="exportData()" class="flex-1 flex items-center justify-center py-2.5 bg-ios-card dark:bg-ios-darkCard rounded-[10px] text-black dark:text-white hover:opacity-70 transition-opacity ios-shadow text-[13px] font-semibold">
                 <i class="fa-solid fa-cloud-arrow-down mr-2 text-[15px]"></i> Export
             </button>
         </div>
@@ -103,100 +115,95 @@
         <!-- HEADER -->
         <header class="h-[52px] bg-ios-card/80 dark:bg-ios-darkBg/80 backdrop-blur-xl border-b border-ios-separator/30 dark:border-ios-darkSeparator flex items-center justify-between px-4 z-10 shrink-0 w-full relative">
             <div class="flex items-center lg:hidden">
-                <button onclick="toggleSidebar()" class="text-ios-blue text-[22px] px-1 active:opacity-50"><i class="fa-solid fa-bars"></i></button>
+                <button onclick="toggleSidebar()" class="text-black dark:text-white text-[22px] px-1 active:opacity-50"><i class="fa-solid fa-bars"></i></button>
                 <h1 class="text-[17px] font-semibold text-black dark:text-white tracking-tight ml-3">Catatan</h1>
             </div>
             
             <div class="flex items-center space-x-3 sm:space-x-4 ml-auto">
-                <!-- Undo / Redo Buttons -->
-                <button onclick="undoAction()" id="btn-undo" class="text-ios-blue text-[18px] active:opacity-50 opacity-30 transition-opacity"><i class="fa-solid fa-rotate-left"></i></button>
-                <button onclick="redoAction()" id="btn-redo" class="text-ios-blue text-[18px] active:opacity-50 opacity-30 transition-opacity"><i class="fa-solid fa-rotate-right"></i></button>
-                
+                <button onclick="undoAction()" id="btn-undo" class="text-black dark:text-white text-[18px] active:opacity-50 opacity-30 transition-opacity"><i class="fa-solid fa-rotate-left"></i></button>
+                <button onclick="redoAction()" id="btn-redo" class="text-black dark:text-white text-[18px] active:opacity-50 opacity-30 transition-opacity"><i class="fa-solid fa-rotate-right"></i></button>
                 <div class="w-px h-5 bg-ios-separator/30 dark:bg-ios-darkSeparator mx-1 hidden sm:block"></div>
-                
-                <button onclick="toggleTheme()" id="btn-theme" class="text-ios-blue text-[20px] active:opacity-50"><i class="fa-solid fa-sun" id="theme-icon"></i></button>
-                <button onclick="toggleGroupView()" id="btn-group" class="text-ios-blue text-[20px] active:opacity-50"><i class="fa-solid fa-layer-group"></i></button>
-                <button onclick="openModal()" class="text-ios-blue text-[24px] active:opacity-50"><i class="fa-solid fa-circle-plus"></i></button>
+                <button onclick="toggleTheme()" id="btn-theme" class="text-black dark:text-white text-[20px] active:opacity-50"><i class="fa-solid fa-sun" id="theme-icon"></i></button>
+                <button onclick="toggleGroupView()" id="btn-group" class="text-black dark:text-white text-[20px] active:opacity-50"><i class="fa-solid fa-layer-group"></i></button>
             </div>
         </header>
 
         <!-- CONTENT LIST -->
-        <div class="flex-1 overflow-y-auto pt-4 pb-24 px-4 lg:px-8 bg-ios-bg dark:bg-ios-darkBg" id="main-area">
+        <div class="flex-1 overflow-y-auto pt-4 pb-24 px-4 lg:px-8 bg-ios-bg dark:bg-ios-darkBg relative" id="main-area">
             <div id="notes-container" class="w-full max-w-[1600px] mx-auto"></div>
         </div>
     </main>
 
-    <!-- TOAST (iOS Top Notification) -->
-    <div id="toast" class="fixed top-8 left-1/2 transform -translate-x-1/2 bg-white/80 dark:bg-[#2C2C2E]/80 backdrop-blur-xl border border-white/20 dark:border-white/10 px-5 py-3 rounded-full ios-shadow z-[110] flex items-center pointer-events-none toast-enter">
-        <i class="fa-solid fa-circle-check text-green-500 mr-2 text-lg"></i>
-        <span id="toast-message" class="text-[15px] font-medium text-black dark:text-white">Sukses!</span>
+    <!-- FLOATING ACTION BUTTON (Drag & Drop) -->
+    <div id="fab-add" class="fixed bottom-8 right-8 z-[80] w-14 h-14 bg-black dark:bg-white text-white dark:text-black rounded-full shadow-2xl flex items-center justify-center cursor-move touch-none hover:scale-105 transition-transform" title="Tambah Catatan">
+        <i class="fa-solid fa-plus text-2xl pointer-events-none"></i>
     </div>
 
-    <!-- MODAL CATEGORY (iOS Sheet) -->
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed top-8 left-1/2 transform -translate-x-1/2 bg-black dark:bg-white backdrop-blur-xl px-5 py-3 rounded-full ios-shadow z-[130] flex items-center pointer-events-none toast-enter">
+        <i class="fa-solid fa-circle-check text-white dark:text-black mr-2 text-lg"></i>
+        <span id="toast-message" class="text-[15px] font-bold text-white dark:text-black">Sukses!</span>
+    </div>
+
+    <!-- MODAL CATEGORY -->
     <div id="cat-modal-overlay" class="fixed inset-0 bg-black/40 dark:bg-black/60 z-[95] hidden opacity-0 transition-opacity duration-400" onclick="closeCatModal()"></div>
     <div id="cat-modal" class="fixed inset-x-0 bottom-0 z-[100] bg-ios-bg dark:bg-[#1C1C1E] rounded-t-[14px] max-h-[85vh] max-w-md mx-auto modal-enter flex flex-col ios-shadow">
         <div class="w-full flex justify-center pt-2 pb-1 shrink-0"><div class="w-10 h-[5px] rounded-full bg-gray-300 dark:bg-gray-600"></div></div>
         <div class="flex justify-between items-center px-4 py-2 border-b border-ios-separator/30 dark:border-ios-darkSeparator shrink-0">
-            <button onclick="closeCatModal()" class="text-ios-blue text-[17px] font-normal active:opacity-50">Batal</button>
-            <h2 class="font-semibold text-[17px] text-black dark:text-white" id="cat-modal-title">Buat Kategori</h2>
-            <button onclick="saveCategory()" class="text-ios-blue text-[17px] font-semibold active:opacity-50">Simpan</button>
+            <button onclick="closeCatModal()" class="text-black dark:text-white text-[17px] font-normal active:opacity-50">Batal</button>
+            <h2 class="font-bold text-[17px] text-black dark:text-white" id="cat-modal-title">Buat Kategori</h2>
+            <button onclick="saveCategory()" class="text-black dark:text-white text-[17px] font-bold active:opacity-50">Simpan</button>
         </div>
         <div class="p-5 flex-1 overflow-y-auto">
             <input type="hidden" id="cat-id">
-            
             <div class="mb-4">
-                <label class="block text-[13px] font-semibold text-gray-500 uppercase tracking-wider mb-2">Nama Kategori</label>
+                <label class="block text-[13px] font-bold text-gray-500 uppercase tracking-wider mb-2">Nama Kategori</label>
                 <input type="text" id="cat-title" placeholder="Cth: Pekerjaan..." class="w-full ios-input px-4 py-3 text-[17px] text-black dark:text-white focus:outline-none">
             </div>
-
             <div class="mb-4 flex space-x-4">
                 <div class="w-1/3">
-                    <label class="block text-[13px] font-semibold text-gray-500 uppercase tracking-wider mb-2">Ikon</label>
+                    <label class="block text-[13px] font-bold text-gray-500 uppercase tracking-wider mb-2">Ikon</label>
                     <input type="text" id="cat-icon" placeholder="📁" maxlength="2" class="w-full ios-input px-4 py-3 text-[20px] text-center text-black dark:text-white focus:outline-none">
                 </div>
                 <div class="w-2/3">
-                    <label class="block text-[13px] font-semibold text-gray-500 uppercase tracking-wider mb-2">Pilih Fitur Kategori</label>
+                    <label class="block text-[13px] font-bold text-gray-500 uppercase tracking-wider mb-2">Pilih Fitur</label>
                     <div class="relative ios-input">
                         <select id="cat-type" class="w-full bg-transparent py-3 px-4 text-[14px] font-medium text-black dark:text-white focus:outline-none appearance-none">
                             <option value="normal">Teks Normal + Media</option>
-                            <option value="todolist">To-Do List (Ceklis Interaktif)</option>
+                            <option value="todolist">To-Do List (Ceklis)</option>
                             <option value="finance">Catatan Keuangan</option>
-                            <option value="journal">Jurnal & Mood Tracker</option>
-                            <option value="carousel">Carousel Card (Slide)</option>
+                            <option value="journal">Jurnal & Mood</option>
+                            <option value="carousel">Carousel Card</option>
                             <option value="mypassword">Akun & Password</option>
-                            <option value="revisi">Format Revisi Teks</option>
-                            <option value="oneshot">Kanvas Fokus (One Shot)</option>
+                            <option value="revisi">Format Revisi</option>
+                            <option value="oneshot">Kanvas One Shot</option>
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400"><i class="fa-solid fa-chevron-down text-xs"></i></div>
                     </div>
                 </div>
             </div>
-
             <div class="mb-6">
-                <label class="block text-[13px] font-semibold text-gray-500 uppercase tracking-wider mb-2">Pilih Warna</label>
-                <div class="flex flex-wrap gap-3" id="cat-color-picker">
-                    <!-- JS Injected Colors -->
-                </div>
-                <input type="hidden" id="cat-color" value="#007AFF">
+                <label class="block text-[13px] font-bold text-gray-500 uppercase tracking-wider mb-2">Pilih Warna</label>
+                <div class="flex flex-wrap gap-3" id="cat-color-picker"></div>
+                <input type="hidden" id="cat-color" value="#000000">
             </div>
-
             <div id="cat-delete-btn-container" class="hidden pt-4 border-t border-ios-separator/20 dark:border-ios-darkSeparator">
-                <button onclick="confirmDeleteCategory()" class="w-full bg-ios-red/10 text-ios-red font-semibold py-3 rounded-xl active:opacity-50 transition-opacity flex justify-center items-center">
+                <button onclick="confirmDeleteCategory()" class="w-full bg-red-500/10 text-red-500 font-bold py-3 rounded-xl active:opacity-50 transition-opacity flex justify-center items-center">
                     <i class="fa-solid fa-trash-can mr-2"></i> Hapus Kategori Ini
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL FORM CATATAN (iOS Sheet) -->
+    <!-- MODAL FORM CATATAN -->
     <div id="modal-overlay" class="fixed inset-0 bg-black/40 dark:bg-black/60 z-[90] hidden opacity-0 transition-opacity duration-400" onclick="closeModal()"></div>
     <div id="modal" class="fixed inset-x-0 bottom-0 z-[100] bg-ios-bg dark:bg-[#1C1C1E] rounded-t-[14px] h-[92vh] max-h-[calc(100%-60px)] max-w-3xl mx-auto modal-enter flex flex-col ios-shadow">
         <div class="w-full flex justify-center pt-2 pb-1 shrink-0"><div class="w-10 h-[5px] rounded-full bg-gray-300 dark:bg-gray-600"></div></div>
         
         <div class="flex justify-between items-center px-4 py-2 border-b border-ios-separator/30 dark:border-ios-darkSeparator shrink-0">
-            <button onclick="closeModal()" class="text-ios-blue text-[17px] font-normal active:opacity-50">Batal</button>
-            <h2 class="font-semibold text-[17px] text-black dark:text-white" id="modal-title">Buat Catatan</h2>
-            <button onclick="saveNote()" class="text-ios-blue text-[17px] font-semibold active:opacity-50">Simpan</button>
+            <button onclick="closeModal()" class="text-black dark:text-white text-[17px] font-normal active:opacity-50">Batal</button>
+            <h2 class="font-bold text-[17px] text-black dark:text-white" id="modal-title">Buat Catatan</h2>
+            <button onclick="saveNote()" class="text-black dark:text-white text-[17px] font-bold active:opacity-50">Simpan</button>
         </div>
         
         <div class="p-5 flex-1 overflow-y-auto bg-ios-bg dark:bg-[#1C1C1E]">
@@ -204,7 +211,7 @@
             
             <div class="mb-5" id="category-select-container">
                 <div class="relative ios-input">
-                    <select id="note-category" onchange="toggleInputFields()" class="w-full bg-transparent py-3 px-4 text-[17px] text-black dark:text-white focus:outline-none appearance-none"></select>
+                    <select id="note-category" onchange="toggleInputFields()" class="w-full bg-transparent py-3 px-4 text-[17px] font-bold text-black dark:text-white focus:outline-none appearance-none"></select>
                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400"><i class="fa-solid fa-chevron-down text-sm"></i></div>
                 </div>
             </div>
@@ -215,8 +222,8 @@
 
             <div class="mb-5">
                 <div class="flex space-x-3 mb-3">
-                    <button onclick="document.getElementById('attach-image').click()" class="bg-white dark:bg-[#2C2C2E] px-4 py-2 rounded-full text-[14px] font-medium text-black dark:text-white ios-shadow flex items-center active:scale-95 transition-transform"><i class="fa-solid fa-image text-ios-blue mr-2"></i> Tambah Gambar</button>
-                    <button onclick="document.getElementById('attach-file').click()" class="bg-white dark:bg-[#2C2C2E] px-4 py-2 rounded-full text-[14px] font-medium text-black dark:text-white ios-shadow flex items-center active:scale-95 transition-transform"><i class="fa-solid fa-paperclip text-purple-500 mr-2"></i> File (>2MB Auto)</button>
+                    <button onclick="document.getElementById('attach-image').click()" class="bg-white dark:bg-[#2C2C2E] px-4 py-2 rounded-full text-[14px] font-bold text-black dark:text-white ios-shadow flex items-center active:scale-95 transition-transform border border-gray-200 dark:border-gray-700"><i class="fa-solid fa-image mr-2"></i> Gambar</button>
+                    <button onclick="document.getElementById('attach-file').click()" class="bg-white dark:bg-[#2C2C2E] px-4 py-2 rounded-full text-[14px] font-bold text-black dark:text-white ios-shadow flex items-center active:scale-95 transition-transform border border-gray-200 dark:border-gray-700"><i class="fa-solid fa-paperclip mr-2"></i> File</button>
                     <input type="file" id="attach-image" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'image')" multiple>
                     <input type="file" id="attach-file" accept=".txt,.pdf,.html,.json,.doc,.docx,.xls,.xlsx,.csv" class="hidden" onchange="handleFileUpload(event, 'file')" multiple>
                 </div>
@@ -231,8 +238,8 @@
             <!-- ToDo List Input -->
             <div id="todolist-input-container" class="w-full flex-col hidden pb-5">
                 <div class="flex justify-between items-center mb-3 px-1">
-                    <span class="text-[13px] font-medium text-gray-500 uppercase tracking-wider">Daftar Tugas</span>
-                    <button onclick="addTodoRow()" class="text-ios-blue text-[13px] font-semibold bg-ios-blue/10 px-3 py-1.5 rounded-full active:opacity-50 transition-opacity"><i class="fa-solid fa-plus mr-1"></i> Tambah Item</button>
+                    <span class="text-[13px] font-bold text-gray-500 uppercase tracking-wider">Daftar Tugas</span>
+                    <button onclick="addTodoRow()" class="text-black dark:text-white text-[13px] font-bold bg-black/10 dark:bg-white/10 px-3 py-1.5 rounded-full active:opacity-50 transition-opacity"><i class="fa-solid fa-plus mr-1"></i> Tambah</button>
                 </div>
                 <div id="todo-rows-wrapper" class="space-y-3 max-h-64 overflow-y-auto pr-1"></div>
             </div>
@@ -241,44 +248,38 @@
             <div id="finance-input-container" class="w-full flex-col hidden space-y-4 pb-5">
                 <div class="flex space-x-3">
                     <div class="relative ios-input w-[40%]">
-                        <select id="fin-type" class="w-full bg-transparent py-3 px-4 text-[15px] font-medium text-black dark:text-white focus:outline-none appearance-none">
+                        <select id="fin-type" class="w-full bg-transparent py-3 px-4 text-[15px] font-bold text-black dark:text-white focus:outline-none appearance-none">
                             <option value="in">Pemasukan</option><option value="out">Pengeluaran</option>
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400"><i class="fa-solid fa-chevron-down text-xs"></i></div>
                     </div>
-                    <input type="number" id="fin-amount" placeholder="Nominal (Rp)" class="w-[60%] ios-input px-4 py-3 text-[17px] font-semibold text-black dark:text-white focus:outline-none">
+                    <input type="number" id="fin-amount" placeholder="Nominal (Rp)" class="w-[60%] ios-input px-4 py-3 text-[17px] font-bold text-black dark:text-white focus:outline-none">
                 </div>
-                <input type="text" id="fin-desc" placeholder="Keterangan / Sumber uang..." class="w-full ios-input px-4 py-3 text-[17px] text-black dark:text-white focus:outline-none">
+                <input type="text" id="fin-desc" placeholder="Keterangan..." class="w-full ios-input px-4 py-3 text-[17px] text-black dark:text-white focus:outline-none">
             </div>
 
             <!-- Journal Input -->
             <div id="journal-input-container" class="w-full flex-col hidden space-y-4 pb-5">
                 <div class="flex items-center space-x-4">
-                    <span class="text-[13px] font-medium text-gray-500 uppercase tracking-wider w-1/3">Mood Hari Ini</span>
+                    <span class="text-[13px] font-bold text-gray-500 uppercase tracking-wider w-1/3">Mood</span>
                     <div class="relative ios-input w-2/3">
-                        <select id="jour-mood" class="w-full bg-transparent py-3 px-4 text-[17px] font-medium text-black dark:text-white focus:outline-none appearance-none">
-                            <option value="😀 Senang">😀 Senang</option>
-                            <option value="😊 Bersyukur">😊 Bersyukur</option>
-                            <option value="😎 Santai">😎 Santai</option>
-                            <option value="😐 Biasa Saja">😐 Biasa Saja</option>
-                            <option value="😔 Sedih">😔 Sedih</option>
-                            <option value="😫 Lelah">😫 Lelah</option>
-                            <option value="😡 Marah">😡 Marah</option>
+                        <select id="jour-mood" class="w-full bg-transparent py-3 px-4 text-[17px] font-bold text-black dark:text-white focus:outline-none appearance-none">
+                            <option value="😀 Senang">😀 Senang</option><option value="😊 Bersyukur">😊 Bersyukur</option><option value="😎 Santai">😎 Santai</option><option value="😐 Biasa Saja">😐 Biasa Saja</option><option value="😔 Sedih">😔 Sedih</option><option value="😫 Lelah">😫 Lelah</option><option value="😡 Marah">😡 Marah</option>
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400"><i class="fa-solid fa-chevron-down text-sm"></i></div>
                     </div>
                 </div>
-                <textarea id="jour-content" placeholder="Ceritakan detail harimu di sini..." class="w-full h-40 ios-input px-4 py-3 text-[17px] text-black dark:text-white resize-none focus:outline-none"></textarea>
+                <textarea id="jour-content" placeholder="Ceritakan harimu..." class="w-full h-40 ios-input px-4 py-3 text-[17px] text-black dark:text-white resize-none focus:outline-none"></textarea>
             </div>
 
             <!-- Carousel Input -->
             <div id="carousel-input-container" class="w-full flex-col hidden pb-5">
                 <div class="flex justify-between items-center mb-2 px-1">
-                    <span class="text-[13px] font-medium text-gray-500 uppercase tracking-wider">Isi Kartu Carousel</span>
+                    <span class="text-[13px] font-bold text-gray-500 uppercase tracking-wider">Isi Carousel</span>
                     <div class="flex items-center space-x-3 bg-white dark:bg-[#2C2C2E] rounded-full px-2 py-1 ios-shadow">
-                        <button onclick="changeCarouselCount(-1)" class="w-7 h-7 text-ios-blue flex justify-center items-center rounded-full active:bg-gray-200 dark:active:bg-gray-600"><i class="fa-solid fa-minus text-[12px]"></i></button>
-                        <span id="carousel-count-display" class="text-[15px] font-semibold text-black dark:text-white w-4 text-center">3</span>
-                        <button onclick="changeCarouselCount(1)" class="w-7 h-7 text-ios-blue flex justify-center items-center rounded-full active:bg-gray-200 dark:active:bg-gray-600"><i class="fa-solid fa-plus text-[12px]"></i></button>
+                        <button onclick="changeCarouselCount(-1)" class="w-7 h-7 text-black dark:text-white flex justify-center items-center rounded-full active:bg-gray-200 dark:active:bg-gray-600"><i class="fa-solid fa-minus text-[12px]"></i></button>
+                        <span id="carousel-count-display" class="text-[15px] font-bold text-black dark:text-white w-4 text-center">3</span>
+                        <button onclick="changeCarouselCount(1)" class="w-7 h-7 text-black dark:text-white flex justify-center items-center rounded-full active:bg-gray-200 dark:active:bg-gray-600"><i class="fa-solid fa-plus text-[12px]"></i></button>
                     </div>
                 </div>
                 <div id="carousel-cards-wrapper" class="space-y-4"></div>
@@ -299,9 +300,21 @@
 
             <!-- OneShot Input -->
             <div id="oneshot-input-container" class="w-full flex-col hidden pb-5 items-center justify-center py-10">
-                <div class="w-24 h-24 bg-ios-red/10 text-ios-red rounded-full flex items-center justify-center text-5xl mb-6">🎯</div>
-                <h3 class="text-[20px] font-semibold text-black dark:text-white mb-2">Mode Anti-Distraksi</h3>
-                <button onclick="openOneShotFullscreen()" class="bg-ios-blue text-white px-8 py-3.5 rounded-full font-semibold text-[17px] w-full md:w-auto active:opacity-70 transition-opacity">Buka Kanvas One Shot</button>
+                <div class="w-24 h-24 bg-black/10 dark:bg-white/10 text-black dark:text-white rounded-full flex items-center justify-center text-5xl mb-6">🎯</div>
+                <h3 class="text-[20px] font-bold text-black dark:text-white mb-2">Mode Anti-Distraksi</h3>
+                <button onclick="openOneShotFullscreen()" class="bg-black dark:bg-white text-white dark:text-black px-8 py-3.5 rounded-full font-bold text-[17px] w-full md:w-auto active:opacity-70 transition-opacity">Buka Kanvas</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL BULK MOVE -->
+    <div id="bulk-move-overlay" class="fixed inset-0 bg-black/40 z-[125] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+        <div id="bulk-move-box" class="bg-white dark:bg-[#1C1C1E] rounded-2xl w-full max-w-xs shadow-2xl p-6 transform scale-95 transition-transform duration-300">
+            <h3 class="text-lg font-bold text-black dark:text-white mb-4">Pindahkan ke Kategori:</h3>
+            <select id="bulk-move-select" class="w-full ios-input px-4 py-3 text-black dark:text-white font-bold mb-5 outline-none"></select>
+            <div class="flex space-x-3">
+                <button onclick="closeBulkMoveModal()" class="flex-1 py-3 bg-gray-100 dark:bg-gray-800 rounded-xl font-bold text-black dark:text-white">Batal</button>
+                <button onclick="executeBulkMove()" class="flex-1 py-3 bg-black dark:bg-white text-white dark:text-black rounded-xl font-bold">Pindah</button>
             </div>
         </div>
     </div>
@@ -310,13 +323,13 @@
     <div id="copy-modal-overlay" class="fixed inset-0 bg-black/40 z-[110] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
         <div id="copy-modal-box" class="bg-[#F2F2F7]/95 dark:bg-[#1E1E1E]/95 backdrop-blur-xl rounded-[14px] w-[270px] overflow-hidden transform scale-95 transition-transform duration-300 text-center flex flex-col ios-shadow">
             <div class="pt-5 pb-4 px-4">
-                <h3 class="font-semibold text-[17px] text-black dark:text-white mb-1">Salin Catatan</h3>
-                <p class="text-[13px] text-gray-500 dark:text-gray-400">Pilih format salinan teks Anda.</p>
+                <h3 class="font-bold text-[17px] text-black dark:text-white mb-1">Salin Catatan</h3>
+                <p class="text-[13px] text-gray-500">Pilih format salinan.</p>
             </div>
             <div class="flex flex-col border-t border-ios-separator/30 dark:border-ios-darkSeparator">
-                <button onclick="executeCopy(true)" class="py-3 text-[17px] text-ios-blue border-b border-ios-separator/30 dark:border-ios-darkSeparator active:bg-gray-200 dark:active:bg-gray-800">Beserta Judul</button>
-                <button onclick="executeCopy(false)" class="py-3 text-[17px] text-ios-blue border-b border-ios-separator/30 dark:border-ios-darkSeparator active:bg-gray-200 dark:active:bg-gray-800">Tanpa Judul</button>
-                <button onclick="closeCopyModal()" class="py-3 text-[17px] text-ios-blue font-semibold active:bg-gray-200 dark:active:bg-gray-800">Batal</button>
+                <button onclick="executeCopy(true)" class="py-3 text-[17px] text-black dark:text-white font-bold border-b border-ios-separator/30 dark:border-ios-darkSeparator active:bg-gray-200 dark:active:bg-gray-800">Beserta Judul</button>
+                <button onclick="executeCopy(false)" class="py-3 text-[17px] text-black dark:text-white font-bold border-b border-ios-separator/30 dark:border-ios-darkSeparator active:bg-gray-200 dark:active:bg-gray-800">Tanpa Judul</button>
+                <button onclick="closeCopyModal()" class="py-3 text-[17px] text-gray-500 font-bold active:bg-gray-200 dark:active:bg-gray-800">Batal</button>
             </div>
         </div>
     </div>
@@ -325,12 +338,12 @@
     <div id="delete-alert-overlay" class="fixed inset-0 bg-black/40 z-[115] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
         <div id="delete-alert-box" class="bg-[#F2F2F7]/95 dark:bg-[#1E1E1E]/95 backdrop-blur-xl rounded-[14px] w-[270px] overflow-hidden transform scale-95 transition-transform duration-300 text-center flex flex-col ios-shadow">
             <div class="pt-5 pb-4 px-4">
-                <h3 class="font-semibold text-[17px] text-black dark:text-white mb-1" id="delete-alert-title">Hapus?</h3>
-                <p class="text-[13px] text-gray-500 dark:text-gray-400" id="delete-alert-desc">Tindakan ini tidak dapat dibatalkan.</p>
+                <h3 class="font-bold text-[17px] text-black dark:text-white mb-1" id="delete-alert-title">Hapus?</h3>
+                <p class="text-[13px] text-gray-500" id="delete-alert-desc">Tidak dapat dibatalkan.</p>
             </div>
             <div class="flex border-t border-ios-separator/30 dark:border-ios-darkSeparator">
-                <button onclick="closeDeleteAlert()" class="flex-1 py-3 text-[17px] text-ios-blue border-r border-ios-separator/30 dark:border-ios-darkSeparator active:bg-gray-200 dark:active:bg-gray-800">Batal</button>
-                <button id="btn-confirm-delete" class="flex-1 py-3 text-[17px] text-ios-red font-semibold active:bg-gray-200 dark:active:bg-gray-800">Hapus</button>
+                <button onclick="closeDeleteAlert()" class="flex-1 py-3 text-[17px] text-black dark:text-white font-bold border-r border-ios-separator/30 dark:border-ios-darkSeparator active:bg-gray-200 dark:active:bg-gray-800">Batal</button>
+                <button id="btn-confirm-delete" class="flex-1 py-3 text-[17px] text-red-500 font-bold active:bg-gray-200 dark:active:bg-gray-800">Hapus</button>
             </div>
         </div>
     </div>
@@ -338,8 +351,8 @@
     <!-- ONE SHOT KANVAS -->
     <div id="oneshot-fullscreen-overlay" class="fixed inset-0 bg-ios-bg dark:bg-ios-darkBg z-[100] hidden flex-col opacity-0 transition-opacity duration-300">
         <div class="absolute top-6 left-6 right-6 flex justify-between items-center z-30 pointer-events-none">
-            <div id="oneshot-fs-stats" class="text-[15px] font-semibold text-ios-red bg-ios-red/10 px-4 py-1.5 rounded-full pointer-events-auto backdrop-blur-md">0 Kata</div>
-            <button onclick="closeOneShotFullscreen()" class="w-10 h-10 bg-ios-card dark:bg-ios-darkCard rounded-full ios-shadow flex items-center justify-center text-ios-blue pointer-events-auto active:opacity-50"><i class="fa-solid fa-times text-lg"></i></button>
+            <div id="oneshot-fs-stats" class="text-[15px] font-bold text-black dark:text-white bg-black/10 dark:bg-white/10 px-4 py-1.5 rounded-full pointer-events-auto backdrop-blur-md">0 Kata</div>
+            <button onclick="closeOneShotFullscreen()" class="w-10 h-10 bg-ios-card dark:bg-ios-darkCard rounded-full ios-shadow flex items-center justify-center text-black dark:text-white pointer-events-auto active:opacity-50"><i class="fa-solid fa-times text-lg"></i></button>
         </div>
         <textarea id="oneshot-fs-hidden" class="hidden"></textarea>
         <div class="flex-1 flex items-center justify-center p-6 relative overflow-hidden z-10">
@@ -347,12 +360,12 @@
         </div>
         <div id="oneshot-fs-preview-box" class="absolute inset-x-6 top-24 bottom-28 md:inset-x-24 md:top-32 md:bottom-32 bg-white/90 dark:bg-[#1C1C1E]/90 backdrop-blur-xl rounded-[24px] ios-shadow p-6 hidden overflow-y-auto text-[17px] leading-relaxed text-black dark:text-white z-20"></div>
         <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 pointer-events-auto">
-            <button onclick="toggleOneShotPreview()" id="btn-oneshot-preview" class="bg-black dark:bg-white text-white dark:text-black px-6 py-3 rounded-full font-semibold ios-shadow flex items-center active:opacity-70"><i class="fa-solid fa-eye mr-2"></i> <span id="oneshot-preview-btn-text">Intip Teks</span></button>
+            <button onclick="toggleOneShotPreview()" id="btn-oneshot-preview" class="bg-black dark:bg-white text-white dark:text-black px-6 py-3 rounded-full font-bold ios-shadow flex items-center active:opacity-70"><i class="fa-solid fa-eye mr-2"></i> <span id="oneshot-preview-btn-text">Intip Teks</span></button>
         </div>
     </div>
 
     <script>
-        const STORAGE_CATS = "simple_app_categories_v2";
+        const STORAGE_CATS = "simple_app_categories_v3";
         const STORAGE_NOTES = "simple_app_notes";
         
         let userCategories = {}; 
@@ -360,6 +373,7 @@
         let currentFilter = 'all';
         let isGrouped = false; 
         let openNotes = new Set(), openCategories = new Set();
+        let selectedNotes = new Set();
         let currentAttachments = [], currentCarouselImages = {}, currentCarouselCount = 3;
         
         let deleteType = null; 
@@ -367,11 +381,10 @@
         let noteIdToCopy = null;
         let toastTimeout;
 
-        // Undo/Redo State
         let historyStack = [];
         let redoStack = [];
 
-        const colorPalette = ['#007AFF', '#34C759', '#FF9500', '#FF3B30', '#AF52DE', '#FF2D55', '#5856D6', '#8E8E93', '#171717'];
+        const colorPalette = ['#000000', '#333333', '#666666', '#8E8E93', '#AEAEB2', '#D1D1D6', '#E5E5EA'];
 
         window.onload = () => { 
             initTheme(); 
@@ -379,26 +392,74 @@
             loadNotes(); 
             renderSidebar(); 
             renderColorPicker();
+            initDragFAB();
         };
 
-        // --- SISTEM KATEGORI DINAMIS ---
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            if (t) {
+                document.getElementById('toast-message').innerText = msg;
+                t.classList.remove('toast-enter');
+                t.classList.add('toast-active');
+                clearTimeout(toastTimeout);
+                toastTimeout = setTimeout(() => {
+                    t.classList.remove('toast-active');
+                    t.classList.add('toast-enter');
+                }, 3000);
+            }
+        }
+
+        // --- DRAG FAB LOGIC ---
+        let fab = document.getElementById('fab-add');
+        let isDraggingFAB = false;
+        let dragStartX, dragStartY, initialLeft, initialTop;
+
+        function initDragFAB() {
+            fab.addEventListener('mousedown', dragStart);
+            fab.addEventListener('touchstart', dragStart, {passive: false});
+            fab.addEventListener('click', (e) => { if(!isDraggingFAB) openModal(); });
+        }
+
+        function dragStart(e) {
+            isDraggingFAB = false;
+            if(e.type === 'touchstart') { dragStartX = e.touches[0].clientX; dragStartY = e.touches[0].clientY; } 
+            else { dragStartX = e.clientX; dragStartY = e.clientY; }
+            let rect = fab.getBoundingClientRect(); initialLeft = rect.left; initialTop = rect.top;
+            document.addEventListener('mousemove', dragMove); document.addEventListener('touchmove', dragMove, {passive: false});
+            document.addEventListener('mouseup', dragEnd); document.addEventListener('touchend', dragEnd);
+        }
+
+        function dragMove(e) {
+            let cx = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX; let cy = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+            let dx = cx - dragStartX; let dy = cy - dragStartY;
+            if (Math.abs(dx) > 5 || Math.abs(dy) > 5) { isDraggingFAB = true; e.preventDefault(); }
+            if (isDraggingFAB) {
+                let nx = initialLeft + dx; let ny = initialTop + dy;
+                nx = Math.max(0, Math.min(nx, window.innerWidth - fab.offsetWidth)); ny = Math.max(0, Math.min(ny, window.innerHeight - fab.offsetHeight));
+                fab.style.left = nx + 'px'; fab.style.top = ny + 'px'; fab.style.right = 'auto'; fab.style.bottom = 'auto';
+            }
+        }
+
+        function dragEnd() { document.removeEventListener('mousemove', dragMove); document.removeEventListener('touchmove', dragMove); document.removeEventListener('mouseup', dragEnd); document.removeEventListener('touchend', dragEnd); }
+
+        // --- KATEGORI DINAMIS ---
         function loadCategories() {
             const saved = localStorage.getItem(STORAGE_CATS);
-            if (saved) userCategories = JSON.parse(saved);
-            else userCategories = {};
+            if (saved) { userCategories = JSON.parse(saved); } 
+            else { userCategories = { "cat_default": { id: "cat_default", title: "General", icon: "📁", type: "normal", color: "#000000" }}; saveCategories(); }
         }
         function saveCategories() { localStorage.setItem(STORAGE_CATS, JSON.stringify(userCategories)); }
 
         function renderColorPicker() {
             const container = document.getElementById('cat-color-picker');
-            container.innerHTML = colorPalette.map(color => `<button type="button" onclick="selectCatColor('${color}')" class="color-picker-btn w-8 h-8 rounded-full transition-all" style="background-color: ${color};"></button>`).join('');
-            selectCatColor('#007AFF');
+            container.innerHTML = colorPalette.map(c => `<button type="button" onclick="selectCatColor('${c}')" class="color-picker-btn w-8 h-8 rounded-full border border-gray-300" style="background-color: ${c};"></button>`).join('');
+            selectCatColor('#000000');
         }
 
         function selectCatColor(color) {
             document.getElementById('cat-color').value = color;
-            document.querySelectorAll('.color-picker-btn').forEach(btn => btn.classList.remove('active'));
-            Array.from(document.querySelectorAll('.color-picker-btn')).find(b => b.outerHTML.includes(color))?.classList.add('active');
+            document.querySelectorAll('.color-picker-btn').forEach(btn => btn.classList.remove('ring-2', 'ring-offset-2', 'ring-black', 'dark:ring-white'));
+            Array.from(document.querySelectorAll('.color-picker-btn')).find(b => b.outerHTML.includes(color))?.classList.add('ring-2', 'ring-offset-2', 'ring-black', 'dark:ring-white');
         }
 
         function openCatModal(editId = null) {
@@ -413,35 +474,29 @@
                 document.getElementById('cat-modal-title').innerText = "Buat Kategori";
                 document.getElementById('cat-id').value = ""; document.getElementById('cat-title').value = "";
                 document.getElementById('cat-icon').value = "📁"; document.getElementById('cat-type').value = "normal";
-                selectCatColor('#007AFF'); delBtn.classList.add('hidden');
+                selectCatColor('#000000'); delBtn.classList.add('hidden');
             }
             overlay.classList.remove('hidden'); setTimeout(()=> { overlay.classList.remove('opacity-0'); modal.classList.add('modal-active'); }, 10);
         }
 
-        function closeCatModal() {
-            document.getElementById('cat-modal-overlay').classList.add('opacity-0'); document.getElementById('cat-modal').classList.remove('modal-active');
-            setTimeout(()=>document.getElementById('cat-modal-overlay').classList.add('hidden'), 400);
-        }
+        function closeCatModal() { document.getElementById('cat-modal-overlay').classList.add('opacity-0'); document.getElementById('cat-modal').classList.remove('modal-active'); setTimeout(()=>document.getElementById('cat-modal-overlay').classList.add('hidden'), 400); }
 
         function saveCategory() {
             const id = document.getElementById('cat-id').value || `cat_${Date.now()}`;
             const title = document.getElementById('cat-title').value.trim(), icon = document.getElementById('cat-icon').value.trim() || "📁", type = document.getElementById('cat-type').value, color = document.getElementById('cat-color').value;
-            if (!title) return showToast("Nama Kategori kosong!");
-            
-            saveHistorySnapshot(); // Catat history
-            
+            if (!title) return showToast("Nama kosong!");
+            saveHistorySnapshot(); 
             userCategories[id] = { id, title, icon, type, color }; saveCategories(); populateCategorySelect(); renderSidebar(); if(isGrouped) renderNotes(); closeCatModal(); showToast("Kategori Tersimpan!");
         }
 
         function confirmDeleteCategory() {
             const id = document.getElementById('cat-id').value; if(!id) return;
             deleteType = 'category'; itemToDelete = id;
-            document.getElementById('delete-alert-title').innerText = "Hapus Kategori?"; document.getElementById('delete-alert-desc').innerText = "Catatan di dalamnya akan menjadi 'Uncategorized'.";
+            document.getElementById('delete-alert-title').innerText = "Hapus Kategori?"; document.getElementById('delete-alert-desc').innerText = "Catatan di dalamnya jadi 'Uncategorized'.";
             document.getElementById('btn-confirm-delete').setAttribute('onclick', 'executeDelete()');
             document.getElementById('delete-alert-overlay').classList.remove('hidden'); setTimeout(()=>document.getElementById('delete-alert-overlay').classList.remove('opacity-0'), 10);
         }
 
-        // --- SISTEM TEMA & UI ---
         function initTheme() { if (localStorage.getItem('theme') === 'light') { document.documentElement.classList.remove('dark'); document.getElementById('theme-icon').className = "fa-solid fa-moon"; } }
         
         function toggleTheme() {
@@ -450,68 +505,29 @@
             else { html.classList.add('dark'); document.getElementById('theme-icon').className = "fa-solid fa-sun"; localStorage.setItem('theme', 'dark'); }
         }
 
-        // --- SISTEM UNDO REDO ---
         function saveHistorySnapshot() {
-            // Push salinan mendalam (deep copy) dari state ke historyStack
             historyStack.push(JSON.stringify({ cats: userCategories, nts: notes }));
-            if (historyStack.length > 50) historyStack.shift(); // Limit tumpukan hingga 50
-            redoStack = []; // Jika ada aksi baru, redoStack dihapus
-            updateUndoRedoButtons();
+            if (historyStack.length > 50) historyStack.shift(); redoStack = []; updateUndoRedoButtons();
         }
 
         function undoAction() {
             if (historyStack.length === 0) return;
-            // Simpan state saat ini ke redo
             redoStack.push(JSON.stringify({ cats: userCategories, nts: notes }));
-            // Ambil state sebelumnya dari history
-            const prevState = JSON.parse(historyStack.pop());
-            userCategories = prevState.cats; 
-            notes = prevState.nts;
-            
-            saveCategories(); 
-            saveToStorage(); 
-            renderSidebar(); 
-            populateCategorySelect(); 
-            renderNotes(); 
-            updateUndoRedoButtons();
-            showToast("Undo berhasil");
+            const p = JSON.parse(historyStack.pop()); userCategories = p.cats; notes = p.nts;
+            saveCategories(); saveToStorage(); renderSidebar(); populateCategorySelect(); renderNotes(); updateUndoRedoButtons(); showToast("Diurungkan");
         }
 
         function redoAction() {
             if (redoStack.length === 0) return;
-            // Simpan state saat ini ke history
             historyStack.push(JSON.stringify({ cats: userCategories, nts: notes }));
-            // Ambil state selanjutnya dari redo
-            const nextState = JSON.parse(redoStack.pop());
-            userCategories = nextState.cats; 
-            notes = nextState.nts;
-            
-            saveCategories(); 
-            saveToStorage(); 
-            renderSidebar(); 
-            populateCategorySelect(); 
-            renderNotes(); 
-            updateUndoRedoButtons();
-            showToast("Redo berhasil");
+            const n = JSON.parse(redoStack.pop()); userCategories = n.cats; notes = n.nts;
+            saveCategories(); saveToStorage(); renderSidebar(); populateCategorySelect(); renderNotes(); updateUndoRedoButtons(); showToast("Diulangi");
         }
 
         function updateUndoRedoButtons() {
-            const btnUndo = document.getElementById('btn-undo');
-            const btnRedo = document.getElementById('btn-redo');
-            if (btnUndo) {
-                if (historyStack.length === 0) btnUndo.classList.add('opacity-30');
-                else btnUndo.classList.remove('opacity-30');
-            }
-            if (btnRedo) {
-                if (redoStack.length === 0) btnRedo.classList.add('opacity-30');
-                else btnRedo.classList.remove('opacity-30');
-            }
-        }
-
-        function showToast(msg) {
-            const t = document.getElementById('toast'); document.getElementById('toast-message').innerText = msg;
-            t.classList.remove('toast-enter'); t.classList.add('toast-active');
-            clearTimeout(toastTimeout); toastTimeout = setTimeout(() => { t.classList.remove('toast-active'); t.classList.add('toast-enter'); }, 3000);
+            const btnUndo = document.getElementById('btn-undo'), btnRedo = document.getElementById('btn-redo');
+            if (btnUndo) { if (historyStack.length === 0) btnUndo.classList.add('opacity-30'); else btnUndo.classList.remove('opacity-30'); }
+            if (btnRedo) { if (redoStack.length === 0) btnRedo.classList.add('opacity-30'); else btnRedo.classList.remove('opacity-30'); }
         }
 
         function toggleSidebar() {
@@ -523,15 +539,15 @@
         function setFilter(key) { currentFilter = key; renderSidebar(); renderNotes(); if(window.innerWidth < 1024) toggleSidebar(); }
 
         function renderSidebar() {
-            let h = `<button onclick="setFilter('all')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-[10px] transition-colors ${currentFilter === 'all' ? 'bg-ios-blue/10 text-ios-blue font-semibold' : 'text-black dark:text-white hover:bg-gray-200/50 dark:hover:bg-gray-700/50'}"><div class="flex items-center text-[15px]"><i class="fa-solid fa-border-all w-6 text-center mr-2"></i> Semua Catatan</div><span class="text-[13px] text-gray-500">${notes.length}</span></button>`;
+            let h = `<button onclick="setFilter('all')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-[10px] transition-colors ${currentFilter === 'all' ? 'bg-black/5 dark:bg-white/10 font-bold text-black dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}"><div class="flex items-center text-[15px]"><i class="fa-solid fa-border-all w-6 text-center mr-2"></i> Semua Catatan</div><span class="text-[13px] text-gray-500">${notes.length}</span></button>`;
             const catKeys = Object.keys(userCategories).sort((a,b) => userCategories[a].title.localeCompare(userCategories[b].title));
             if(catKeys.length === 0) h += `<div class="text-[13px] text-gray-400 px-3 py-4 text-center">Belum ada kategori.</div>`;
             catKeys.forEach(key => {
                 const conf = userCategories[key], c = notes.filter(n => n.category === key).length;
-                h += `<div class="group relative w-full flex items-center justify-between mt-1 rounded-[10px] transition-colors ${currentFilter === key ? 'bg-ios-blue/10 text-ios-blue font-semibold' : 'text-black dark:text-white hover:bg-gray-200/50 dark:hover:bg-gray-700/50'}">
+                h += `<div class="group relative w-full flex items-center justify-between mt-1 rounded-[10px] transition-colors ${currentFilter === key ? 'bg-black/5 dark:bg-white/10 font-bold text-black dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}">
                         <button onclick="setFilter('${key}')" class="flex-1 flex items-center px-3 py-2.5 text-left"><div class="flex items-center text-[15px]"><span class="w-6 text-center mr-2 text-[16px]">${conf.icon}</span>${conf.title}</div></button>
                         <div class="flex items-center pr-3">${c>0 ? `<span class="text-[13px] text-gray-500 mr-2 group-hover:hidden">${c}</span>` : '<span class="group-hover:hidden w-4"></span>'}
-                        <button onclick="openCatModal('${key}')" class="hidden group-hover:flex w-6 h-6 items-center justify-center text-gray-400 hover:text-ios-blue rounded-full bg-gray-200 dark:bg-gray-700"><i class="fa-solid fa-pen text-[10px]"></i></button></div></div>`;
+                        <button onclick="openCatModal('${key}')" class="hidden group-hover:flex w-6 h-6 items-center justify-center text-gray-400 hover:text-black dark:hover:text-white rounded-full bg-gray-200 dark:bg-gray-700"><i class="fa-solid fa-pen text-[10px]"></i></button></div></div>`;
             });
             document.getElementById('sidebar-categories').innerHTML = h;
         }
@@ -540,6 +556,46 @@
             const sel = document.getElementById('note-category'); sel.innerHTML = '';
             const catKeys = Object.keys(userCategories).sort((a,b) => userCategories[a].title.localeCompare(userCategories[b].title));
             catKeys.forEach(k => { const conf = userCategories[k]; const o = document.createElement('option'); o.value = k; o.innerHTML = `${conf.icon} ${conf.title}`; sel.appendChild(o); });
+        }
+
+        // --- BULK SELECTION LOGIC ---
+        function toggleSelection(id) {
+            if (selectedNotes.has(id)) selectedNotes.delete(id); else selectedNotes.add(id);
+            updateBulkBar(); renderNotes();
+        }
+        function clearSelection() { selectedNotes.clear(); updateBulkBar(); renderNotes(); }
+        function updateBulkBar() {
+            const bar = document.getElementById('bulk-action-bar');
+            if (selectedNotes.size > 0) { document.getElementById('bulk-count').innerText = selectedNotes.size; bar.classList.remove('-translate-y-full'); } 
+            else { bar.classList.add('-translate-y-full'); }
+        }
+        
+        function confirmBulkDelete() {
+            deleteType = 'bulk'; document.getElementById('delete-alert-title').innerText = `Hapus ${selectedNotes.size} Catatan?`;
+            document.getElementById('delete-alert-desc').innerText = "Tindakan ini permanen."; document.getElementById('btn-confirm-delete').setAttribute('onclick', 'executeDelete()');
+            document.getElementById('delete-alert-overlay').classList.remove('hidden'); setTimeout(()=>document.getElementById('delete-alert-overlay').classList.remove('opacity-0'), 10);
+        }
+        
+        function bulkCopy() {
+            let txt = "";
+            selectedNotes.forEach(id => {
+                const n = notes.find(x => x.id === id); if(n) { txt += `[${n.title || 'Tanpa Judul'}]\n${n.content}\n\n`; }
+            });
+            navigator.clipboard.writeText(txt.trim()).then(() => { clearSelection(); showToast("Disalin!"); });
+        }
+
+        function openBulkMoveModal() {
+            const sel = document.getElementById('bulk-move-select'); sel.innerHTML = '';
+            const catKeys = Object.keys(userCategories);
+            catKeys.forEach(k => { const o = document.createElement('option'); o.value = k; o.innerHTML = `${userCategories[k].icon} ${userCategories[k].title}`; sel.appendChild(o); });
+            document.getElementById('bulk-move-overlay').classList.remove('hidden'); setTimeout(()=>document.getElementById('bulk-move-overlay').classList.remove('opacity-0'), 10);
+        }
+        function closeBulkMoveModal() { document.getElementById('bulk-move-overlay').classList.add('opacity-0'); setTimeout(()=>document.getElementById('bulk-move-overlay').classList.add('hidden'), 300); }
+        function executeBulkMove() {
+            const target = document.getElementById('bulk-move-select').value;
+            saveHistorySnapshot();
+            notes.forEach(n => { if (selectedNotes.has(n.id)) n.category = target; });
+            saveToStorage(); closeBulkMoveModal(); clearSelection(); renderSidebar(); showToast("Dipindahkan!");
         }
 
         function compressImage(file, cb) {
@@ -569,58 +625,30 @@
         function toggleInputFields() {
             const catId = document.getElementById('note-category').value;
             const type = userCategories[catId]?.type || 'normal';
-            ['normal','carousel','mypassword','revisi','oneshot','todolist','finance','journal'].forEach(id => {
-                const el = document.getElementById(id+'-input-container'); if(el) { el.classList.add('hidden'); el.classList.remove('flex'); }
-            });
+            ['normal','carousel','mypassword','revisi','oneshot','todolist','finance','journal'].forEach(id => { const el = document.getElementById(id+'-input-container'); if(el) { el.classList.add('hidden'); el.classList.remove('flex'); } });
             const tg = document.getElementById(type+'-input-container'); if(tg) tg.classList.replace('hidden', 'flex');
         }
 
-        // CAROUSEL LOGIC
-        function createCarouselInputGroup(id, lbl) {
-            return `<div id="car-input-group-${id}" class="relative bg-white dark:bg-ios-darkCard rounded-[14px] p-4 ios-shadow mb-4 border border-ios-separator/10 dark:border-ios-darkSeparator"><div class="text-[12px] font-semibold text-ios-blue mb-2 uppercase tracking-wide">${lbl}</div><textarea id="car-content-${id}" placeholder="Konten..." class="w-full bg-transparent text-[16px] text-black dark:text-white focus:outline-none resize-none h-16"></textarea><div class="mt-3 pt-3 border-t border-ios-separator/30 dark:border-ios-darkSeparator flex justify-between items-center"><button onclick="document.getElementById('modal-car-img-${id}').click()" class="text-[14px] text-ios-blue font-medium active:opacity-50"><i class="fa-solid fa-image mr-1"></i> Gambar</button><input type="file" id="modal-car-img-${id}" accept="image/*" class="hidden" onchange="handleModalCarouselImage(event, '${id}')"><div id="car-img-preview-box-${id}" class="hidden flex items-center space-x-2"><img id="car-img-preview-src-${id}" src="" class="w-8 h-8 object-cover rounded border border-gray-300 dark:border-gray-600"><button onclick="removeModalCarouselImage('${id}')" class="text-ios-red text-[16px] active:opacity-50"><i class="fa-solid fa-circle-xmark"></i></button></div></div></div>`;
-        }
-
-        function initCarouselInputs(count = 3) {
-            currentCarouselCount = count; document.getElementById('carousel-count-display').innerText = count;
-            const wrap = document.getElementById('carousel-cards-wrapper'); wrap.innerHTML = '';
-            for(let i=1; i<=count; i++) wrap.innerHTML += createCarouselInputGroup(i, `Slide ${i}`);
-            wrap.innerHTML += createCarouselInputGroup('caption', 'Caption');
-        }
-
-        function changeCarouselCount(d) {
-            const n = currentCarouselCount + d; if (n<1 || n>20) return;
-            const cap = document.getElementById('car-input-group-caption');
-            if (d>0) { currentCarouselCount++; cap.insertAdjacentHTML('beforebegin', createCarouselInputGroup(currentCarouselCount, `Slide ${currentCarouselCount}`)); } 
-            else { const c = document.getElementById(`car-input-group-${currentCarouselCount}`); if(c) c.remove(); delete currentCarouselImages[currentCarouselCount]; currentCarouselCount--; }
-            document.getElementById('carousel-count-display').innerText = currentCarouselCount;
-        }
-
-        function handleModalCarouselImage(evt, idx) {
-            const f = evt.target.files[0]; if(!f) return;
-            if(f.size>2097152){ compressImage(f, c => { currentCarouselImages[idx]=c; renderModalCarouselImagePreview(idx); }); }
-            else { const r = new FileReader(); r.onload=e=>{ currentCarouselImages[idx]=e.target.result; renderModalCarouselImagePreview(idx); }; r.readAsDataURL(f); }
-        }
+        function createCarouselInputGroup(id, lbl) { return `<div id="car-input-group-${id}" class="relative bg-white dark:bg-[#2C2C2E] rounded-[14px] p-4 border border-gray-200 dark:border-gray-700 mb-4"><div class="text-[12px] font-bold text-black dark:text-white mb-2 uppercase">${lbl}</div><textarea id="car-content-${id}" placeholder="Konten..." class="w-full bg-transparent text-[16px] text-black dark:text-white focus:outline-none resize-none h-16"></textarea><div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-600 flex justify-between items-center"><button onclick="document.getElementById('modal-car-img-${id}').click()" class="text-[14px] font-bold active:opacity-50"><i class="fa-solid fa-image mr-1"></i> Gambar</button><input type="file" id="modal-car-img-${id}" accept="image/*" class="hidden" onchange="handleModalCarouselImage(event, '${id}')"><div id="car-img-preview-box-${id}" class="hidden flex items-center space-x-2"><img id="car-img-preview-src-${id}" src="" class="w-8 h-8 object-cover rounded border border-gray-300"><button onclick="removeModalCarouselImage('${id}')" class="text-red-500 text-[16px] active:opacity-50"><i class="fa-solid fa-circle-xmark"></i></button></div></div></div>`; }
+        function initCarouselInputs(count = 3) { currentCarouselCount = count; document.getElementById('carousel-count-display').innerText = count; const wrap = document.getElementById('carousel-cards-wrapper'); wrap.innerHTML = ''; for(let i=1; i<=count; i++) wrap.innerHTML += createCarouselInputGroup(i, `Slide ${i}`); wrap.innerHTML += createCarouselInputGroup('caption', 'Caption'); }
+        function changeCarouselCount(d) { const n = currentCarouselCount + d; if (n<1 || n>20) return; const cap = document.getElementById('car-input-group-caption'); if (d>0) { currentCarouselCount++; cap.insertAdjacentHTML('beforebegin', createCarouselInputGroup(currentCarouselCount, `Slide ${currentCarouselCount}`)); } else { const c = document.getElementById(`car-input-group-${currentCarouselCount}`); if(c) c.remove(); delete currentCarouselImages[currentCarouselCount]; currentCarouselCount--; } document.getElementById('carousel-count-display').innerText = currentCarouselCount; }
+        function handleModalCarouselImage(evt, idx) { const f = evt.target.files[0]; if(!f) return; if(f.size>2097152){ compressImage(f, c => { currentCarouselImages[idx]=c; renderModalCarouselImagePreview(idx); }); } else { const r = new FileReader(); r.onload=e=>{ currentCarouselImages[idx]=e.target.result; renderModalCarouselImagePreview(idx); }; r.readAsDataURL(f); } }
         function removeModalCarouselImage(idx) { delete currentCarouselImages[idx]; renderModalCarouselImagePreview(idx); }
-        function renderModalCarouselImagePreview(idx) {
-            const bx = document.getElementById(`car-img-preview-box-${idx}`), im = document.getElementById(`car-img-preview-src-${idx}`);
-            if(currentCarouselImages[idx]){ im.src = currentCarouselImages[idx]; bx.classList.remove('hidden'); } else bx.classList.add('hidden');
-        }
+        function renderModalCarouselImagePreview(idx) { const bx = document.getElementById(`car-img-preview-box-${idx}`), im = document.getElementById(`car-img-preview-src-${idx}`); if(currentCarouselImages[idx]){ im.src = currentCarouselImages[idx]; bx.classList.remove('hidden'); } else bx.classList.add('hidden'); }
 
-        // TODOLIST LOGIC
         function addTodoRow(val='', checked=false) {
-            const w = document.getElementById('todo-rows-wrapper');
-            const div = document.createElement('div');
-            div.className = 'flex items-center space-x-3 bg-white dark:bg-[#2C2C2E] p-2 rounded-[10px] ios-shadow border border-ios-separator/10 dark:border-ios-darkSeparator';
-            div.innerHTML = `<input type="checkbox" ${checked?'checked':''} class="w-6 h-6 rounded text-ios-blue focus:ring-0"><input type="text" value="${val}" placeholder="Tugas baru..." class="flex-1 bg-transparent text-[16px] text-black dark:text-white focus:outline-none"><button onclick="this.parentElement.remove()" class="text-gray-400 hover:text-ios-red w-8 h-8 flex items-center justify-center"><i class="fa-solid fa-times"></i></button>`;
-            w.appendChild(div);
+            const w = document.getElementById('todo-rows-wrapper'); const div = document.createElement('div'); div.className = 'flex items-center space-x-3 bg-white dark:bg-[#2C2C2E] p-2 rounded-[10px] border border-gray-200 dark:border-gray-700'; div.innerHTML = `<input type="checkbox" ${checked?'checked':''} class="w-6 h-6 rounded text-black focus:ring-0"><input type="text" value="${val}" placeholder="Tugas baru..." class="flex-1 bg-transparent text-[16px] text-black dark:text-white focus:outline-none"><button onclick="this.parentElement.remove()" class="text-gray-400 hover:text-red-500 w-8 h-8 flex items-center justify-center"><i class="fa-solid fa-times"></i></button>`; w.appendChild(div);
+        }
+        
+        window.toggleTodoItem = function(event, noteId, taskIndex) {
+            event.stopPropagation(); const idx = notes.findIndex(n => n.id === noteId);
+            if(idx !== -1) { try { saveHistorySnapshot(); const tasks = JSON.parse(notes[idx].content); tasks[taskIndex].checked = !tasks[taskIndex].checked; notes[idx].content = JSON.stringify(tasks); saveToStorage(); renderNotes(); } catch(e) {} }
         }
 
         function openModal(editId = null) {
             if(Object.keys(userCategories).length === 0) return showToast("Buat kategori dulu!");
             ['note-id','note-title','note-content','pw-username','pw-password','pw-link','rev-tujuan','rev-content','oneshot-fs-hidden','fin-amount','fin-desc','jour-content'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = ""; });
-            if(document.getElementById('oneshot-fs-visible')) document.getElementById('oneshot-fs-visible').innerText = "";
-            document.getElementById('todo-rows-wrapper').innerHTML = '';
-            populateCategorySelect();
+            if(document.getElementById('oneshot-fs-visible')) document.getElementById('oneshot-fs-visible').innerText = ""; document.getElementById('todo-rows-wrapper').innerHTML = ''; populateCategorySelect();
             const catC = document.getElementById('category-select-container'), catS = document.getElementById('note-category');
             
             if (editId) {
@@ -629,32 +657,14 @@
                     document.getElementById('note-id').value = note.id; document.getElementById('note-title').value = note.title; 
                     if(!userCategories[note.category]) catS.value = Object.keys(userCategories)[0]; else catS.value = note.category;
                     const cType = userCategories[catS.value]?.type || 'normal';
-                    document.getElementById('modal-title').innerText = "Edit Catatan";
-                    currentAttachments = note.attachments ? [...note.attachments] : [];
-                    
-                    if(cType === 'carousel'){
-                        let p = []; try{ p=JSON.parse(note.content); }catch(e){}
-                        const reg = p.filter(c=>!c.isCaption), cap = p.find(c=>c.isCaption); let cCount = 3;
-                        if(reg.length>0) cCount = reg.length; initCarouselInputs(cCount);
-                        for(let i=1;i<=cCount;i++){ if(reg[i-1]){ document.getElementById(`car-content-${i}`).value=reg[i-1].content||''; if(reg[i-1].image){ currentCarouselImages[i]=reg[i-1].image; renderModalCarouselImagePreview(i); } } }
-                        if(cap){ document.getElementById('car-content-caption').value=cap.content||''; if(cap.image){ currentCarouselImages['caption']=cap.image; renderModalCarouselImagePreview('caption'); } }
-                    } else if(cType === 'mypassword'){
-                        let p = {}; try{ p=JSON.parse(note.content); }catch(e){}
-                        document.getElementById('pw-username').value=p.username||''; document.getElementById('pw-password').value=p.password||''; document.getElementById('pw-link').value=p.link||'';
-                    } else if(cType === 'revisi'){
-                        let r = {}; try{ r=JSON.parse(note.content); }catch(e){}
-                        document.getElementById('rev-tujuan').value=r.tujuan||''; document.getElementById('rev-content').value=r.content||'';
-                    } else if(cType === 'oneshot'){ 
-                        document.getElementById('oneshot-fs-hidden').value=note.content||''; updateOneShotStats(); 
-                    } else if(cType === 'todolist'){
-                        let p = []; try{ p=JSON.parse(note.content); }catch(e){}
-                        p.forEach(t => addTodoRow(t.text, t.checked)); if(p.length===0) addTodoRow();
-                    } else if(cType === 'finance'){
-                        let p = {}; try{ p=JSON.parse(note.content); }catch(e){}
-                        document.getElementById('fin-type').value=p.type||'in'; document.getElementById('fin-amount').value=p.amount||''; document.getElementById('fin-desc').value=p.desc||'';
-                    } else if(cType === 'journal'){
-                        let p = {}; try{ p=JSON.parse(note.content); }catch(e){}
-                        document.getElementById('jour-mood').value=p.mood||'😀 Senang'; document.getElementById('jour-content').value=p.content||'';
+                    document.getElementById('modal-title').innerText = "Edit Catatan"; currentAttachments = note.attachments ? [...note.attachments] : [];
+                    if(cType === 'carousel'){ let p = []; try{ p=JSON.parse(note.content); }catch(e){} const reg = p.filter(c=>!c.isCaption), cap = p.find(c=>c.isCaption); let cCount = 3; if(reg.length>0) cCount = reg.length; initCarouselInputs(cCount); for(let i=1;i<=cCount;i++){ if(reg[i-1]){ document.getElementById(`car-content-${i}`).value=reg[i-1].content||''; if(reg[i-1].image){ currentCarouselImages[i]=reg[i-1].image; renderModalCarouselImagePreview(i); } } } if(cap){ document.getElementById('car-content-caption').value=cap.content||''; if(cap.image){ currentCarouselImages['caption']=cap.image; renderModalCarouselImagePreview('caption'); } }
+                    } else if(cType === 'mypassword'){ let p = {}; try{ p=JSON.parse(note.content); }catch(e){} document.getElementById('pw-username').value=p.username||''; document.getElementById('pw-password').value=p.password||''; document.getElementById('pw-link').value=p.link||'';
+                    } else if(cType === 'revisi'){ let r = {}; try{ r=JSON.parse(note.content); }catch(e){} document.getElementById('rev-tujuan').value=r.tujuan||''; document.getElementById('rev-content').value=r.content||'';
+                    } else if(cType === 'oneshot'){ document.getElementById('oneshot-fs-hidden').value=note.content||''; updateOneShotStats(); 
+                    } else if(cType === 'todolist'){ let p = []; try{ p=JSON.parse(note.content); }catch(e){} p.forEach(t => addTodoRow(t.text, t.checked)); if(p.length===0) addTodoRow();
+                    } else if(cType === 'finance'){ let p = {}; try{ p=JSON.parse(note.content); }catch(e){} document.getElementById('fin-type').value=p.type||'in'; document.getElementById('fin-amount').value=p.amount||''; document.getElementById('fin-desc').value=p.desc||'';
+                    } else if(cType === 'journal'){ let p = {}; try{ p=JSON.parse(note.content); }catch(e){} document.getElementById('jour-mood').value=p.mood||'😀 Senang'; document.getElementById('jour-content').value=p.content||'';
                     } else { document.getElementById('note-content').value=note.content; }
                 }
             } else {
@@ -662,51 +672,31 @@
                 if(currentFilter !== 'all' && userCategories[currentFilter]){ catS.value = currentFilter; catC.classList.add('hidden'); } else { catS.value = Object.keys(userCategories)[0]; catC.classList.remove('hidden'); }
                 initCarouselInputs(); addTodoRow();
             }
-            renderAttachmentPreview(); toggleInputFields();
-            document.getElementById('modal-overlay').classList.remove('hidden'); setTimeout(()=> { document.getElementById('modal-overlay').classList.remove('opacity-0'); document.getElementById('modal').classList.add('modal-active'); }, 10);
+            renderAttachmentPreview(); toggleInputFields(); document.getElementById('modal-overlay').classList.remove('hidden'); setTimeout(()=> { document.getElementById('modal-overlay').classList.remove('opacity-0'); document.getElementById('modal').classList.add('modal-active'); }, 10);
         }
 
         function closeModal() { document.getElementById('modal-overlay').classList.add('opacity-0'); document.getElementById('modal').classList.remove('modal-active'); setTimeout(()=>document.getElementById('modal-overlay').classList.add('hidden'), 400); }
 
         function openOneShotFullscreen() { document.getElementById('oneshot-fullscreen-overlay').classList.remove('hidden'); document.getElementById('oneshot-fullscreen-overlay').classList.add('flex'); setTimeout(() => { document.getElementById('oneshot-fullscreen-overlay').classList.remove('opacity-0'); placeCaretAtEnd(document.getElementById('oneshot-fs-visible')); }, 10); }
         function closeOneShotFullscreen() { document.getElementById('oneshot-fullscreen-overlay').classList.add('opacity-0'); setTimeout(() => { document.getElementById('oneshot-fullscreen-overlay').classList.add('hidden'); document.getElementById('oneshot-fullscreen-overlay').classList.remove('flex'); }, 300); }
-        
-        function handleOneShotInput(e) {
-            const vis = document.getElementById('oneshot-fs-visible'), hid = document.getElementById('oneshot-fs-hidden'); let txt = vis.innerText;
-            if (txt.length === 1) { const prev = hid.value; if (prev === "" || /[.!?]\s+$/.test(prev)) { vis.innerText = txt.toUpperCase(); placeCaretAtEnd(vis); txt = vis.innerText; } }
-            let val = txt.replace(/\u00A0/g, " ");
-            if (val.includes(' ') || val.includes('\n')) { const m = val.match(/^(.*[\s\n]+)([^\s\n]*)$/); if (m) { hid.value += m[1]; vis.innerText = m[2]; placeCaretAtEnd(vis); } }
-            updateOneShotStats(); const box = document.getElementById('oneshot-fs-preview-box'); if(!box.classList.contains('hidden')) box.innerText = hid.value + vis.innerText;
-        }
-
+        function handleOneShotInput(e) { const vis = document.getElementById('oneshot-fs-visible'), hid = document.getElementById('oneshot-fs-hidden'); let txt = vis.innerText; if (txt.length === 1) { const prev = hid.value; if (prev === "" || /[.!?]\s+$/.test(prev)) { vis.innerText = txt.toUpperCase(); placeCaretAtEnd(vis); txt = vis.innerText; } } let val = txt.replace(/\u00A0/g, " "); if (val.includes(' ') || val.includes('\n')) { const m = val.match(/^(.*[\s\n]+)([^\s\n]*)$/); if (m) { hid.value += m[1]; vis.innerText = m[2]; placeCaretAtEnd(vis); } } updateOneShotStats(); const box = document.getElementById('oneshot-fs-preview-box'); if(!box.classList.contains('hidden')) box.innerText = hid.value + vis.innerText; }
         function placeCaretAtEnd(el) { el.focus(); if (typeof window.getSelection !== "undefined" && typeof document.createRange !== "undefined") { const r = document.createRange(); r.selectNodeContents(el); r.collapse(false); const s = window.getSelection(); s.removeAllRanges(); s.addRange(r); } }
         function updateOneShotStats() { const txt = document.getElementById('oneshot-fs-hidden').value + document.getElementById('oneshot-fs-visible').innerText; const w = txt.trim() === "" ? 0 : txt.trim().split(/\s+/).length; document.getElementById('oneshot-fs-stats').innerText = w + " Kata"; }
         function toggleOneShotPreview() { const box = document.getElementById('oneshot-fs-preview-box'), btnTxt = document.getElementById('oneshot-preview-btn-text'); if (box.classList.contains('hidden')) { box.classList.remove('hidden'); box.innerText = document.getElementById('oneshot-fs-hidden').value + document.getElementById('oneshot-fs-visible').innerText; btnTxt.innerText = "Tutup Intip"; } else { box.classList.add('hidden'); btnTxt.innerText = "Intip Teks"; placeCaretAtEnd(document.getElementById('oneshot-fs-visible')); } }
 
         function saveNote() {
             const id = document.getElementById('note-id').value, cat = document.getElementById('note-category').value, title = document.getElementById('note-title').value.trim();
-            const type = userCategories[cat]?.type || 'normal';
-            let content = "";
-            
-            if (type === 'carousel') {
-                const cards = []; for(let i=1;i<=currentCarouselCount;i++){ cards.push({ id: `card-${Date.now()}-${i}`, content: document.getElementById(`car-content-${i}`).value, image: currentCarouselImages[i] || null, isCaption: false }); }
-                cards.push({ id: `card-${Date.now()}-cap`, content: document.getElementById('car-content-caption').value, image: currentCarouselImages['caption'] || null, isCaption: true });
-                content = JSON.stringify(cards);
+            const type = userCategories[cat]?.type || 'normal'; let content = "";
+            if (type === 'carousel') { const cards = []; for(let i=1;i<=currentCarouselCount;i++){ cards.push({ id: `card-${Date.now()}-${i}`, content: document.getElementById(`car-content-${i}`).value, image: currentCarouselImages[i] || null, isCaption: false }); } cards.push({ id: `card-${Date.now()}-cap`, content: document.getElementById('car-content-caption').value, image: currentCarouselImages['caption'] || null, isCaption: true }); content = JSON.stringify(cards);
             } else if (type === 'mypassword') { content = JSON.stringify({ username: document.getElementById('pw-username').value, password: document.getElementById('pw-password').value, link: document.getElementById('pw-link').value });
             } else if (type === 'revisi') { content = JSON.stringify({ tujuan: document.getElementById('rev-tujuan').value, content: document.getElementById('rev-content').value });
             } else if (type === 'oneshot') { content = document.getElementById('oneshot-fs-hidden').value + document.getElementById('oneshot-fs-visible').innerText; 
-            } else if (type === 'todolist') {
-                const rows = Array.from(document.getElementById('todo-rows-wrapper').children);
-                const tasks = rows.map(r => ({ text: r.querySelector('input[type="text"]').value.trim(), checked: r.querySelector('input[type="checkbox"]').checked })).filter(t => t.text !== "");
-                content = JSON.stringify(tasks);
+            } else if (type === 'todolist') { const rows = Array.from(document.getElementById('todo-rows-wrapper').children); const tasks = rows.map(r => ({ text: r.querySelector('input[type="text"]').value.trim(), checked: r.querySelector('input[type="checkbox"]').checked })).filter(t => t.text !== ""); content = JSON.stringify(tasks);
             } else if (type === 'finance') { content = JSON.stringify({ type: document.getElementById('fin-type').value, amount: document.getElementById('fin-amount').value, desc: document.getElementById('fin-desc').value });
             } else if (type === 'journal') { content = JSON.stringify({ mood: document.getElementById('jour-mood').value, content: document.getElementById('jour-content').value });
             } else { content = document.getElementById('note-content').value; }
-
             if (!content.trim() && !['carousel','mypassword','revisi','todolist','finance','journal'].includes(type) && currentAttachments.length===0 && !title) return;
-
-            saveHistorySnapshot(); // Catat untuk Undo
-
+            saveHistorySnapshot(); 
             if (id) { const i = notes.findIndex(n => n.id === id); if(i!==-1) notes[i] = { ...notes[i], category: cat, title, content, attachments: [...currentAttachments], updatedAt: new Date().toISOString() }; } 
             else { notes.unshift({ id: Date.now().toString(), category: cat, title, content, attachments: [...currentAttachments], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }); }
             saveToStorage(); renderSidebar(); renderNotes(); closeModal(); showToast("Tersimpan!");
@@ -716,37 +706,36 @@
         function saveToStorage() { localStorage.setItem(STORAGE_NOTES, JSON.stringify(notes)); }
 
         function toggleGroupView() { isGrouped = !isGrouped; document.getElementById('btn-group').classList.toggle('opacity-50'); renderNotes(); }
-        function toggleAccordion(id) { const c = document.getElementById(`acc-content-${id}`), i = document.getElementById(`acc-icon-${id}`); if(openNotes.has(id)){ openNotes.delete(id); c.classList.remove('open'); i.classList.remove('open'); } else { openNotes.add(id); c.classList.add('open'); i.classList.add('open'); } }
-        function toggleCategoryGroup(cat) { const c = document.getElementById(`cat-content-${cat}`), i = document.getElementById(`cat-icon-${cat}`); if(openCategories.has(cat)){ openCategories.delete(cat); c.classList.add('hidden'); i.style.transform = 'rotate(0deg)'; } else { openCategories.add(cat); c.classList.remove('hidden'); i.style.transform = 'rotate(180deg)'; } }
-        
-        window.toggleTodoItem = function(event, noteId, taskIndex) {
-            event.stopPropagation(); const idx = notes.findIndex(n => n.id === noteId);
-            if(idx !== -1) {
-                try { 
-                    saveHistorySnapshot(); // Catat untuk Undo
-                    const tasks = JSON.parse(notes[idx].content); tasks[taskIndex].checked = !tasks[taskIndex].checked; notes[idx].content = JSON.stringify(tasks); saveToStorage(); renderNotes(); 
-                } catch(e) {}
-            }
+        function toggleAccordion(id) { 
+            const c = document.getElementById(`acc-content-${id}`), i = document.getElementById(`acc-icon-${id}`); 
+            if(openNotes.has(id)){ 
+                openNotes.delete(id); 
+                if (c) c.classList.remove('open'); 
+                if (i) i.classList.remove('open'); 
+            } else { 
+                openNotes.add(id); 
+                if (c) c.classList.add('open'); 
+                if (i) i.classList.add('open'); 
+            } 
         }
-
+        function toggleCategoryGroup(cat) { const c = document.getElementById(`cat-content-${cat}`), i = document.getElementById(`cat-icon-${cat}`); if(openCategories.has(cat)){ openCategories.delete(cat); c.classList.add('hidden'); i.style.transform = 'rotate(0deg)'; } else { openCategories.add(cat); c.classList.remove('hidden'); i.style.transform = 'rotate(180deg)'; } }
         function formatDate(ds) { const d=new Date(ds), now=new Date(), diff=(now-d)/1000; if(diff<86400) return d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}); if(diff<604800) return ['Min','Sen','Sel','Rab','Kam','Jum','Sab'][d.getDay()]; return d.toLocaleDateString('id-ID',{day:'numeric',month:'short'}); }
 
-        // --- HAPUS & SALIN ---
         function executeDelete() {
-            saveHistorySnapshot(); // Catat untuk Undo
+            saveHistorySnapshot(); 
             if (deleteType === 'category') {
                 delete userCategories[itemToDelete];
                 notes.forEach(n => { if (n.category === itemToDelete) n.category = Object.keys(userCategories)[0] || 'uncategorized'; });
-                saveCategories(); saveToStorage(); renderSidebar(); populateCategorySelect(); renderNotes(); closeDeleteAlert(); showToast("Kategori Dihapus");
+                saveCategories(); saveToStorage(); renderSidebar(); populateCategorySelect(); renderNotes(); closeDeleteAlert(); showToast("Dihapus");
             } else if (deleteType === 'note') {
-                notes = notes.filter(n => n.id !== itemToDelete);
-                saveToStorage(); renderSidebar(); renderNotes(); closeDeleteAlert(); showToast("Catatan Dihapus");
+                notes = notes.filter(n => n.id !== itemToDelete); saveToStorage(); renderSidebar(); renderNotes(); closeDeleteAlert(); showToast("Dihapus");
+            } else if (deleteType === 'bulk') {
+                notes = notes.filter(n => !selectedNotes.has(n.id)); saveToStorage(); clearSelection(); renderSidebar(); closeDeleteAlert(); showToast("Dihapus");
             }
         }
 
         function openCopyModal(id) { noteIdToCopy = id; document.getElementById('copy-modal-overlay').classList.remove('hidden'); setTimeout(()=>document.getElementById('copy-modal-overlay').classList.remove('opacity-0'),10); }
         function closeCopyModal() { document.getElementById('copy-modal-overlay').classList.add('opacity-0'); setTimeout(()=>document.getElementById('copy-modal-overlay').classList.add('hidden'),300); }
-        
         function executeCopy(withTitle) {
             const n = notes.find(x => x.id === noteIdToCopy); if(!n) return;
             const cType = userCategories[n.category]?.type || 'normal'; let txt = (withTitle && n.title) ? n.title + "\n\n" : "";
@@ -759,25 +748,13 @@
             } else { txt += n.content; }
             navigator.clipboard.writeText(txt.trim()).then(() => { closeCopyModal(); showToast("Teks disalin"); });
         }
-
-        function openDeleteAlert(id) { deleteType = 'note'; itemToDelete = id; document.getElementById('delete-alert-title').innerText = "Hapus Catatan?"; document.getElementById('delete-alert-desc').innerText = "Tindakan ini tidak dapat dibatalkan."; document.getElementById('btn-confirm-delete').setAttribute('onclick', 'executeDelete()'); document.getElementById('delete-alert-overlay').classList.remove('hidden'); setTimeout(()=>document.getElementById('delete-alert-overlay').classList.remove('opacity-0'),10); }
+        function openDeleteAlert(id) { deleteType = 'note'; itemToDelete = id; document.getElementById('delete-alert-title').innerText = "Hapus Catatan?"; document.getElementById('delete-alert-desc').innerText = "Tidak dapat dibatalkan."; document.getElementById('btn-confirm-delete').setAttribute('onclick', 'executeDelete()'); document.getElementById('delete-alert-overlay').classList.remove('hidden'); setTimeout(()=>document.getElementById('delete-alert-overlay').classList.remove('opacity-0'),10); }
         function closeDeleteAlert() { document.getElementById('delete-alert-overlay').classList.add('opacity-0'); setTimeout(()=>document.getElementById('delete-alert-overlay').classList.add('hidden'),300); }
 
-        function escapeHTML(str) {
-            if (!str) return "";
-            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
-        }
-
+        function escapeHTML(str) { if (!str) return ""; return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
         function linkify(text) {
-            if (!text) return "";
-            let escaped = escapeHTML(text);
-            const urlRegex = /(https?:\/\/[^\s]+)/g;
-            return escaped.replace(urlRegex, function(url) {
-                let cleanUrl = url; let punc = '';
-                if (/[.,;!?)]$/.test(cleanUrl)) { punc = cleanUrl.slice(-1); cleanUrl = cleanUrl.slice(0, -1); }
-                const href = cleanUrl.replace(/&amp;/g, '&');
-                return '<a href="' + href + '" target="_blank" onclick="event.stopPropagation()" class="text-ios-blue hover:underline break-all">' + cleanUrl + '</a>' + punc;
-            });
+            if (!text) return ""; let escaped = escapeHTML(text); const urlRegex = /(https?:\/\/[^\s]+)/g;
+            return escaped.replace(urlRegex, function(url) { let cleanUrl = url; let punc = ''; if (/[.,;!?)]$/.test(cleanUrl)) { punc = cleanUrl.slice(-1); cleanUrl = cleanUrl.slice(0, -1); } const href = cleanUrl.replace(/&amp;/g, '&'); return '<a href="' + href + '" target="_blank" onclick="event.stopPropagation()" class="font-bold underline break-all">' + cleanUrl + '</a>' + punc; });
         }
 
         function renderNotes() {
@@ -788,36 +765,21 @@
             if (isGrouped) {
                 const cats = [...new Set(f.map(n=>n.category))].sort();
                 cats.forEach(c => {
-                    const cNotes = f.filter(n=>n.category===c); 
-                    const conf = userCategories[c] || { title: "Uncategorized", icon: "📁", color: "#8E8E93", type: "normal" }; 
-                    if(!openCategories.has(c)) openCategories.add(c);
-                    
-                    let h = `<div class="mb-6 bg-white dark:bg-ios-darkCard rounded-[28px] ios-shadow p-5 lg:p-6 border border-ios-separator/10 dark:border-ios-darkSeparator">
-                        <div class="flex items-center justify-between cursor-pointer active:opacity-50 pb-2" onclick="toggleCategoryGroup('${c}')">
-                            <div class="flex items-center">
-                                <span class="w-10 h-10 text-white rounded-full flex items-center justify-center mr-4 ios-shadow" style="background-color: ${conf.color}"><span class="text-[18px]">${conf.icon}</span></span>
-                                <h3 class="font-bold text-[22px] text-black dark:text-white tracking-tight">${conf.title}</h3>
-                            </div>
-                            <div class="flex items-center">
-                                <span class="text-[14px] font-semibold text-gray-500 bg-gray-100 dark:bg-[#2C2C2E] px-3 py-1 rounded-full mr-3">${cNotes.length}</span>
-                                <i id="cat-icon-${c}" class="fa-solid fa-chevron-down text-gray-400 transition-transform ${openCategories.has(c)?'rotate-180':''}"></i>
-                            </div>
-                        </div>
-                        <div id="cat-content-${c}" class="${openCategories.has(c)?'':'hidden'} pt-5 mt-3 border-t border-ios-separator/20 dark:border-ios-darkSeparator columns-1 md:columns-2 lg:columns-3 gap-4">`;
-                    
-                    cNotes.forEach(n => h += `<div class="break-inside-avoid mb-4">${buildNoteCard(n, true)}</div>`);
-                    h += `</div></div>`; cont.innerHTML += h;
+                    const cNotes = f.filter(n=>n.category===c); const conf = userCategories[c] || { title: "Uncategorized", icon: "📁", color: "#000000", type: "normal" }; if(!openCategories.has(c)) openCategories.add(c);
+                    let h = `<div class="mb-6 bg-white dark:bg-[#1E1E1E] rounded-[24px] shadow-sm border border-gray-200 dark:border-gray-800 p-5 lg:p-6"><div class="flex items-center justify-between cursor-pointer active:opacity-50 pb-2" onclick="toggleCategoryGroup('${c}')"><div class="flex items-center"><span class="w-10 h-10 rounded-full flex items-center justify-center mr-4 shadow-sm text-white" style="background-color: ${conf.color}"><span class="text-[18px]">${conf.icon}</span></span><h3 class="font-bold text-[22px] text-black dark:text-white tracking-tight">${conf.title}</h3></div><div class="flex items-center"><span class="text-[14px] font-bold text-gray-500 bg-gray-100 dark:bg-[#2C2C2E] px-3 py-1 rounded-full mr-3">${cNotes.length}</span><i id="cat-icon-${c}" class="fa-solid fa-chevron-down text-gray-400 transition-transform ${openCategories.has(c)?'rotate-180':''}"></i></div></div><div id="cat-content-${c}" class="${openCategories.has(c)?'':'hidden'} pt-5 mt-3 border-t border-gray-200 dark:border-gray-800 columns-1 md:columns-2 lg:columns-3 gap-4">`;
+                    cNotes.forEach(n => h += `<div class="break-inside-avoid mb-4">${buildNoteCard(n, true)}</div>`); h += `</div></div>`; cont.innerHTML += h;
                 });
             } else {
                 let h = `<div class="columns-1 md:columns-2 lg:columns-3 gap-4">`;
-                f.forEach(n => h += `<div class="break-inside-avoid mb-4">${buildNoteCard(n, false)}</div>`);
-                h += `</div>`; cont.innerHTML = h;
+                f.forEach(n => h += `<div class="break-inside-avoid mb-4">${buildNoteCard(n, false)}</div>`); h += `</div>`; cont.innerHTML = h;
             }
         }
 
         function buildNoteCard(note, isNested = false) {
-            const conf = userCategories[note.category] || { title: "Uncategorized", icon: "📁", color: "#8E8E93", type: "normal" };
-            const bgWrapper = isNested ? 'bg-gray-50/70 dark:bg-[#2C2C2E]/60 border border-ios-separator/20 dark:border-ios-darkSeparator' : 'bg-ios-card dark:bg-ios-darkCard ios-shadow border border-ios-separator/10 dark:border-ios-darkSeparator';
+            const conf = userCategories[note.category] || { title: "Uncategorized", icon: "📁", color: "#000000", type: "normal" };
+            const bgWrapper = isNested ? 'bg-gray-50 dark:bg-[#2C2C2E] border border-gray-200 dark:border-gray-700' : 'bg-white dark:bg-[#1E1E1E] shadow-sm border border-gray-200 dark:border-gray-800';
+            const isSelected = selectedNotes.has(note.id);
+            const selectionRing = isSelected ? 'ring-2 ring-black dark:ring-white' : '';
 
             let firstUrl = null;
             if (conf.type === 'mypassword') { try { const p = JSON.parse(note.content); if (p.link) firstUrl = p.link; } catch(e) {} } 
@@ -826,40 +788,27 @@
             let imgHtml = '', fileHtml = '';
             if(note.attachments && note.attachments.length>0){
                 const imgs = note.attachments.filter(a=>a.type==='image'), fls = note.attachments.filter(a=>a.type!=='image');
-                if(imgs.length>0) imgHtml = `<div class="w-full flex flex-col gap-2 mb-3">` + imgs.map((i,idx)=>`<div class="relative"><img src="${i.data}" class="w-full h-auto rounded-[12px] border border-ios-separator/10 dark:border-ios-darkSeparator"><a href="${i.data}" download="image-${idx}.jpg" onclick="event.stopPropagation()" class="absolute top-2 right-2 w-8 h-8 bg-black/60 backdrop-blur-md rounded-full text-white flex items-center justify-center active:scale-95"><i class="fa-solid fa-download text-[13px]"></i></a></div>`).join('') + `</div>`;
-                if(fls.length>0) fileHtml = `<div class="flex flex-wrap gap-2 mt-3 pt-3 border-t border-ios-separator/20 dark:border-ios-darkSeparator">` + fls.map(f=>`<a href="${f.data}" download="${f.name}" onclick="event.stopPropagation()" class="bg-gray-200/50 dark:bg-[#3A3A3C]/50 px-3 py-1.5 rounded-[8px] text-[13px] flex items-center text-black dark:text-white hover:opacity-70"><i class="fa-solid fa-file mr-2 text-gray-500"></i> <span class="truncate max-w-[120px]">${f.name}</span><i class="fa-solid fa-download ml-2 text-ios-blue text-[11px]"></i></a>`).join('') + `</div>`;
+                if(imgs.length>0) imgHtml = `<div class="w-full flex flex-col gap-2 mb-3">` + imgs.map((i,idx)=>`<div class="relative"><img src="${i.data}" class="w-full h-auto rounded-[12px] border border-gray-200 dark:border-gray-700"><a href="${i.data}" download="image-${idx}.jpg" onclick="event.stopPropagation()" class="absolute top-2 right-2 w-8 h-8 bg-black/60 backdrop-blur-md rounded-full text-white flex items-center justify-center active:scale-95"><i class="fa-solid fa-download text-[13px]"></i></a></div>`).join('') + `</div>`;
+                if(fls.length>0) fileHtml = `<div class="flex flex-wrap gap-2 mt-3 pt-3">` + fls.map(f=>`<a href="${f.data}" download="${f.name}" onclick="event.stopPropagation()" class="bg-gray-200 dark:bg-gray-800 px-3 py-1.5 rounded-[8px] text-[13px] flex items-center text-black dark:text-white hover:opacity-70 font-bold"><i class="fa-solid fa-file mr-2 text-gray-500"></i> <span class="truncate max-w-[120px]">${f.name}</span><i class="fa-solid fa-download ml-2 text-[11px]"></i></a>`).join('') + `</div>`;
             }
 
             let cHtml = '';
             if (conf.type === 'carousel') {
                 try {
                     const p = JSON.parse(note.content), reg=p.filter(c=>!c.isCaption), cap=p.find(c=>c.isCaption);
-                    if(reg.length>0) cHtml += `<div class="flex overflow-x-auto space-x-3 pb-2 hide-scrollbar">` + reg.map((c,i)=>`<div class="shrink-0 w-[220px] bg-white dark:bg-[#1C1C1E] border border-ios-separator/10 dark:border-ios-darkSeparator rounded-[14px] overflow-hidden flex flex-col shadow-sm"><div class="bg-gray-200 dark:bg-[#3A3A3C] px-3 py-1.5 text-[11px] font-semibold text-gray-700 dark:text-gray-300">Slide ${i+1}</div>${c.image?`<div class="relative"><img src="${c.image}" class="w-full h-auto object-contain bg-gray-100 dark:bg-[#2C2C2E]"><a href="${c.image}" download="slide-${i}.jpg" onclick="event.stopPropagation()" class="absolute top-1 right-1 w-6 h-6 bg-black/60 rounded-full text-white flex items-center justify-center"><i class="fa-solid fa-download text-[10px]"></i></a></div>`:''}<div class="p-3 text-[15px] text-black dark:text-white whitespace-pre-wrap">${linkify(c.content)}</div></div>`).join('') + `</div>`;
-                    if(cap) cHtml += `<div class="mt-3 bg-ios-blue/10 border border-ios-blue/20 rounded-[14px] overflow-hidden shadow-sm"><div class="bg-ios-blue/20 px-3 py-1.5 text-[11px] font-bold text-ios-blue">Caption</div>${cap.image?`<div class="relative"><img src="${cap.image}" class="w-full h-auto object-contain bg-gray-100 dark:bg-[#2C2C2E]"><a href="${cap.image}" download="caption.jpg" onclick="event.stopPropagation()" class="absolute top-1 right-1 w-6 h-6 bg-black/60 rounded-full text-white flex items-center justify-center"><i class="fa-solid fa-download text-[10px]"></i></a></div>`:''}<div class="p-3 text-[15px] text-black dark:text-white whitespace-pre-wrap">${linkify(cap.content)}</div></div>`;
+                    if(reg.length>0) cHtml += `<div class="flex overflow-x-auto space-x-3 pb-2 hide-scrollbar">` + reg.map((c,i)=>`<div class="shrink-0 w-[220px] bg-white dark:bg-[#1C1C1E] border border-gray-200 dark:border-gray-700 rounded-[14px] overflow-hidden flex flex-col shadow-sm"><div class="bg-gray-100 dark:bg-gray-800 px-3 py-1.5 text-[11px] font-bold text-gray-700 dark:text-gray-300">Slide ${i+1}</div>${c.image?`<div class="relative"><img src="${c.image}" class="w-full h-auto object-contain bg-gray-50 dark:bg-[#2C2C2E]"><a href="${c.image}" download="slide-${i}.jpg" onclick="event.stopPropagation()" class="absolute top-1 right-1 w-6 h-6 bg-black/60 rounded-full text-white flex items-center justify-center"><i class="fa-solid fa-download text-[10px]"></i></a></div>`:''}<div class="p-3 text-[15px] text-black dark:text-white whitespace-pre-wrap">${linkify(c.content)}</div></div>`).join('') + `</div>`;
+                    if(cap) cHtml += `<div class="mt-3 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-[14px] overflow-hidden shadow-sm"><div class="bg-gray-200 dark:bg-[#3A3A3C] px-3 py-1.5 text-[11px] font-bold">Caption</div>${cap.image?`<div class="relative"><img src="${cap.image}" class="w-full h-auto object-contain bg-gray-50 dark:bg-[#2C2C2E]"><a href="${cap.image}" download="caption.jpg" onclick="event.stopPropagation()" class="absolute top-1 right-1 w-6 h-6 bg-black/60 rounded-full text-white flex items-center justify-center"><i class="fa-solid fa-download text-[10px]"></i></a></div>`:''}<div class="p-3 text-[15px] text-black dark:text-white whitespace-pre-wrap">${linkify(cap.content)}</div></div>`;
                 } catch(e) { cHtml = linkify(note.content); }
             } else if (conf.type === 'mypassword') {
-                try {
-                    const p = JSON.parse(note.content);
-                    cHtml = `<div class="space-y-2"><div class="flex items-center text-[15px]"><span class="w-8 text-center text-gray-400"><i class="fa-solid fa-user"></i></span><span class="font-medium text-black dark:text-white bg-white dark:bg-[#3A3A3C] shadow-sm px-2 py-1 rounded-[8px]">${p.username||'-'}</span></div><div class="flex items-center text-[15px]"><span class="w-8 text-center text-gray-400"><i class="fa-solid fa-key"></i></span><span class="font-medium text-black dark:text-white bg-white dark:bg-[#3A3A3C] shadow-sm px-2 py-1 rounded-[8px] blur-sm hover:blur-none transition-all">${p.password||'-'}</span></div>${p.link?`<div class="flex items-center text-[15px] mt-2"><span class="w-8 text-center text-gray-400"><i class="fa-solid fa-link"></i></span><a href="${p.link}" target="_blank" onclick="event.stopPropagation()" class="text-ios-blue hover:underline truncate">${p.link}</a></div>`:''}</div>`;
-                } catch(e) { cHtml = linkify(note.content); }
+                try { const p = JSON.parse(note.content); cHtml = `<div class="space-y-2"><div class="flex items-center text-[15px]"><span class="w-8 text-center text-gray-400"><i class="fa-solid fa-user"></i></span><span class="font-bold text-black dark:text-white bg-gray-100 dark:bg-[#3A3A3C] px-2 py-1 rounded-[8px]">${p.username||'-'}</span></div><div class="flex items-center text-[15px]"><span class="w-8 text-center text-gray-400"><i class="fa-solid fa-key"></i></span><span class="font-bold text-black dark:text-white bg-gray-100 dark:bg-[#3A3A3C] px-2 py-1 rounded-[8px] blur-sm hover:blur-none transition-all">${p.password||'-'}</span></div>${p.link?`<div class="flex items-center text-[15px] mt-2"><span class="w-8 text-center text-gray-400"><i class="fa-solid fa-link"></i></span><a href="${p.link}" target="_blank" onclick="event.stopPropagation()" class="font-bold underline truncate">${p.link}</a></div>`:''}</div>`; } catch(e) { cHtml = linkify(note.content); }
             } else if (conf.type === 'revisi') {
-                try { const r = JSON.parse(note.content); cHtml = `<div class="bg-white dark:bg-[#3A3A3C] shadow-sm border border-ios-separator/10 dark:border-ios-darkSeparator p-3 rounded-[12px] mb-3"><div class="text-[12px] font-semibold text-gray-500 mb-1">Tujuan:</div><div class="font-medium text-black dark:text-white text-[15px]">${linkify(r.tujuan)}</div></div><div class="text-[16px] text-black dark:text-white whitespace-pre-wrap leading-relaxed">${linkify(r.content)}</div>`; } catch(e) { cHtml = linkify(note.content); }
+                try { const r = JSON.parse(note.content); cHtml = `<div class="bg-gray-100 dark:bg-[#3A3A3C] border border-gray-200 dark:border-gray-700 p-3 rounded-[12px] mb-3"><div class="text-[12px] font-bold text-gray-500 mb-1">Tujuan:</div><div class="font-bold text-black dark:text-white text-[15px]">${linkify(r.tujuan)}</div></div><div class="text-[16px] text-black dark:text-white whitespace-pre-wrap leading-relaxed">${linkify(r.content)}</div>`; } catch(e) { cHtml = linkify(note.content); }
             } else if (conf.type === 'todolist') {
-                try {
-                    const p = JSON.parse(note.content);
-                    cHtml = `<div class="space-y-2 mt-1">` + p.map((t, i) => `<div class="flex items-start space-x-3 cursor-pointer group" onclick="toggleTodoItem(event, '${note.id}', ${i})"><div class="mt-0.5 text-[18px] ${t.checked ? 'text-ios-blue' : 'text-gray-300 dark:text-gray-600'} transition-colors"><i class="fa-${t.checked ? 'solid fa-circle-check' : 'regular fa-circle'}"></i></div><span class="text-[16px] text-black dark:text-white transition-all ${t.checked ? 'line-through opacity-50' : ''}">${linkify(t.text)}</span></div>`).join('') + `</div>`;
-                } catch(e) { cHtml = linkify(note.content); }
+                try { const p = JSON.parse(note.content); cHtml = `<div class="space-y-2 mt-1">` + p.map((t, i) => `<div class="flex items-start space-x-3 cursor-pointer group" onclick="toggleTodoItem(event, '${note.id}', ${i})"><div class="mt-0.5 text-[18px] ${t.checked ? 'text-black dark:text-white' : 'text-gray-300 dark:text-gray-600'} transition-colors"><i class="fa-${t.checked ? 'solid fa-circle-check' : 'regular fa-circle'}"></i></div><span class="text-[16px] text-black dark:text-white transition-all ${t.checked ? 'line-through opacity-50' : ''}">${linkify(t.text)}</span></div>`).join('') + `</div>`; } catch(e) { cHtml = linkify(note.content); }
             } else if (conf.type === 'finance') {
-                try {
-                    const p = JSON.parse(note.content); const isInc = p.type === 'in'; const num = parseInt(p.amount) || 0;
-                    const formatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
-                    cHtml = `<div class="flex items-center justify-between bg-white dark:bg-[#3A3A3C] shadow-sm p-4 rounded-[16px] border border-ios-separator/10 dark:border-ios-darkSeparator"><div class="flex flex-col"><span class="text-[13px] font-semibold text-gray-500 uppercase tracking-wider mb-1">${p.desc || 'Tanpa Keterangan'}</span><span class="text-[24px] font-bold ${isInc ? 'text-green-500' : 'text-black dark:text-white'}">${formatted}</span></div><div class="w-12 h-12 rounded-full ${isInc ? 'bg-green-100 text-green-500' : 'bg-gray-100 dark:bg-[#2C2C2E] text-gray-500'} flex items-center justify-center text-xl"><i class="fa-solid fa-arrow-trend-${isInc ? 'up' : 'down'}"></i></div></div>`;
-                } catch(e) { cHtml = note.content; }
+                try { const p = JSON.parse(note.content); const isInc = p.type === 'in'; const num = parseInt(p.amount) || 0; const formatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num); cHtml = `<div class="flex items-center justify-between bg-gray-100 dark:bg-[#3A3A3C] p-4 rounded-[16px] border border-gray-200 dark:border-gray-700"><div class="flex flex-col"><span class="text-[13px] font-bold text-gray-500 uppercase tracking-wider mb-1">${p.desc || 'Tanpa Keterangan'}</span><span class="text-[24px] font-black ${isInc ? 'text-green-500' : 'text-black dark:text-white'}">${formatted}</span></div><div class="w-12 h-12 rounded-full ${isInc ? 'bg-green-100 text-green-500' : 'bg-gray-200 dark:bg-[#2C2C2E] text-gray-500'} flex items-center justify-center text-xl"><i class="fa-solid fa-arrow-trend-${isInc ? 'up' : 'down'}"></i></div></div>`; } catch(e) { cHtml = note.content; }
             } else if (conf.type === 'journal') {
-                try {
-                    const p = JSON.parse(note.content);
-                    cHtml = `<div class="flex flex-col"><div class="inline-flex items-center self-start bg-white dark:bg-[#3A3A3C] shadow-sm border border-ios-separator/10 dark:border-ios-darkSeparator px-3 py-1.5 rounded-full mb-3"><span class="text-[15px] font-medium text-black dark:text-white">${p.mood}</span></div><div class="text-[16px] text-black dark:text-white leading-relaxed whitespace-pre-wrap">${linkify(p.content)}</div></div>`;
-                } catch(e) { cHtml = linkify(note.content); }
+                try { const p = JSON.parse(note.content); cHtml = `<div class="flex flex-col"><div class="inline-flex items-center self-start bg-gray-100 dark:bg-[#3A3A3C] border border-gray-200 dark:border-gray-700 px-3 py-1.5 rounded-full mb-3"><span class="text-[15px] font-bold text-black dark:text-white">${p.mood}</span></div><div class="text-[16px] text-black dark:text-white leading-relaxed whitespace-pre-wrap">${linkify(p.content)}</div></div>`; } catch(e) { cHtml = linkify(note.content); }
             } else {
                 cHtml = `<div class="text-[16px] leading-relaxed text-black dark:text-white whitespace-pre-wrap">${linkify(note.content)}</div>`;
             }
@@ -868,26 +817,32 @@
             let dateHtml = `Buat: ${formatDate(note.createdAt)}`;
             if (note.updatedAt && note.updatedAt !== note.createdAt) dateHtml += ` • Edit: ${formatDate(note.updatedAt)}`;
 
-            return `<div class="${bgWrapper} rounded-[24px] p-5 relative overflow-hidden group">
-                <div class="flex justify-between items-start cursor-pointer" onclick="toggleAccordion('${note.id}')">
-                    <div class="flex items-start space-x-3 max-w-[60%]">
-                        <span class="w-9 h-9 shrink-0 rounded-full text-white flex items-center justify-center text-[15px] shadow-sm mt-0.5" style="background-color: ${conf.color}">${conf.icon}</span>
-                        <div class="flex flex-col overflow-hidden">
-                            <h4 class="font-semibold text-black dark:text-white text-[17px] leading-tight mb-1 truncate">${displayTitle}</h4>
-                            <p class="text-[11px] text-gray-500 leading-tight whitespace-nowrap overflow-hidden text-ellipsis">${dateHtml}</p>
-                        </div>
+            return `<div class="${bgWrapper} rounded-[24px] p-5 relative overflow-hidden group ${selectionRing}">
+                <!-- Row 1: Actions -->
+                <div class="flex justify-between items-center mb-3">
+                    <div class="flex items-center space-x-2">
+                        <button onclick="event.stopPropagation(); toggleSelection('${note.id}')" class="w-6 h-6 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center transition-colors ${isSelected ? 'bg-black border-black text-white dark:bg-white dark:border-white dark:text-black' : ''}">
+                            ${isSelected ? '<i class="fa-solid fa-check text-[10px]"></i>' : ''}
+                        </button>
+                        <span class="w-7 h-7 rounded-full text-white flex items-center justify-center text-[12px] shadow-sm" style="background-color: ${conf.color}">${conf.icon}</span>
                     </div>
-                    <div class="flex space-x-2 shrink-0">
-                        ${firstUrl ? `<a href="${firstUrl}" target="_blank" onclick="event.stopPropagation()" class="w-8 h-8 text-ios-blue bg-blue-50 dark:bg-blue-900/30 rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-solid fa-arrow-up-right-from-square text-[13px]"></i></a>` : ''}
-                        <button onclick="event.stopPropagation(); openCopyModal('${note.id}')" class="w-8 h-8 text-gray-400 hover:text-green-500 bg-gray-100 dark:bg-[#2C2C2E] rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-regular fa-copy text-[13px]"></i></button>
-                        <button onclick="event.stopPropagation(); openModal('${note.id}')" class="w-8 h-8 text-gray-400 hover:text-ios-blue bg-gray-100 dark:bg-[#2C2C2E] rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-solid fa-pen-to-square text-[13px]"></i></button>
-                        <button onclick="event.stopPropagation(); openDeleteAlert('${note.id}')" class="w-8 h-8 text-gray-400 hover:text-ios-red bg-gray-100 dark:bg-[#2C2C2E] rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-solid fa-trash-can text-[13px]"></i></button>
-                        <i id="acc-icon-${note.id}" class="fa-solid fa-chevron-down text-gray-400 transition-transform ml-1 mt-2 text-[14px] ${openNotes.has(note.id)?'rotate-180':''}"></i>
+                    <div class="flex space-x-1">
+                        ${firstUrl ? `<a href="${firstUrl}" target="_blank" onclick="event.stopPropagation()" class="w-8 h-8 text-black dark:text-white bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-solid fa-arrow-up-right-from-square text-[13px]"></i></a>` : ''}
+                        <button onclick="event.stopPropagation(); openCopyModal('${note.id}')" class="w-8 h-8 text-black dark:text-white bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-regular fa-copy text-[13px]"></i></button>
+                        <button onclick="event.stopPropagation(); openModal('${note.id}')" class="w-8 h-8 text-black dark:text-white bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-solid fa-pen text-[13px]"></i></button>
+                        <button onclick="event.stopPropagation(); openDeleteAlert('${note.id}')" class="w-8 h-8 text-red-500 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-solid fa-trash-can text-[13px]"></i></button>
                     </div>
                 </div>
-                <!-- ACCORDION CONTENT -->
+                
+                <!-- Row 2: Title -->
+                <div class="cursor-pointer mb-2" onclick="toggleAccordion('${note.id}')">
+                    <h4 class="font-bold text-black dark:text-white text-[18px] leading-tight break-words">${displayTitle}</h4>
+                    <p class="text-[11px] font-medium text-gray-500 mt-1">${dateHtml}</p>
+                </div>
+                
+                <!-- ACCORDION CONTENT (Tanpa Divider) -->
                 <div class="accordion-content ${openNotes.has(note.id)?'open':''}" id="acc-content-${note.id}">
-                    <div class="accordion-inner pt-4 border-t border-ios-separator/10 dark:border-ios-darkSeparator mt-3">
+                    <div class="accordion-inner pt-2">
                         ${imgHtml}
                         ${cHtml}
                         ${fileHtml}
@@ -907,16 +862,12 @@
             const file = e.target.files[0]; if(!file) return; const reader = new FileReader();
             reader.onload = e => { 
                 try { 
-                    const imp = JSON.parse(e.target.result); 
-                    saveHistorySnapshot(); // Catat untuk Undo
-                    if(imp.categories && imp.notes) {
-                        userCategories = { ...userCategories, ...imp.categories };
-                        notes = [...imp.notes, ...notes.filter(n=>!imp.notes.find(i=>i.id===n.id))];
-                    } else if(Array.isArray(imp)) { notes = [...imp, ...notes.filter(n=>!imp.find(i=>i.id===n.id))]; }
+                    const imp = JSON.parse(e.target.result); saveHistorySnapshot();
+                    if(imp.categories && imp.notes) { userCategories = { ...userCategories, ...imp.categories }; notes = [...imp.notes, ...notes.filter(n=>!imp.notes.find(i=>i.id===n.id))]; } 
+                    else if(Array.isArray(imp)) { notes = [...imp, ...notes.filter(n=>!imp.find(i=>i.id===n.id))]; }
                     saveCategories(); saveToStorage(); renderSidebar(); populateCategorySelect(); renderNotes(); showToast("Data diimport"); 
                 } catch(err) { alert("File tidak valid"); } 
-            };
-            reader.readAsText(file); e.target.value = '';
+            }; reader.readAsText(file); e.target.value = '';
         }
     </script>
 </body>
