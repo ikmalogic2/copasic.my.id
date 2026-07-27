@@ -29,8 +29,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* Base Font */
-        body { font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+        /* Apple System Fonts */
+        body { font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { display: none; }
         
         /* iOS Shadow & Transitions */
@@ -53,17 +53,14 @@
         .ios-input { appearance: none; background: rgba(118, 118, 128, 0.12); border-radius: 10px; }
         .dark .ios-input { background: rgba(118, 118, 128, 0.24); }
 
-        /* Color Picker Focus */
-        .color-picker-btn.active { outline: 3px solid #007AFF; outline-offset: 2px; }
-        .dark .color-picker-btn.active { outline: 3px solid #0A84FF; }
-
-        /* Fix Opsi Dropdown Select Native di Mode Gelap */
+        /* Fix Tampilan Dropdown Mode Gelap */
+        html { color-scheme: light; }
         html.dark { color-scheme: dark; }
         select option { background-color: #FFFFFF; color: #000000; }
-        html.dark select option { background-color: #1C1C1E; color: #FFFFFF; }
+        .dark select option { background-color: #1C1C1E; color: #FFFFFF; }
     </style>
 </head>
-<body class="flex h-screen overflow-hidden bg-ios-bg dark:bg-ios-darkBg transition-colors duration-300">
+<body class="flex h-[100dvh] overflow-hidden bg-ios-bg dark:bg-ios-darkBg transition-colors duration-300">
 
     <!-- OVERLAY SIDEBAR -->
     <div id="sidebar-overlay" class="fixed inset-0 bg-black/40 z-20 hidden lg:hidden transition-opacity opacity-0 backdrop-blur-sm" onclick="toggleSidebar()"></div>
@@ -96,7 +93,7 @@
     </aside>
 
     <!-- MAIN AREA -->
-    <main class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-ios-card lg:bg-ios-bg dark:bg-ios-darkBg lg:rounded-l-[32px] lg:border-l border-ios-separator/30 dark:border-ios-darkSeparator shadow-[-4px_0_24px_rgba(0,0,0,0.05)]">
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden bg-ios-card lg:bg-ios-bg dark:bg-ios-darkBg lg:rounded-l-[32px] lg:border-l border-ios-separator/30 dark:border-ios-darkSeparator shadow-[-4px_0_24px_rgba(0,0,0,0.05)]">
         
         <!-- HEADER -->
         <header class="h-[52px] bg-ios-card/80 dark:bg-ios-darkBg/80 backdrop-blur-xl border-b border-ios-separator/30 dark:border-ios-darkSeparator flex items-center justify-between px-4 z-10 shrink-0 w-full relative">
@@ -113,12 +110,12 @@
         </header>
 
         <!-- CONTENT LIST -->
-        <div class="flex-1 overflow-y-auto pt-4 pb-12 px-4 lg:px-8 bg-ios-bg dark:bg-ios-darkBg" id="main-area">
+        <div class="flex-1 overflow-y-auto pt-4 pb-24 px-4 lg:px-8 bg-ios-bg dark:bg-ios-darkBg" id="main-area">
             <div id="notes-container" class="w-full max-w-[1600px] mx-auto"></div>
         </div>
     </main>
 
-    <!-- TOAST NOTIFICATION -->
+    <!-- TOAST (iOS Top Notification) -->
     <div id="toast" class="fixed top-8 left-1/2 transform -translate-x-1/2 bg-white/80 dark:bg-[#2C2C2E]/80 backdrop-blur-xl border border-white/20 dark:border-white/10 px-5 py-3 rounded-full ios-shadow z-[110] flex items-center pointer-events-none toast-enter">
         <i class="fa-solid fa-circle-check text-green-500 mr-2 text-lg"></i>
         <span id="toast-message" class="text-[15px] font-medium text-black dark:text-white">Sukses!</span>
@@ -652,6 +649,18 @@
 
         function formatDate(ds) { const d=new Date(ds), now=new Date(), diff=(now-d)/1000; if(diff<86400) return d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}); if(diff<604800) return ['Min','Sen','Sel','Rab','Kam','Jum','Sab'][d.getDay()]; return d.toLocaleDateString('id-ID',{day:'numeric',month:'short'}); }
 
+        // --- HAPUS & SALIN ---
+        function executeDelete() {
+            if (deleteType === 'category') {
+                delete userCategories[itemToDelete];
+                notes.forEach(n => { if (n.category === itemToDelete) n.category = Object.keys(userCategories)[0] || 'uncategorized'; });
+                saveCategories(); saveToStorage(); renderSidebar(); populateCategorySelect(); renderNotes(); closeDeleteAlert(); showToast("Kategori Dihapus");
+            } else if (deleteType === 'note') {
+                notes = notes.filter(n => n.id !== itemToDelete);
+                saveToStorage(); renderSidebar(); renderNotes(); closeDeleteAlert(); showToast("Catatan Dihapus");
+            }
+        }
+
         function openCopyModal(id) { noteIdToCopy = id; document.getElementById('copy-modal-overlay').classList.remove('hidden'); setTimeout(()=>document.getElementById('copy-modal-overlay').classList.remove('opacity-0'),10); }
         function closeCopyModal() { document.getElementById('copy-modal-overlay').classList.add('opacity-0'); setTimeout(()=>document.getElementById('copy-modal-overlay').classList.add('hidden'),300); }
         
@@ -670,10 +679,22 @@
 
         function openDeleteAlert(id) { deleteType = 'note'; itemToDelete = id; document.getElementById('delete-alert-title').innerText = "Hapus Catatan?"; document.getElementById('delete-alert-desc').innerText = "Tindakan ini tidak dapat dibatalkan."; document.getElementById('btn-confirm-delete').setAttribute('onclick', 'executeDelete()'); document.getElementById('delete-alert-overlay').classList.remove('hidden'); setTimeout(()=>document.getElementById('delete-alert-overlay').classList.remove('opacity-0'),10); }
         function closeDeleteAlert() { document.getElementById('delete-alert-overlay').classList.add('opacity-0'); setTimeout(()=>document.getElementById('delete-alert-overlay').classList.add('hidden'),300); }
-        function executeDelete() { 
-            if(deleteType === 'note') { notes = notes.filter(n=>n.id !== itemToDelete); saveToStorage(); renderSidebar(); renderNotes(); showToast("Catatan dihapus"); } 
-            else if (deleteType === 'category') { delete userCategories[itemToDelete]; saveCategories(); renderSidebar(); renderNotes(); closeCatModal(); showToast("Kategori Dihapus"); }
-            closeDeleteAlert(); 
+
+        function escapeHTML(str) {
+            if (!str) return "";
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+        }
+
+        function linkify(text) {
+            if (!text) return "";
+            let escaped = escapeHTML(text);
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            return escaped.replace(urlRegex, function(url) {
+                let cleanUrl = url; let punc = '';
+                if (/[.,;!?)]$/.test(cleanUrl)) { punc = cleanUrl.slice(-1); cleanUrl = cleanUrl.slice(0, -1); }
+                const href = cleanUrl.replace(/&amp;/g, '&');
+                return '<a href="' + href + '" target="_blank" onclick="event.stopPropagation()" class="text-ios-blue hover:underline break-all">' + cleanUrl + '</a>' + punc;
+            });
         }
 
         function renderNotes() {
@@ -682,28 +703,33 @@
             if(f.length===0){ cont.innerHTML = `<div class="flex flex-col items-center justify-center h-[50vh] text-gray-400"><i class="fa-solid fa-folder-open text-6xl mb-4 opacity-40"></i><p class="text-[17px]">Belum ada catatan.</p></div>`; return; }
 
             if (isGrouped) {
-                const usedCatIds = [...new Set(f.map(n=>n.category))];
-                usedCatIds.forEach(c => {
-                    const cNotes = f.filter(n=>n.category===c); const conf = userCategories[c] || { title: "Uncategorized", icon: "📁", color: "#8E8E93" }; if(!openCategories.has(c)) openCategories.add(c);
-                    let h = `<div class="mb-6 bg-white dark:bg-ios-darkCard rounded-[28px] ios-shadow p-5 lg:p-6 border border-ios-separator/10 dark:border-ios-darkSeparator"><div class="flex items-center justify-between cursor-pointer active:opacity-50 pb-2" onclick="toggleCategoryGroup('${c}')"><div class="flex items-center"><span class="w-10 h-10 text-white rounded-full flex items-center justify-center mr-4 ios-shadow" style="background-color: ${conf.color}"><span class="text-[18px]">${conf.icon}</span></span><h3 class="font-bold text-[22px] text-black dark:text-white tracking-tight">${conf.title}</h3></div><div class="flex items-center"><span class="text-[14px] font-semibold text-gray-500 bg-gray-100 dark:bg-[#2C2C2E] px-3 py-1 rounded-full mr-3">${cNotes.length}</span><i id="cat-icon-${c}" class="fa-solid fa-chevron-down text-gray-400 transition-transform ${openCategories.has(c)?'rotate-180':''}"></i></div></div><div id="cat-content-${c}" class="${openCategories.has(c)?'':'hidden'} pt-5 mt-3 border-t border-ios-separator/20 dark:border-ios-darkSeparator columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">`;
-                    cNotes.forEach(n => h += `<div class="break-inside-avoid">${buildNoteCard(n, true)}</div>`);
+                const cats = [...new Set(f.map(n=>n.category))].sort();
+                cats.forEach(c => {
+                    const cNotes = f.filter(n=>n.category===c); 
+                    const conf = userCategories[c] || { title: "Uncategorized", icon: "📁", color: "#8E8E93", type: "normal" }; 
+                    if(!openCategories.has(c)) openCategories.add(c);
+                    
+                    let h = `<div class="mb-6 bg-white dark:bg-ios-darkCard rounded-[28px] ios-shadow p-5 lg:p-6 border border-ios-separator/10 dark:border-ios-darkSeparator">
+                        <div class="flex items-center justify-between cursor-pointer active:opacity-50 pb-2" onclick="toggleCategoryGroup('${c}')">
+                            <div class="flex items-center">
+                                <span class="w-10 h-10 text-white rounded-full flex items-center justify-center mr-4 ios-shadow" style="background-color: ${conf.color}"><span class="text-[18px]">${conf.icon}</span></span>
+                                <h3 class="font-bold text-[22px] text-black dark:text-white tracking-tight">${conf.title}</h3>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-[14px] font-semibold text-gray-500 bg-gray-100 dark:bg-[#2C2C2E] px-3 py-1 rounded-full mr-3">${cNotes.length}</span>
+                                <i id="cat-icon-${c}" class="fa-solid fa-chevron-down text-gray-400 transition-transform ${openCategories.has(c)?'rotate-180':''}"></i>
+                            </div>
+                        </div>
+                        <div id="cat-content-${c}" class="${openCategories.has(c)?'':'hidden'} pt-5 mt-3 border-t border-ios-separator/20 dark:border-ios-darkSeparator columns-1 md:columns-2 lg:columns-3 gap-4">`;
+                    
+                    cNotes.forEach(n => h += `<div class="break-inside-avoid mb-4">${buildNoteCard(n, true)}</div>`);
                     h += `</div></div>`; cont.innerHTML += h;
                 });
             } else {
-                let h = `<div class="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">`;
-                f.forEach(n => h += `<div class="break-inside-avoid">${buildNoteCard(n, false)}</div>`);
+                let h = `<div class="columns-1 md:columns-2 lg:columns-3 gap-4">`;
+                f.forEach(n => h += `<div class="break-inside-avoid mb-4">${buildNoteCard(n, false)}</div>`);
                 h += `</div>`; cont.innerHTML = h;
             }
-        }
-
-        function linkify(text) {
-            if (!text) return text;
-            const urlRegex = /(https?:\/\/[^\s<>"'\\]+)/g;
-            return text.replace(urlRegex, url => {
-                let cleanUrl = url; if (/[.,;!?)]$/.test(cleanUrl)) cleanUrl = cleanUrl.slice(0, -1);
-                const trailing = url.slice(cleanUrl.length);
-                return `<a href="${cleanUrl}" target="_blank" onclick="event.stopPropagation()" class="text-ios-blue hover:underline break-all">${cleanUrl}</a>${trailing}`;
-            });
         }
 
         function buildNoteCard(note, isNested = false) {
@@ -772,6 +798,7 @@
                         ${firstUrl ? `<a href="${firstUrl}" target="_blank" onclick="event.stopPropagation()" class="w-8 h-8 text-ios-blue bg-blue-50 dark:bg-blue-900/30 rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-solid fa-arrow-up-right-from-square text-[13px]"></i></a>` : ''}
                         <button onclick="event.stopPropagation(); openCopyModal('${note.id}')" class="w-8 h-8 text-gray-400 hover:text-green-500 bg-gray-100 dark:bg-[#2C2C2E] rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-regular fa-copy text-[13px]"></i></button>
                         <button onclick="event.stopPropagation(); openModal('${note.id}')" class="w-8 h-8 text-gray-400 hover:text-ios-blue bg-gray-100 dark:bg-[#2C2C2E] rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-solid fa-pen-to-square text-[13px]"></i></button>
+                        <button onclick="event.stopPropagation(); openDeleteAlert('${note.id}')" class="w-8 h-8 text-gray-400 hover:text-ios-red bg-gray-100 dark:bg-[#2C2C2E] rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-solid fa-trash-can text-[13px]"></i></button>
                         <i id="acc-icon-${note.id}" class="fa-solid fa-chevron-down text-gray-400 transition-transform ml-1 mt-2 text-[14px] ${openNotes.has(note.id)?'rotate-180':''}"></i>
                     </div>
                 </div>
