@@ -102,7 +102,13 @@
                 <h1 class="text-[17px] font-semibold text-black dark:text-white tracking-tight ml-3">Catatan</h1>
             </div>
             
-            <div class="flex items-center space-x-4 ml-auto">
+            <div class="flex items-center space-x-3 sm:space-x-4 ml-auto">
+                <!-- Undo / Redo Buttons -->
+                <button onclick="undoAction()" id="btn-undo" class="text-ios-blue text-[18px] active:opacity-50 opacity-30 transition-opacity"><i class="fa-solid fa-rotate-left"></i></button>
+                <button onclick="redoAction()" id="btn-redo" class="text-ios-blue text-[18px] active:opacity-50 opacity-30 transition-opacity"><i class="fa-solid fa-rotate-right"></i></button>
+                
+                <div class="w-px h-5 bg-ios-separator/30 dark:bg-ios-darkSeparator mx-1 hidden sm:block"></div>
+                
                 <button onclick="toggleTheme()" id="btn-theme" class="text-ios-blue text-[20px] active:opacity-50"><i class="fa-solid fa-sun" id="theme-icon"></i></button>
                 <button onclick="toggleGroupView()" id="btn-group" class="text-ios-blue text-[20px] active:opacity-50"><i class="fa-solid fa-layer-group"></i></button>
                 <button onclick="openModal()" class="text-ios-blue text-[24px] active:opacity-50"><i class="fa-solid fa-circle-plus"></i></button>
@@ -356,6 +362,10 @@
         let noteIdToCopy = null;
         let toastTimeout;
 
+        // Undo/Redo State
+        let historyStack = [];
+        let redoStack = [];
+
         const colorPalette = ['#007AFF', '#34C759', '#FF9500', '#FF3B30', '#AF52DE', '#FF2D55', '#5856D6', '#8E8E93', '#171717'];
 
         window.onload = () => { 
@@ -412,6 +422,9 @@
             const id = document.getElementById('cat-id').value || `cat_${Date.now()}`;
             const title = document.getElementById('cat-title').value.trim(), icon = document.getElementById('cat-icon').value.trim() || "📁", type = document.getElementById('cat-type').value, color = document.getElementById('cat-color').value;
             if (!title) return showToast("Nama Kategori kosong!");
+            
+            saveHistorySnapshot(); // Catat history
+            
             userCategories[id] = { id, title, icon, type, color }; saveCategories(); populateCategorySelect(); renderSidebar(); if(isGrouped) renderNotes(); closeCatModal(); showToast("Kategori Tersimpan!");
         }
 
@@ -425,10 +438,69 @@
 
         // --- SISTEM TEMA & UI ---
         function initTheme() { if (localStorage.getItem('theme') === 'light') { document.documentElement.classList.remove('dark'); document.getElementById('theme-icon').className = "fa-solid fa-moon"; } }
+        
         function toggleTheme() {
             const html = document.documentElement;
             if (html.classList.contains('dark')) { html.classList.remove('dark'); document.getElementById('theme-icon').className = "fa-solid fa-moon"; localStorage.setItem('theme', 'light'); } 
             else { html.classList.add('dark'); document.getElementById('theme-icon').className = "fa-solid fa-sun"; localStorage.setItem('theme', 'dark'); }
+        }
+
+        // --- SISTEM UNDO REDO ---
+        function saveHistorySnapshot() {
+            // Push salinan mendalam (deep copy) dari state ke historyStack
+            historyStack.push(JSON.stringify({ cats: userCategories, nts: notes }));
+            if (historyStack.length > 50) historyStack.shift(); // Limit tumpukan hingga 50
+            redoStack = []; // Jika ada aksi baru, redoStack dihapus
+            updateUndoRedoButtons();
+        }
+
+        function undoAction() {
+            if (historyStack.length === 0) return;
+            // Simpan state saat ini ke redo
+            redoStack.push(JSON.stringify({ cats: userCategories, nts: notes }));
+            // Ambil state sebelumnya dari history
+            const prevState = JSON.parse(historyStack.pop());
+            userCategories = prevState.cats; 
+            notes = prevState.nts;
+            
+            saveCategories(); 
+            saveToStorage(); 
+            renderSidebar(); 
+            populateCategorySelect(); 
+            renderNotes(); 
+            updateUndoRedoButtons();
+            showToast("Undo berhasil");
+        }
+
+        function redoAction() {
+            if (redoStack.length === 0) return;
+            // Simpan state saat ini ke history
+            historyStack.push(JSON.stringify({ cats: userCategories, nts: notes }));
+            // Ambil state selanjutnya dari redo
+            const nextState = JSON.parse(redoStack.pop());
+            userCategories = nextState.cats; 
+            notes = nextState.nts;
+            
+            saveCategories(); 
+            saveToStorage(); 
+            renderSidebar(); 
+            populateCategorySelect(); 
+            renderNotes(); 
+            updateUndoRedoButtons();
+            showToast("Redo berhasil");
+        }
+
+        function updateUndoRedoButtons() {
+            const btnUndo = document.getElementById('btn-undo');
+            const btnRedo = document.getElementById('btn-redo');
+            if (btnUndo) {
+                if (historyStack.length === 0) btnUndo.classList.add('opacity-30');
+                else btnUndo.classList.remove('opacity-30');
+            }
+            if (btnRedo) {
+                if (redoStack.length === 0) btnRedo.classList.add('opacity-30');
+                else btnRedo.classList.remove('opacity-30');
+            }
         }
 
         function showToast(msg) {
@@ -529,7 +601,7 @@
             if(currentCarouselImages[idx]){ im.src = currentCarouselImages[idx]; bx.classList.remove('hidden'); } else bx.classList.add('hidden');
         }
 
-        // NEW TODOLIST LOGIC
+        // TODOLIST LOGIC
         function addTodoRow(val='', checked=false) {
             const w = document.getElementById('todo-rows-wrapper');
             const div = document.createElement('div');
@@ -628,6 +700,8 @@
 
             if (!content.trim() && !['carousel','mypassword','revisi','todolist','finance','journal'].includes(type) && currentAttachments.length===0 && !title) return;
 
+            saveHistorySnapshot(); // Catat untuk Undo
+
             if (id) { const i = notes.findIndex(n => n.id === id); if(i!==-1) notes[i] = { ...notes[i], category: cat, title, content, attachments: [...currentAttachments], updatedAt: new Date().toISOString() }; } 
             else { notes.unshift({ id: Date.now().toString(), category: cat, title, content, attachments: [...currentAttachments], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }); }
             saveToStorage(); renderSidebar(); renderNotes(); closeModal(); showToast("Tersimpan!");
@@ -643,7 +717,10 @@
         window.toggleTodoItem = function(event, noteId, taskIndex) {
             event.stopPropagation(); const idx = notes.findIndex(n => n.id === noteId);
             if(idx !== -1) {
-                try { const tasks = JSON.parse(notes[idx].content); tasks[taskIndex].checked = !tasks[taskIndex].checked; notes[idx].content = JSON.stringify(tasks); saveToStorage(); renderNotes(); } catch(e) {}
+                try { 
+                    saveHistorySnapshot(); // Catat untuk Undo
+                    const tasks = JSON.parse(notes[idx].content); tasks[taskIndex].checked = !tasks[taskIndex].checked; notes[idx].content = JSON.stringify(tasks); saveToStorage(); renderNotes(); 
+                } catch(e) {}
             }
         }
 
@@ -651,6 +728,7 @@
 
         // --- HAPUS & SALIN ---
         function executeDelete() {
+            saveHistorySnapshot(); // Catat untuk Undo
             if (deleteType === 'category') {
                 delete userCategories[itemToDelete];
                 notes.forEach(n => { if (n.category === itemToDelete) n.category = Object.keys(userCategories)[0] || 'uncategorized'; });
@@ -825,6 +903,7 @@
             reader.onload = e => { 
                 try { 
                     const imp = JSON.parse(e.target.result); 
+                    saveHistorySnapshot(); // Catat untuk Undo
                     if(imp.categories && imp.notes) {
                         userCategories = { ...userCategories, ...imp.categories };
                         notes = [...imp.notes, ...notes.filter(n=>!imp.notes.find(i=>i.id===n.id))];
