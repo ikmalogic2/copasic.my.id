@@ -36,8 +36,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        html { color-scheme: light; }
-        html.dark { color-scheme: dark; }
+        html { color-scheme: dark; }
         
         body { font-family: 'Space Grotesk', -apple-system, sans-serif; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { display: none; }
@@ -54,8 +53,6 @@
         .accordion-content { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.3s ease; }
         .accordion-content.open { grid-template-rows: 1fr; }
         .accordion-inner { overflow: hidden; }
-        .chevron-icon { transition: transform 0.3s ease; }
-        .chevron-icon.open { transform: rotate(180deg); }
 
         .ios-input { appearance: none; background: rgba(118, 118, 128, 0.12); border-radius: 10px; }
         .dark .ios-input { background: rgba(118, 118, 128, 0.24); }
@@ -65,19 +62,6 @@
     </style>
 </head>
 <body class="flex h-[100dvh] overflow-hidden bg-ios-bg dark:bg-ios-darkBg transition-colors duration-300">
-
-    <!-- BULK ACTION BAR (Muncul dari atas saat ada catatan dipilih) -->
-    <div id="bulk-action-bar" class="fixed top-0 inset-x-0 h-[60px] bg-black dark:bg-white text-white dark:text-black z-[120] flex items-center justify-between px-5 transform -translate-y-full transition-transform duration-300 ios-shadow">
-        <div class="flex items-center space-x-4">
-            <button onclick="clearSelection()" class="text-xl active:opacity-50"><i class="fa-solid fa-xmark"></i></button>
-            <span class="font-bold text-[16px]"><span id="bulk-count">0</span> Terpilih</span>
-        </div>
-        <div class="flex items-center space-x-5">
-            <button onclick="bulkCopy()" class="text-[18px] active:opacity-50"><i class="fa-regular fa-copy"></i></button>
-            <button onclick="openBulkMoveModal()" class="text-[18px] active:opacity-50"><i class="fa-solid fa-folder-open"></i></button>
-            <button onclick="confirmBulkDelete()" class="text-[18px] text-red-500 active:opacity-50"><i class="fa-solid fa-trash-can"></i></button>
-        </div>
-    </div>
 
     <!-- OVERLAY SIDEBAR -->
     <div id="sidebar-overlay" class="fixed inset-0 bg-black/40 z-20 hidden lg:hidden transition-opacity opacity-0 backdrop-blur-sm" onclick="toggleSidebar()"></div>
@@ -119,12 +103,28 @@
                 <h1 class="text-[17px] font-semibold text-black dark:text-white tracking-tight ml-3">Catatan</h1>
             </div>
             
-            <div class="flex items-center space-x-3 sm:space-x-4 ml-auto">
+            <!-- Default Actions -->
+            <div id="default-header-actions" class="flex items-center space-x-3 sm:space-x-4 ml-auto transition-opacity duration-300">
                 <button onclick="undoAction()" id="btn-undo" class="text-black dark:text-white text-[18px] active:opacity-50 opacity-30 transition-opacity"><i class="fa-solid fa-rotate-left"></i></button>
                 <button onclick="redoAction()" id="btn-redo" class="text-black dark:text-white text-[18px] active:opacity-50 opacity-30 transition-opacity"><i class="fa-solid fa-rotate-right"></i></button>
                 <div class="w-px h-5 bg-ios-separator/30 dark:bg-ios-darkSeparator mx-1 hidden sm:block"></div>
                 <button onclick="toggleTheme()" id="btn-theme" class="text-black dark:text-white text-[20px] active:opacity-50"><i class="fa-solid fa-sun" id="theme-icon"></i></button>
+                
+                <!-- NEW BUTTON: Select Mode (Check-Double) -->
+                <button onclick="toggleSelectMode()" id="btn-select" class="text-black dark:text-white text-[18px] active:opacity-50"><i class="fa-solid fa-check-double"></i></button>
+                
                 <button onclick="toggleGroupView()" id="btn-group" class="text-black dark:text-white text-[20px] active:opacity-50"><i class="fa-solid fa-layer-group"></i></button>
+            </div>
+
+            <!-- Bulk Actions (Hidden by default, shown in Select Mode) -->
+            <div id="bulk-header-actions" class="hidden items-center space-x-3 sm:space-x-4 ml-auto transition-opacity duration-300">
+                <span class="font-bold text-[14px] text-black dark:text-white mr-1"><span id="bulk-count">0</span> Terpilih</span>
+                <button onclick="bulkCopy()" class="text-black dark:text-white text-[18px] active:opacity-50"><i class="fa-regular fa-copy"></i></button>
+                <button onclick="openBulkMoveModal()" class="text-black dark:text-white text-[18px] active:opacity-50"><i class="fa-solid fa-folder-open"></i></button>
+                <button onclick="confirmBulkDelete()" class="text-red-500 text-[18px] active:opacity-50"><i class="fa-solid fa-trash-can"></i></button>
+                <div class="w-px h-5 bg-ios-separator/30 dark:bg-ios-darkSeparator mx-1"></div>
+                <!-- Cancel Select Mode -->
+                <button onclick="toggleSelectMode()" class="text-black dark:text-white text-[18px] active:opacity-50"><i class="fa-solid fa-xmark"></i></button>
             </div>
         </header>
 
@@ -372,6 +372,7 @@
         let notes = [];
         let currentFilter = 'all';
         let isGrouped = false; 
+        let isSelectMode = false;
         let openNotes = new Set(), openCategories = new Set();
         let selectedNotes = new Set();
         let currentAttachments = [], currentCarouselImages = {}, currentCarouselCount = 3;
@@ -558,33 +559,52 @@
             catKeys.forEach(k => { const conf = userCategories[k]; const o = document.createElement('option'); o.value = k; o.innerHTML = `${conf.icon} ${conf.title}`; sel.appendChild(o); });
         }
 
-        // --- BULK SELECTION LOGIC ---
+        // --- BULK SELECTION (MODE PILIH) LOGIC ---
+        function toggleSelectMode() {
+            isSelectMode = !isSelectMode;
+            if (!isSelectMode) selectedNotes.clear();
+            updateBulkBar();
+            renderNotes();
+        }
+
         function toggleSelection(id) {
             if (selectedNotes.has(id)) selectedNotes.delete(id); else selectedNotes.add(id);
-            updateBulkBar(); renderNotes();
+            document.getElementById('bulk-count').innerText = selectedNotes.size;
+            renderNotes();
         }
-        function clearSelection() { selectedNotes.clear(); updateBulkBar(); renderNotes(); }
+        
         function updateBulkBar() {
-            const bar = document.getElementById('bulk-action-bar');
-            if (selectedNotes.size > 0) { document.getElementById('bulk-count').innerText = selectedNotes.size; bar.classList.remove('-translate-y-full'); } 
-            else { bar.classList.add('-translate-y-full'); }
+            const defActions = document.getElementById('default-header-actions');
+            const bulkActions = document.getElementById('bulk-header-actions');
+            if (isSelectMode) { 
+                document.getElementById('bulk-count').innerText = selectedNotes.size; 
+                defActions.classList.add('hidden'); defActions.classList.remove('flex');
+                bulkActions.classList.remove('hidden'); bulkActions.classList.add('flex');
+            } 
+            else { 
+                defActions.classList.remove('hidden'); defActions.classList.add('flex');
+                bulkActions.classList.add('hidden'); bulkActions.classList.remove('flex');
+            }
         }
         
         function confirmBulkDelete() {
+            if (selectedNotes.size === 0) return showToast("Pilih catatan dulu!");
             deleteType = 'bulk'; document.getElementById('delete-alert-title').innerText = `Hapus ${selectedNotes.size} Catatan?`;
             document.getElementById('delete-alert-desc').innerText = "Tindakan ini permanen."; document.getElementById('btn-confirm-delete').setAttribute('onclick', 'executeDelete()');
             document.getElementById('delete-alert-overlay').classList.remove('hidden'); setTimeout(()=>document.getElementById('delete-alert-overlay').classList.remove('opacity-0'), 10);
         }
         
         function bulkCopy() {
+            if (selectedNotes.size === 0) return showToast("Pilih catatan dulu!");
             let txt = "";
             selectedNotes.forEach(id => {
                 const n = notes.find(x => x.id === id); if(n) { txt += `[${n.title || 'Tanpa Judul'}]\n${n.content}\n\n`; }
             });
-            navigator.clipboard.writeText(txt.trim()).then(() => { clearSelection(); showToast("Disalin!"); });
+            navigator.clipboard.writeText(txt.trim()).then(() => { isSelectMode = false; selectedNotes.clear(); updateBulkBar(); renderNotes(); showToast("Disalin!"); });
         }
 
         function openBulkMoveModal() {
+            if (selectedNotes.size === 0) return showToast("Pilih catatan dulu!");
             const sel = document.getElementById('bulk-move-select'); sel.innerHTML = '';
             const catKeys = Object.keys(userCategories);
             catKeys.forEach(k => { const o = document.createElement('option'); o.value = k; o.innerHTML = `${userCategories[k].icon} ${userCategories[k].title}`; sel.appendChild(o); });
@@ -595,7 +615,7 @@
             const target = document.getElementById('bulk-move-select').value;
             saveHistorySnapshot();
             notes.forEach(n => { if (selectedNotes.has(n.id)) n.category = target; });
-            saveToStorage(); closeBulkMoveModal(); clearSelection(); renderSidebar(); showToast("Dipindahkan!");
+            saveToStorage(); closeBulkMoveModal(); isSelectMode = false; selectedNotes.clear(); updateBulkBar(); renderSidebar(); showToast("Dipindahkan!");
         }
 
         function compressImage(file, cb) {
@@ -730,7 +750,7 @@
             } else if (deleteType === 'note') {
                 notes = notes.filter(n => n.id !== itemToDelete); saveToStorage(); renderSidebar(); renderNotes(); closeDeleteAlert(); showToast("Dihapus");
             } else if (deleteType === 'bulk') {
-                notes = notes.filter(n => !selectedNotes.has(n.id)); saveToStorage(); clearSelection(); renderSidebar(); closeDeleteAlert(); showToast("Dihapus");
+                notes = notes.filter(n => !selectedNotes.has(n.id)); saveToStorage(); isSelectMode = false; selectedNotes.clear(); updateBulkBar(); renderSidebar(); closeDeleteAlert(); showToast("Dihapus");
             }
         }
 
@@ -766,7 +786,7 @@
                 const cats = [...new Set(f.map(n=>n.category))].sort();
                 cats.forEach(c => {
                     const cNotes = f.filter(n=>n.category===c); const conf = userCategories[c] || { title: "Uncategorized", icon: "📁", color: "#000000", type: "normal" }; if(!openCategories.has(c)) openCategories.add(c);
-                    let h = `<div class="mb-6 bg-white dark:bg-[#1E1E1E] rounded-[24px] shadow-sm border border-gray-200 dark:border-gray-800 p-5 lg:p-6"><div class="flex items-center justify-between cursor-pointer active:opacity-50 pb-2" onclick="toggleCategoryGroup('${c}')"><div class="flex items-center"><span class="w-10 h-10 rounded-full flex items-center justify-center mr-4 shadow-sm text-white" style="background-color: ${conf.color}"><span class="text-[18px]">${conf.icon}</span></span><h3 class="font-bold text-[22px] text-black dark:text-white tracking-tight">${conf.title}</h3></div><div class="flex items-center"><span class="text-[14px] font-bold text-gray-500 bg-gray-100 dark:bg-[#2C2C2E] px-3 py-1 rounded-full mr-3">${cNotes.length}</span><i id="cat-icon-${c}" class="fa-solid fa-chevron-down text-gray-400 transition-transform ${openCategories.has(c)?'rotate-180':''}"></i></div></div><div id="cat-content-${c}" class="${openCategories.has(c)?'':'hidden'} pt-5 mt-3 border-t border-gray-200 dark:border-gray-800 columns-1 md:columns-2 lg:columns-3 gap-4">`;
+                    let h = `<div class="mb-6 bg-white dark:bg-[#1E1E1E] rounded-[24px] shadow-sm border border-gray-200 dark:border-gray-800 p-4 lg:p-5"><div class="flex items-center justify-between cursor-pointer active:opacity-50 pb-2" onclick="toggleCategoryGroup('${c}')"><div class="flex items-center"><span class="w-10 h-10 rounded-full flex items-center justify-center mr-4 shadow-sm text-white" style="background-color: ${conf.color}"><span class="text-[18px]">${conf.icon}</span></span><h3 class="font-bold text-[22px] text-black dark:text-white tracking-tight">${conf.title}</h3></div><div class="flex items-center"><span class="text-[14px] font-bold text-gray-500 bg-gray-100 dark:bg-[#2C2C2E] px-3 py-1 rounded-full mr-3">${cNotes.length}</span><i id="cat-icon-${c}" class="fa-solid fa-chevron-down text-gray-400 transition-transform ${openCategories.has(c)?'rotate-180':''}"></i></div></div><div id="cat-content-${c}" class="${openCategories.has(c)?'':'hidden'} pt-4 mt-2 border-t border-gray-200 dark:border-gray-800 columns-1 md:columns-2 lg:columns-3 gap-4">`;
                     cNotes.forEach(n => h += `<div class="break-inside-avoid mb-4">${buildNoteCard(n, true)}</div>`); h += `</div></div>`; cont.innerHTML += h;
                 });
             } else {
@@ -817,32 +837,45 @@
             let dateHtml = `Buat: ${formatDate(note.createdAt)}`;
             if (note.updatedAt && note.updatedAt !== note.createdAt) dateHtml += ` • Edit: ${formatDate(note.updatedAt)}`;
 
-            return `<div class="${bgWrapper} rounded-[24px] p-5 relative overflow-hidden group ${selectionRing}">
+            let selectHtml = '';
+            if (isSelectMode) {
+                selectHtml = `<button onclick="event.stopPropagation(); toggleSelection('${note.id}')" class="w-6 h-6 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center transition-colors shrink-0 mr-1.5 ${isSelected ? 'bg-black border-black text-white dark:bg-white dark:border-white dark:text-black' : ''}">
+                    ${isSelected ? '<i class="fa-solid fa-check text-[10px]"></i>' : ''}
+                </button>`;
+            }
+
+            let categoryPillHtml = '';
+            if (!isNested) {
+                categoryPillHtml = `<div class="flex items-center bg-gray-100/70 dark:bg-[#2C2C2E]/70 px-2 py-1 rounded-full border border-gray-200/50 dark:border-gray-700/50">
+                    <span class="w-4 h-4 rounded-full text-white flex items-center justify-center text-[8px] shadow-sm mr-1.5" style="background-color: ${conf.color}">${conf.icon}</span>
+                    <span class="text-[10px] font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide truncate max-w-[100px] sm:max-w-[150px]">${conf.title}</span>
+                </div>`;
+            }
+
+            return `<div class="${bgWrapper} rounded-[18px] p-3.5 relative overflow-hidden group ${selectionRing}">
                 <!-- Row 1: Actions -->
-                <div class="flex justify-between items-center mb-3">
-                    <div class="flex items-center space-x-2">
-                        <button onclick="event.stopPropagation(); toggleSelection('${note.id}')" class="w-6 h-6 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center transition-colors ${isSelected ? 'bg-black border-black text-white dark:bg-white dark:border-white dark:text-black' : ''}">
-                            ${isSelected ? '<i class="fa-solid fa-check text-[10px]"></i>' : ''}
-                        </button>
-                        <span class="w-7 h-7 rounded-full text-white flex items-center justify-center text-[12px] shadow-sm" style="background-color: ${conf.color}">${conf.icon}</span>
+                <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center">
+                        ${selectHtml}
+                        ${categoryPillHtml}
                     </div>
-                    <div class="flex space-x-1">
-                        ${firstUrl ? `<a href="${firstUrl}" target="_blank" onclick="event.stopPropagation()" class="w-8 h-8 text-black dark:text-white bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-solid fa-arrow-up-right-from-square text-[13px]"></i></a>` : ''}
-                        <button onclick="event.stopPropagation(); openCopyModal('${note.id}')" class="w-8 h-8 text-black dark:text-white bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-regular fa-copy text-[13px]"></i></button>
-                        <button onclick="event.stopPropagation(); openModal('${note.id}')" class="w-8 h-8 text-black dark:text-white bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-solid fa-pen text-[13px]"></i></button>
-                        <button onclick="event.stopPropagation(); openDeleteAlert('${note.id}')" class="w-8 h-8 text-red-500 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-solid fa-trash-can text-[13px]"></i></button>
+                    <div class="flex space-x-1 shrink-0 ml-2">
+                        ${firstUrl ? `<a href="${firstUrl}" target="_blank" onclick="event.stopPropagation()" class="w-7 h-7 text-black dark:text-white bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-solid fa-arrow-up-right-from-square text-[11px]"></i></a>` : ''}
+                        <button onclick="event.stopPropagation(); openCopyModal('${note.id}')" class="w-7 h-7 text-black dark:text-white bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-regular fa-copy text-[11px]"></i></button>
+                        <button onclick="event.stopPropagation(); openModal('${note.id}')" class="w-7 h-7 text-black dark:text-white bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-solid fa-pen text-[11px]"></i></button>
+                        <button onclick="event.stopPropagation(); openDeleteAlert('${note.id}')" class="w-7 h-7 text-red-500 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center transition-colors active:scale-95"><i class="fa-solid fa-trash-can text-[11px]"></i></button>
                     </div>
                 </div>
                 
                 <!-- Row 2: Title -->
-                <div class="cursor-pointer mb-2" onclick="toggleAccordion('${note.id}')">
-                    <h4 class="font-bold text-black dark:text-white text-[18px] leading-tight break-words">${displayTitle}</h4>
+                <div class="cursor-pointer" onclick="toggleAccordion('${note.id}')">
+                    <h4 class="font-bold text-black dark:text-white text-[16px] leading-tight break-words">${displayTitle}</h4>
                     <p class="text-[11px] font-medium text-gray-500 mt-1">${dateHtml}</p>
                 </div>
                 
-                <!-- ACCORDION CONTENT (Tanpa Divider) -->
+                <!-- ACCORDION CONTENT -->
                 <div class="accordion-content ${openNotes.has(note.id)?'open':''}" id="acc-content-${note.id}">
-                    <div class="accordion-inner pt-2">
+                    <div class="accordion-inner pt-3">
                         ${imgHtml}
                         ${cHtml}
                         ${fileHtml}
